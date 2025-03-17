@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../assets/styles/globals.css";
-
+import { CONFIG } from "@/lib/constants";
+import { ThemeProvider } from "next-themes";
 const inter = Inter({
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Pro-store",
-  description: "a modern e-commerce platform built with Next.js",
+  title: {
+    template: `%s |${CONFIG.APP_NAME}`,
+    default: `${CONFIG.APP_NAME}`,
+  },
+  description: `${CONFIG.APP_DESCRIPTION}`,
+  metadataBase: new URL(CONFIG.APP_URL),
 };
 
 export default function RootLayout({
@@ -17,8 +22,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className}  antialiased`}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className}  antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

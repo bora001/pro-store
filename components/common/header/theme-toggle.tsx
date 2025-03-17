@@ -55,7 +55,6 @@ const ThemeToggle = () => {
             <ThemeToggleCheckboxItem type={SYSTEM_TYPE.SYSTEM} />
             <ThemeToggleCheckboxItem type={SYSTEM_TYPE.DARK} />
             <ThemeToggleCheckboxItem type={SYSTEM_TYPE.LIGHT} />
-            <DropdownMenuCheckboxItem></DropdownMenuCheckboxItem>
           </>
         )}
       </DropdownMenuContent>

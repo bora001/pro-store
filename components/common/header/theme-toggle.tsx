@@ -10,8 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
-import { toTitleCase } from "@/utils/to-title-case";
 import { useEffect, useState } from "react";
+import { toTitleCase } from "@/lib/utils";
 
 const SYSTEM_TYPE = {
   SYSTEM: "system",

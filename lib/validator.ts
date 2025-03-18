@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { formatNumberWithDecimal } from "./utils";
 
+// product
 export const insertProductSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters long"),
   slug: z.string().min(3, "Slug must be at least 3 characters long"),
@@ -20,3 +21,24 @@ export const insertProductSchema = z.object({
       "Price must have exactly two decimal places"
     ),
 });
+
+// sign-in
+export const signInSchema = z.object({
+  email: z.string().email("invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+});
+
+// sign-up
+export const signUpSchema = z
+  .object({
+    email: z.string().email("invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+    confirmPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters long"),
+    name: z.string().min(3, "Username must be at least 3 characters long"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });

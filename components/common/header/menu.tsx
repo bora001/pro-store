@@ -1,13 +1,14 @@
 import LinkButton from "@/components/custom/LinkButton";
 import Flex from "../flex";
 import ThemeToggle from "./theme-toggle";
-import { EllipsisVertical, ShoppingCart, UserIcon } from "lucide-react";
+import { EllipsisVertical, ShoppingCart } from "lucide-react";
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import UserButton from "./user-button";
 
 const MenuContent = (
   <>
@@ -18,7 +19,7 @@ const MenuContent = (
       title="Cart"
       url="/cart"
     />
-    <LinkButton icon={<UserIcon />} title="Sign In" url="/sign-in" />
+    <UserButton />
   </>
 );
 

@@ -21,3 +21,7 @@ export function divideByDecimal(num: number) {
   const [int, decimal] = num.toFixed(2).split(".");
   return decimal ? [int, decimal.padEnd(2, "0")] : [int, "00"];
 }
+
+// to title case
+export const toTitleCase = (str: string) =>
+  str.length && str.charAt(0).toUpperCase() + str.slice(1);

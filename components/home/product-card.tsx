@@ -1,8 +1,8 @@
-import { ProductItem } from "@/db/sample-data";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import ProductPrice from "./product-price";
+import { ProductItem } from "@/types";
 
 const ProductCard = ({
   product: { slug, images, name, brand, rating, stock, price },
@@ -12,7 +12,7 @@ const ProductCard = ({
   return (
     <Card className="w-full max-w-sm">
       {/* header */}
-      <CardHeader p-0 items-center>
+      <CardHeader className="p-0 items-center">
         <Link href={`/product/${slug}`}>
           <Image
             src={images[0]}

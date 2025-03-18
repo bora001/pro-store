@@ -1,4 +1,4 @@
-import { CONFIG } from "@/lib/constants";
+import { CONFIG } from "@/lib/constants/config";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();

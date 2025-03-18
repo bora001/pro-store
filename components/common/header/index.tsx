@@ -1,7 +1,7 @@
-import { CONFIG } from "@/lib/constants";
 import Link from "next/link";
 import LogoImage from "../logo";
 import Menu from "./menu";
+import { CONFIG } from "@/lib/constants/config";
 
 const Header = () => {
   return (

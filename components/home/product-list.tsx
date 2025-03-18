@@ -1,4 +1,4 @@
-import { ProductItem } from "@/db/sample-data";
+import { ProductItem } from "@/types";
 import ProductCard from "./product-card";
 
 const ProductList = ({

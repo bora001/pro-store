@@ -1,4 +1,4 @@
-import { CONFIG } from "@/lib/constants";
+import { CONFIG } from "@/lib/constants/config";
 import Image from "next/image";
 
 const LogoImage = ({ size }: { size?: number }) => {

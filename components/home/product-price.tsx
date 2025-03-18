@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, divideByDecimal } from "@/lib/utils";
 import Text from "../custom/Text";
 
 const ProductPrice = ({
@@ -7,15 +7,15 @@ const ProductPrice = ({
   className,
 }: {
   unit?: string;
-  price: number;
+  price: string;
   className?: string;
 }) => {
-  const [whole, fraction] = price.toFixed(2).split(".");
+  const [whole, fraction] = divideByDecimal(+price);
   return (
-    <p className={cn("text-xl flex leading-[1]", className)}>
+    <div className={cn("text-xl flex leading-[1]", className)}>
       <Text size="xs">{unit}</Text> {whole}
       <Text size="xs">.{fraction}</Text>
-    </p>
+    </div>
   );
 };
 

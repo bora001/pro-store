@@ -1,7 +1,7 @@
 import ProductImages from "@/components/home/product-images";
 import ProductPrice from "@/components/home/product-price";
+import AddToCart from "@/components/product/add-to-cart";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getProductBySlug } from "@/lib/actions/product.actions";
 import { notFound } from "next/navigation";
@@ -22,6 +22,7 @@ const ProductDetailPage = async (props: {
     description,
     stock,
     images,
+    id,
   } = product;
   const inStock = stock > 0;
 
@@ -69,7 +70,16 @@ const ProductDetailPage = async (props: {
             </div>
             {inStock && (
               <div className="flex-center">
-                <Button className="w-full">Add to Cart</Button>
+                <AddToCart
+                  item={{
+                    productId: id,
+                    name,
+                    slug,
+                    price,
+                    qty: 1,
+                    image: images[0],
+                  }}
+                />
               </div>
             )}
           </CardContent>

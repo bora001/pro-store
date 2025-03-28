@@ -1,11 +1,13 @@
 "use server";
 
-import { signInSchema, signUpSchema } from "../validator";
-import { signIn, signOut } from "@/auth";
+import { shippingSchema, signInSchema, signUpSchema } from "../validator";
+import { auth, signIn, signOut } from "@/auth";
 import { prisma } from "@/db/prisma";
+import { Shipping } from "@/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { hashSync } from "bcrypt-ts-edge";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { cookies } from "next/headers";
 import { ZodError } from "zod";
 
 // sign-in
@@ -29,6 +31,8 @@ export async function signInUser(prevState: unknown, formData: FormData) {
 
 // sign-out
 export async function signOutUser() {
+  const cookieStore = await cookies();
+  cookieStore.delete("sessionCartId");
   await signOut();
   return { success: true, message: "Signed out successfully" };
 }
@@ -74,6 +78,44 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
       success: false,
       message: "Sign up failed",
       data,
+    };
+  }
+}
+
+// get-user
+export async function getUserById(id: string) {
+  const user = await prisma.user.findFirst({
+    where: { id },
+  });
+  if (!user) throw new Error("User not found");
+  return user;
+}
+
+// update-address
+export async function updateUserAddress(data: Shipping) {
+  try {
+    const session = await auth();
+    const currentUser = await prisma.user.findFirst({
+      where: {
+        id: session?.user?.id,
+      },
+    });
+    if (!currentUser) throw new Error("User not found");
+    const address = shippingSchema.parse(data);
+    await prisma.user.update({
+      where: {
+        id: currentUser.id,
+      },
+      data: { address },
+    });
+    return {
+      success: true,
+      message: "User Address updated successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error,
     };
   }
 }

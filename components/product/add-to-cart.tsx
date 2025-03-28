@@ -6,9 +6,10 @@ import { ToastAction } from "../ui/toast";
 import { addItemToCart } from "@/lib/actions/cart.actions";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { Loader2, Minus, Plus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import Flex from "../common/flex";
 import { useState, useTransition } from "react";
+import ButtonWithTransition from "../custom/ButtonWithTransition";
 
 const AddToCart = ({ item }: { item: CartItem }) => {
   const router = useRouter();
@@ -55,10 +56,11 @@ const AddToCart = ({ item }: { item: CartItem }) => {
           <Plus />
         </Button>
       </Flex>
-
-      <Button className="w-full" onClick={handleAddCart}>
-        {isPending ? <Loader2 className="animate-spin" /> : "Add to Cart"}
-      </Button>
+      <ButtonWithTransition
+        isPending={isPending}
+        title="Add to Cart"
+        onClick={handleAddCart}
+      />
     </div>
   );
 };

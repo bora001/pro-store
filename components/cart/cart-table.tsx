@@ -14,12 +14,13 @@ import Image from "next/image";
 import ItemQtyChanger from "./item-qty-changer";
 import { Card, CardContent } from "../ui/card";
 import { currencyFormatter } from "@/lib/utils";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import ItemRemoveButton from "./item-remove-button";
+import ButtonWithTransition from "../custom/ButtonWithTransition";
 
-const CartTable = ({ cart }: { cart: Cart }) => {
+const CartTable = ({ cart }: { cart?: Cart }) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -94,20 +95,14 @@ const CartTable = ({ cart }: { cart: Cart }) => {
                   {currencyFormatter.format(+cart.itemPrice)}
                 </p>
               </div>
-              <Button
-                className="w-full"
-                disabled={isPending}
+              <ButtonWithTransition
+                isPending={isPending}
                 onClick={() =>
                   startTransition(() => router.push("/shipping-address"))
                 }
-              >
-                {isPending ? (
-                  <Loader2 className="animate-spin" />
-                ) : (
-                  <ArrowRight />
-                )}
-                Proceed to Checkout
-              </Button>
+                leftIcon={<ArrowRight />}
+                title="Proceed to Checkout"
+              />
             </CardContent>
           </Card>
         </div>

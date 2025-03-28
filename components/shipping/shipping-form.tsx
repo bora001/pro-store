@@ -12,6 +12,7 @@ import { useTransition } from "react";
 import { updateUserAddress } from "@/lib/actions/user.action";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { PATH } from "@/lib/constants";
 
 type ShippingFormType = z.infer<typeof shippingSchema>;
 const ShippingForm = ({ address }: { address?: Shipping }) => {
@@ -25,7 +26,7 @@ const ShippingForm = ({ address }: { address?: Shipping }) => {
     startTransition(async () => {
       const { success, message } = await updateUserAddress(values);
       if (success) {
-        router.push("/payment-method");
+        router.push(PATH.PAYMENT);
       } else {
         toast({ variant: "destructive", description: message as string });
       }

@@ -9,6 +9,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import UserButton from "./user-button";
+import { PATH } from "@/lib/constants";
 
 const MenuContent = (
   <>
@@ -17,7 +18,7 @@ const MenuContent = (
       {...{ variant: "ghost" }}
       icon={<ShoppingCart />}
       title="Cart"
-      url="/cart"
+      url={PATH.CART}
     />
     <UserButton />
   </>

@@ -5,7 +5,7 @@ import Link from "next/link";
 const LinkButton = ({
   icon,
   title,
-  url,
+  url = "/",
   ...props
 }: {
   icon?: ReactNode;

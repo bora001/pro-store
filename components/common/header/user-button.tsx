@@ -8,12 +8,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOutUser } from "@/lib/actions/user.action";
+import { PATH } from "@/lib/constants";
 import { UserIcon } from "lucide-react";
 
 const UserButton = async () => {
   const session = await auth();
   if (!session)
-    return <LinkButton icon={<UserIcon />} title="Sign In" url="/sign-in" />;
+    return (
+      <LinkButton icon={<UserIcon />} title="Sign In" url={PATH.SIGN_IN} />
+    );
 
   return (
     <DropdownMenu>

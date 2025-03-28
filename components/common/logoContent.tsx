@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import Flex from "./flex";
 import LogoImage from "./logo";
 import Link from "next/link";
+import { PATH } from "@/lib/constants";
 
 const LogoContent = ({
   title,
@@ -16,7 +17,7 @@ const LogoContent = ({
       <Card>
         <CardHeader className="space-y-4">
           <Flex className="flex-start gap-4">
-            <Link href="/">
+            <Link href={PATH.HOME}>
               <LogoImage />
             </Link>
             <CardTitle>{title}</CardTitle>

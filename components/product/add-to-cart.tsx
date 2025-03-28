@@ -10,6 +10,7 @@ import { Minus, Plus } from "lucide-react";
 import Flex from "../common/flex";
 import { useState, useTransition } from "react";
 import ButtonWithTransition from "../custom/ButtonWithTransition";
+import { PATH } from "@/lib/constants";
 
 const AddToCart = ({ item }: { item: CartItem }) => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const AddToCart = ({ item }: { item: CartItem }) => {
             <ToastAction
               className="bg-primary text-white hover:bg-gray-800"
               altText="go to cart"
-              onClick={() => router.push("/cart")}
+              onClick={() => router.push(PATH.CART)}
             >
               Go to Cart
             </ToastAction>

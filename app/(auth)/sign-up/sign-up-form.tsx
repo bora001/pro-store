@@ -3,6 +3,7 @@
 import FormSubmitButton from "@/components/custom/FormSubmitButton";
 import { Input } from "@/components/ui/input";
 import { signUpUser } from "@/lib/actions/user.action";
+import { PATH } from "@/lib/constants";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
@@ -16,7 +17,11 @@ const SignUpForm = () => {
   return (
     <form className="space-y-5" action={action}>
       <div className="space-y-3">
-        <Input type="hidden" name="callbackUrl" value={callbackUrl || "/"} />
+        <Input
+          type="hidden"
+          name="callbackUrl"
+          value={callbackUrl || PATH.HOME}
+        />
         <Input
           type="text"
           name="name"
@@ -45,7 +50,7 @@ const SignUpForm = () => {
         {data && data.message}
       </p>
       <div className="text-sm text-center text-muted-foreground">
-        Already Have an account? <Link href="/sign-in">Sign in</Link>
+        Already Have an account? <Link href={PATH.SIGN_IN}>Sign in</Link>
       </div>
     </form>
   );

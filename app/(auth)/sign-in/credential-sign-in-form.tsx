@@ -3,6 +3,7 @@
 import FormSubmitButton from "@/components/custom/FormSubmitButton";
 import { Input } from "@/components/ui/input";
 import { signInUser } from "@/lib/actions/user.action";
+import { PATH } from "@/lib/constants";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
@@ -17,7 +18,11 @@ const CredentialSignInForm = () => {
   return (
     <form className="space-y-5" action={action}>
       <div className="space-y-3">
-        <Input type="hidden" name="callbackUrl" value={callbackUrl || "/"} />
+        <Input
+          type="hidden"
+          name="callbackUrl"
+          value={callbackUrl || PATH.HOME}
+        />
         <Input
           defaultValue={((data && data && data.data?.email) as string) || ""}
           type="email"
@@ -33,7 +38,7 @@ const CredentialSignInForm = () => {
         {data && data.message}
       </p>
       <div className="text-sm text-center text-muted-foreground">
-        Don&apos;t have an account? <Link href="/sign-up">Sign up</Link>
+        Don&apos;t have an account? <Link href={PATH.SIGN_UP}>Sign up</Link>
       </div>
     </form>
   );

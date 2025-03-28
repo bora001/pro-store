@@ -19,6 +19,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import ItemRemoveButton from "./item-remove-button";
 import ButtonWithTransition from "../custom/ButtonWithTransition";
+import { PATH } from "@/lib/constants";
 
 const CartTable = ({ cart }: { cart?: Cart }) => {
   const [isPending, startTransition] = useTransition();
@@ -31,7 +32,7 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
         <div className="flex items-center flex-col justify-center h-full gap-4">
           <p>Cart is empty...</p>
           <Button>
-            <Link href="/">Go to shopping</Link>
+            <Link href={PATH.HOME}>Go to shopping</Link>
           </Button>
         </div>
       ) : (
@@ -98,7 +99,7 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
               <ButtonWithTransition
                 isPending={isPending}
                 onClick={() =>
-                  startTransition(() => router.push("/shipping-address"))
+                  startTransition(() => router.push(PATH.SHIPPING))
                 }
                 leftIcon={<ArrowRight />}
                 title="Proceed to Checkout"

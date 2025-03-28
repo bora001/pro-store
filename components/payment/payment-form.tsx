@@ -7,7 +7,7 @@ import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { PAYMENT_METHODS } from "@/lib/constants";
 import { Button } from "../ui/button";
-type PaymentFormType = z.infer<typeof paymentSchema>;
+export type PaymentFormType = z.infer<typeof paymentSchema>;
 
 const PaymentForm = () => {
   const router = useRouter();

@@ -10,7 +10,13 @@ import {
 } from "@/lib/actions/cart.actions";
 import { toast } from "@/hooks/use-toast";
 
-const ItemQtyChanger = ({ item }: { item: CartItem }) => {
+const ItemQtyChanger = ({
+  item,
+  isView,
+}: {
+  item: CartItem;
+  isView?: boolean;
+}) => {
   const [isPending, startTransition] = useTransition();
   const handleItemQty = (type: string) => {
     const qty = type === "plus" ? item.qty + 1 : item.qty - 1;
@@ -41,6 +47,7 @@ const ItemQtyChanger = ({ item }: { item: CartItem }) => {
   return (
     <Flex className="justify-between">
       <Button
+        className={isView ? "hidden" : "block"}
         variant="outline"
         onClick={() => handleItemQty("minus")}
         disabled={isPending}
@@ -49,6 +56,7 @@ const ItemQtyChanger = ({ item }: { item: CartItem }) => {
       </Button>
       <span className="w-12 text-center">{item.qty}</span>
       <Button
+        className={isView ? "hidden" : "block"}
         variant="outline"
         onClick={() => handleItemQty("plus")}
         disabled={isPending}

@@ -14,9 +14,9 @@ import {
   TableRow,
 } from "../ui/table";
 import Image from "next/image";
-import { currencyFormatter } from "@/lib/utils";
 import { useTransition } from "react";
 import { createOrder } from "@/lib/actions/order.actions";
+import PriceSummary from "../common/price-summary";
 
 const PlacerOrderForm = ({
   address,
@@ -113,26 +113,12 @@ const PlacerOrderForm = ({
         </div>
         {/*  */}
         <div>
-          <Card>
-            <CardContent className="p-4 gap-4 space-y-4">
-              <div className="flex justify-between">
-                <div>Items</div>
-                <div>{currencyFormatter.format(+cart.itemPrice)}</div>
-              </div>
-              <div className="flex justify-between">
-                <div>Tax</div>
-                <div>{currencyFormatter.format(+cart.taxPrice)}</div>
-              </div>
-              <div className="flex justify-between">
-                <div>Shipping</div>
-                <div>{currencyFormatter.format(+cart.shippingPrice)}</div>
-              </div>
-              <div className="flex justify-between">
-                <div>Total</div>
-                <div>{currencyFormatter.format(+cart.totalPrice)}</div>
-              </div>
-            </CardContent>
-          </Card>
+          <PriceSummary
+            itemPrice={cart.itemPrice}
+            taxPrice={cart.taxPrice}
+            shippingPrice={cart.shippingPrice}
+            totalPrice={cart.totalPrice}
+          />
           <Button
             className="w-full"
             onClick={handlePlaceOrder}

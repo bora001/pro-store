@@ -25,3 +25,10 @@ export function divideByDecimal(num: number) {
 // to title case
 export const toTitleCase = (str: string) =>
   str.length && str.charAt(0).toUpperCase() + str.slice(1);
+
+// currency
+export const currencyFormatter = new Intl.NumberFormat("en-US", {
+  currency: "USD",
+  style: "currency",
+  minimumFractionDigits: 2,
+});

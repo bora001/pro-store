@@ -5,7 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getProductBySlug } from "@/lib/actions/product.actions";
 import { notFound } from "next/navigation";
-
+export const metadata = {
+  title: "Product",
+};
 const ProductDetailPage = async (props: {
   params: Promise<{ slug: string }>;
 }) => {

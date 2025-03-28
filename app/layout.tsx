@@ -10,7 +10,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: `%s |${CONFIG.APP_NAME}`,
+    template: `%s | ${CONFIG.APP_NAME}`,
     default: `${CONFIG.APP_NAME}`,
   },
   description: `${CONFIG.APP_DESCRIPTION}`,

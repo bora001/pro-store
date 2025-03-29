@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
+import qs from "query-string";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -63,4 +64,27 @@ export function formatError(error: any) {
     message,
     data: undefined,
   };
+}
+
+// long-id-slicer
+export function idSlicer(str: string, cut?: number) {
+  return str.slice(-(cut || 10)).toUpperCase();
+}
+
+// url-query-changer
+export function URLChanger({
+  params,
+  key,
+  value,
+}: {
+  params: string;
+  key: string;
+  value: number | string;
+}) {
+  const query = qs.parse(params);
+  query[key] = String(value);
+  return qs.stringifyUrl(
+    { url: window.location.pathname, query },
+    { skipNull: true }
+  );
 }

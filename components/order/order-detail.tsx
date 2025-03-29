@@ -15,7 +15,7 @@ import {
   createPaypalOrder,
 } from "@/lib/actions/order.actions";
 import { toast } from "@/hooks/use-toast";
-import { dateTimeConverter } from "@/lib/utils";
+import { dateTimeConverter, idSlicer } from "@/lib/utils";
 
 const OrderDetail = ({
   order,
@@ -65,7 +65,7 @@ const OrderDetail = ({
     <>
       <h1 className="py-4 text-2xl">
         Order{" "}
-        <span className="text-gray-500 text-base"># {order.id.slice(-10)}</span>
+        <span className="text-gray-500 text-base"># {idSlicer(order.id)}</span>
       </h1>
       <div className="grid md:grid-cols-3 md:gap-5">
         <div className="col-span-2 space-y-4 overflow-x-auto">

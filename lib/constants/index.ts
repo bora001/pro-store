@@ -10,5 +10,6 @@ export const PATH = {
   CART: "/cart",
   SIGN_UP: "/sign-up",
   SIGN_IN: "/sign-in",
+  MY_ORDER: "/user/order",
   HOME: "/",
 };

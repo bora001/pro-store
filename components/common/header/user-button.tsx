@@ -7,9 +7,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOutUser } from "@/lib/actions/user.action";
 import { PATH } from "@/lib/constants";
 import { UserIcon } from "lucide-react";
+import UserButtonBox from "./user-buttons-box";
 
 const UserButton = async () => {
   const session = await auth();
@@ -44,13 +44,8 @@ const UserButton = async () => {
               {session.user?.email}
             </div>
           </div>
-          <Button
-            className="flex gap-3 justify-start w-full "
-            variant="outline"
-            onClick={signOutUser}
-          >
-            Sign Out
-          </Button>
+          {/* buttons */}
+          <UserButtonBox />
         </DropdownMenuLabel>
       </DropdownMenuContent>
     </DropdownMenu>

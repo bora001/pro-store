@@ -30,8 +30,7 @@ const PlacerOrderForm = ({
   const [isPending, startTransition] = useTransition();
   const handlePlaceOrder = () => {
     startTransition(async () => {
-      const res = await createOrder(method);
-      console.log(res, "RR");
+      await createOrder(method);
     });
   };
   return (

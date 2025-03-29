@@ -6,6 +6,7 @@ import { compareSync } from "bcrypt-ts-edge";
 import { cookies } from "next/headers";
 import { CartItem } from "./types";
 import { calcPrice } from "./lib/actions/cart.actions";
+import { PATH } from "./lib/constants";
 type User = {
   id: string;
   name: string;
@@ -13,7 +14,7 @@ type User = {
   role: string;
 };
 export const config = {
-  pages: { signIn: "sign-in", error: "sign-in" },
+  pages: { signIn: PATH.SIGN_IN, error: PATH.SIGN_IN },
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   adapter: PrismaAdapter(prisma),
   providers: [

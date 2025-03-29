@@ -10,6 +10,8 @@ import {
 } from "@/lib/validator";
 import { z } from "zod";
 
+export type USER_ROLE = "admin" | "user";
+
 export type ProductItem = z.infer<typeof insertProductSchema> & {
   id: string;
   rating: string;

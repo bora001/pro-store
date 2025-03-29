@@ -4,8 +4,12 @@ import { signOutUser } from "@/lib/actions/user.action";
 import { PATH } from "@/lib/constants";
 import { redirect } from "next/navigation";
 
-const UserButtonBox = () => {
+const UserButtonBox = ({ isAdmin }: { isAdmin: boolean }) => {
+  const ADMIN_BUTTON = isAdmin
+    ? [{ action: () => redirect(PATH.DASHBOARD), title: "Admin" }]
+    : [];
   const USER_BUTTON = [
+    ...ADMIN_BUTTON,
     { action: () => redirect(PATH.MY_PROFILE), title: "My Profile" },
     { action: () => redirect(PATH.MY_ORDER), title: "My Order" },
     { action: signOutUser, title: "Sign Out" },

@@ -13,4 +13,8 @@ export const PATH = {
   MY_ORDER: "/user/order",
   MY_PROFILE: "/user/profile",
   HOME: "/",
+  DASHBOARD: "/admin/dashboard",
+  PRODUCTS: "/admin/products",
+  USERS: "/admin/users",
+  ORDERS: "/admin/orders",
 };

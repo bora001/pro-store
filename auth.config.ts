@@ -1,5 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import { NextResponse } from "next/server";
+
 export const authConfig = {
   providers: [], // Required by NextAuthConfig type
   callbacks: {
@@ -20,7 +21,6 @@ export const authConfig = {
 
       // Check if user is not authenticated and accessing a protected path
       if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;
-
       // Check for session cart cookie
       if (!request.cookies.get("sessionCartId")) {
         // Generate new session cart id cookie

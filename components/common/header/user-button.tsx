@@ -45,7 +45,7 @@ const UserButton = async () => {
             </div>
           </div>
           {/* buttons */}
-          <UserButtonBox />
+          <UserButtonBox isAdmin={session.user?.role === "admin"} />
         </DropdownMenuLabel>
       </DropdownMenuContent>
     </DropdownMenu>

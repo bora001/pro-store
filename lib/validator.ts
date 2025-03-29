@@ -109,3 +109,11 @@ export const orderItemSchema = z.object({
   price: currency,
   qty: z.number().int().nonnegative("Quantity must be a positive integer"),
 });
+
+// paypal-payment
+export const paymentResultSchema = z.object({
+  id: z.string(),
+  status: z.string(),
+  pricePaid: z.string(),
+  email_address: z.string(),
+});

@@ -8,7 +8,10 @@ import { getMyCart } from "./cart.actions";
 import { getUserById } from "./user.action";
 import { orderSchema } from "../validator";
 import { prisma } from "@/db/prisma";
-import { prismaToJs } from "../utils";
+import { formatError, prismaToJs } from "../utils";
+import { paypal } from "../paypal";
+import { PaymentResult } from "@/types";
+import { revalidatePath } from "next/cache";
 
 // place-order
 export async function createOrder(payment: string | null) {
@@ -61,10 +64,7 @@ export async function createOrder(payment: string | null) {
     redirect(`/order/${newOrderId}`);
   } catch (error) {
     if (isRedirectError(error)) throw error;
-    return {
-      success: false,
-      message: error,
-    };
+    return formatError(error);
   }
 }
 
@@ -87,9 +87,130 @@ export async function getOrderInfo(orderId: string) {
       data: prismaToJs(data),
     };
   } catch (error) {
+    return formatError(error);
+  }
+}
+
+// paypal-order
+export async function createPaypalOrder(orderId: string) {
+  try {
+    const order = await prisma.order.findFirst({
+      where: { id: orderId },
+    });
+    if (!order) throw new Error("order not found");
+
+    const paypalOrder = await paypal.createOrder(+order.totalPrice);
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        paymentResult: {
+          id: paypalOrder.id,
+          email_address: "",
+          pricePaid: "",
+          status: "",
+        },
+      },
+    });
     return {
-      success: false,
-      message: error,
+      success: true,
+      message: "Item order created successfully",
+      data: paypalOrder.id,
     };
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// approve-paypal
+export async function approvalPaypalOrder(
+  orderId: string,
+  data: {
+    orderID: string;
+  }
+) {
+  try {
+    const order = await prisma.order.findFirst({
+      where: {
+        id: orderId,
+      },
+    });
+    if (!order) throw new Error("Order not found");
+    const captureData = await paypal.capturePayment(data.orderID);
+    if (
+      !captureData ||
+      captureData.id !== (order.paymentResult as PaymentResult).id ||
+      captureData.status !== "COMPLETED"
+    ) {
+      throw new Error("Error in paypal payment");
+    }
+
+    await updateOrderToPaid({
+      orderId,
+      paymentResult: {
+        id: captureData.id,
+        status: captureData.status,
+        email_address: captureData.payer.email_address,
+        pricePaid:
+          captureData.purchase_units[0].payments?.captures[0].amount.value,
+      },
+    });
+    revalidatePath(`/order/${orderId}`);
+    return {
+      success: true,
+      message: "order has been paid",
+    };
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// update paid
+async function updateOrderToPaid({
+  orderId,
+  paymentResult,
+}: {
+  orderId: string;
+  paymentResult?: PaymentResult;
+}) {
+  try {
+    const order = await prisma.order.findFirst({
+      where: {
+        id: orderId,
+      },
+      include: {
+        orderItems: true,
+      },
+    });
+    if (!order) throw new Error("Order not found");
+    if (order.isPaid) throw new Error("Order is already paid");
+    await prisma.$transaction(async (tx) => {
+      for (const item of order.orderItems) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { increment: -item.qty } },
+        });
+      }
+
+      await tx.order.update({
+        where: { id: orderId },
+        data: {
+          isPaid: true,
+          paidAt: new Date(),
+          paymentResult,
+        },
+      });
+    });
+    const updateOrder = await prisma.order.findFirst({
+      where: { id: orderId },
+      include: {
+        orderItems: true,
+        user: {
+          select: { name: true, email: true },
+        },
+      },
+    });
+    if (!updateOrder) throw new Error("Order not found");
+  } catch (error) {
+    return formatError(error);
   }
 }

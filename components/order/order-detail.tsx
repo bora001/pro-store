@@ -5,8 +5,25 @@ import { Badge } from "../ui/badge";
 import Flex from "../common/flex";
 import ProductTable from "../common/product-table";
 import PriceSummary from "../common/price-summary";
+import {
+  PayPalButtons,
+  PayPalScriptProvider,
+  usePayPalScriptReducer,
+} from "@paypal/react-paypal-js";
+import {
+  approvalPaypalOrder,
+  createPaypalOrder,
+} from "@/lib/actions/order.actions";
+import { toast } from "@/hooks/use-toast";
+import { dateTimeConverter } from "@/lib/utils";
 
-const OrderDetail = ({ order }: { order: Order }) => {
+const OrderDetail = ({
+  order,
+  clientId,
+}: {
+  order: Order;
+  clientId: string;
+}) => {
   const {
     address,
     orderItems,
@@ -20,6 +37,30 @@ const OrderDetail = ({ order }: { order: Order }) => {
     paidAt,
     deliveredAt,
   } = order;
+  const handleCreatePaypalOrder = async () => {
+    const response = await createPaypalOrder(order.id);
+    if (!response.success)
+      toast({
+        variant: "destructive",
+        description: String(response.message),
+      });
+    return response.data;
+  };
+  const handleApprovePaypalOrder = async (data: { orderID: string }) => {
+    const response = await approvalPaypalOrder(order.id, data);
+    toast({
+      variant: response.success ? "default" : "destructive",
+      description: String(response.message),
+    });
+  };
+
+  const LoadingPaypal = () => {
+    const [{ isPending, isRejected }] = usePayPalScriptReducer();
+    let status = "";
+    if (isPending) status = "Loading Paypal..";
+    if (isRejected) status = "Loading Paypal Rejected";
+    return status;
+  };
   return (
     <>
       <h1 className="py-4 text-2xl">
@@ -34,7 +75,9 @@ const OrderDetail = ({ order }: { order: Order }) => {
               <Flex className="gap-3 pb-4">
                 <h2 className="text-xl">Payment Method</h2>
                 {isPaid ? (
-                  <Badge variant="secondary">Paid at {String(paidAt)}</Badge>
+                  <Badge variant="secondary">
+                    Paid at {dateTimeConverter(paidAt)}
+                  </Badge>
                 ) : (
                   <Badge variant="destructive">unpaid</Badge>
                 )}
@@ -49,7 +92,7 @@ const OrderDetail = ({ order }: { order: Order }) => {
                 <h2 className="text-xl">Shipping Address</h2>
                 {isDelivered ? (
                   <Badge variant="secondary">
-                    Delivered at {String(deliveredAt)}
+                    Delivered at {dateTimeConverter(deliveredAt)}
                   </Badge>
                 ) : (
                   <Badge variant="destructive">Not Delivered</Badge>
@@ -70,12 +113,26 @@ const OrderDetail = ({ order }: { order: Order }) => {
           </Card>
         </div>
         {/* price-summary */}
-        <PriceSummary
-          itemPrice={itemPrice}
-          taxPrice={taxPrice}
-          shippingPrice={shippingPrice}
-          totalPrice={totalPrice}
-        />
+        <div>
+          <PriceSummary
+            itemPrice={itemPrice}
+            taxPrice={taxPrice}
+            shippingPrice={shippingPrice}
+            totalPrice={totalPrice}
+          />
+          {/* paypal */}
+          {!isPaid && payment === "PayPal" && (
+            <>
+              <PayPalScriptProvider options={{ clientId }}>
+                <LoadingPaypal />
+                <PayPalButtons
+                  createOrder={handleCreatePaypalOrder}
+                  onApprove={handleApprovePaypalOrder}
+                />
+              </PayPalScriptProvider>
+            </>
+          )}
+        </div>
       </div>
     </>
   );

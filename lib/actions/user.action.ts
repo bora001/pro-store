@@ -9,6 +9,7 @@ import { hashSync } from "bcrypt-ts-edge";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 import { ZodError } from "zod";
+import { formatError } from "../utils";
 
 // sign-in
 export async function signInUser(prevState: unknown, formData: FormData) {
@@ -113,9 +114,6 @@ export async function updateUserAddress(data: Shipping) {
       message: "User Address updated successfully",
     };
   } catch (error) {
-    return {
-      success: false,
-      message: error,
-    };
+    return formatError(error);
   }
 }

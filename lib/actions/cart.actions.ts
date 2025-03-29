@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/db/prisma";
 import { CartItem } from "@/types";
 import { cookies } from "next/headers";
-import { prismaToJs } from "../utils";
+import { formatError, prismaToJs } from "../utils";
 import { cartItemSchema, insertCartSchema } from "../validator";
 import { revalidatePath } from "next/cache";
 
@@ -112,10 +112,7 @@ export async function getMyCart() {
       }),
     };
   } catch (error) {
-    return {
-      success: false,
-      message: error,
-    };
+    return formatError(error);
   }
 }
 
@@ -161,10 +158,7 @@ export async function modifyItemQtyToCart(data: CartItem, qty: number) {
       };
     }
   } catch (error) {
-    return {
-      success: false,
-      message: error as string,
-    };
+    return formatError(error);
   }
 }
 
@@ -203,9 +197,6 @@ export async function removeItemToCart(data: CartItem) {
       };
     }
   } catch (error) {
-    return {
-      success: false,
-      message: error as string,
-    };
+    return formatError(error);
   }
 }

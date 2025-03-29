@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -32,3 +33,34 @@ export const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   minimumFractionDigits: 2,
 });
+
+// full date + time
+export const dateTimeConverter = (time: Date | null) => {
+  return dayjs(time).format("MMM DD, YYYY hh:mm A");
+};
+
+// handle error
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function formatError(error: any) {
+  const isZodError = error.name === "ZodError";
+  const isPrismaError =
+    error.name === "PrismaClientKnownRequestError" && error.code === "P2002";
+  let message = "";
+  if (isZodError) {
+    message = Object.keys(error.errors)
+      .map((field) => error.errors[field].message)
+      .join(". ");
+  } else if (isPrismaError) {
+    const field = error.meta?.target ? error.meta.target[0] : "Field";
+    const errorFiled = field.charAt(0).toUpperCase() + field.slice(1);
+    message = `${errorFiled} already exists`;
+  } else {
+    const err = error.message;
+    message = typeof err === "string" ? err : JSON.stringify(err);
+  }
+  return {
+    success: false,
+    message,
+    data: undefined,
+  };
+}

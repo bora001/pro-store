@@ -49,15 +49,19 @@ export const config = {
       }
       return session;
     },
-    async jwt({ token, user, trigger }: any) {
+    async jwt({ token, user, trigger, session }: any) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
-        if (user.name === "NO_NAME") token.name = user.email.split("@")[0];
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { name: token.name },
-        });
+
+        if (user.name === "NO_NAME") {
+          token.name = user.email!.split("@")[0];
+
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { name: token.name },
+          });
+        }
         if (trigger === "signIn" || trigger === "signUp") {
           const cookieObj = await cookies();
           const sessionCartId = cookieObj.get("sessionCartId")?.value;
@@ -69,7 +73,7 @@ export const config = {
             const sessionCart = await prisma.cart.findFirst({
               where: { sessionCartId },
             });
-            if (!sessionCart) return;
+            if (!sessionCart) return token;
             if (existingCart) {
               const updatedItems = [...existingCart.items] as CartItem[];
               // merge into existing cart
@@ -106,6 +110,13 @@ export const config = {
             }
           }
         }
+      }
+
+      if (session?.user.name && trigger === "update") {
+        token.name = session.user.name;
+      }
+      if (session?.user.email && trigger === "update") {
+        token.email = session.user.email;
       }
       return token;
     },

@@ -6,8 +6,9 @@ import { redirect } from "next/navigation";
 
 const UserButtonBox = () => {
   const USER_BUTTON = [
+    { action: () => redirect(PATH.MY_PROFILE), title: "My Profile" },
     { action: () => redirect(PATH.MY_ORDER), title: "My Order" },
-    { action: () => signOutUser, title: "Sign Out" },
+    { action: signOutUser, title: "Sign Out" },
   ];
   return (
     <div className="space-y-1">

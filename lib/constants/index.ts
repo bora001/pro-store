@@ -11,5 +11,6 @@ export const PATH = {
   SIGN_UP: "/sign-up",
   SIGN_IN: "/sign-in",
   MY_ORDER: "/user/order",
+  MY_PROFILE: "/user/profile",
   HOME: "/",
 };

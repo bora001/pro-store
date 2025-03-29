@@ -3,7 +3,7 @@
 import { shippingSchema, signInSchema, signUpSchema } from "../validator";
 import { auth, signIn, signOut } from "@/auth";
 import { prisma } from "@/db/prisma";
-import { Shipping } from "@/types";
+import { Shipping, userProfile } from "@/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { hashSync } from "bcrypt-ts-edge";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -112,6 +112,28 @@ export async function updateUserAddress(data: Shipping) {
     return {
       success: true,
       message: "User Address updated successfully",
+    };
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// update-user-profile
+export async function updateUserProfile(data: userProfile) {
+  try {
+    const session = await auth();
+    console.log(session?.user?.id, "session?.user?.id");
+    const currentUser = await prisma.user.findFirst({
+      where: { id: session?.user?.id },
+    });
+    if (!currentUser) throw new Error("User not found");
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data,
+    });
+    return {
+      success: true,
+      message: "User profile is updated successfully",
     };
   } catch (error) {
     return formatError(error);

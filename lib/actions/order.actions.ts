@@ -165,7 +165,7 @@ export async function approvalPaypalOrder(
 }
 
 // update paid
-async function updateOrderToPaid({
+export async function updateOrderToPaid({
   orderId,
   paymentResult,
 }: {
@@ -237,4 +237,20 @@ export async function getUserOrder({
     where: { userId: session.user?.id },
   });
   return { data, totalPages: Math.ceil(dataCount / limit) };
+}
+
+// delete-order
+export async function deleteOrder(id: string) {
+  try {
+    await prisma.order.delete({
+      where: { id },
+    });
+    revalidatePath(PATH.ORDERS);
+    return {
+      success: true,
+      message: "Order is deleted successfully",
+    };
+  } catch (error) {
+    return formatError(error);
+  }
 }

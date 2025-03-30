@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PATH } from "@/lib/constants";
+import { CONSTANTS, PATH } from "@/lib/constants";
 import { UserIcon } from "lucide-react";
 import UserButtonBox from "./user-buttons-box";
 
@@ -45,7 +45,7 @@ const UserButton = async () => {
             </div>
           </div>
           {/* buttons */}
-          <UserButtonBox isAdmin={session.user?.role === "admin"} />
+          <UserButtonBox isAdmin={session.user?.role === CONSTANTS.ADMIN} />
         </DropdownMenuLabel>
       </DropdownMenuContent>
     </DropdownMenu>

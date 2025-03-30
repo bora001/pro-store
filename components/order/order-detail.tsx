@@ -1,6 +1,6 @@
 "use client";
-import { Order } from "@/types";
-import { Card, CardContent } from "../ui/card";
+import { Order, PaymentResult } from "@/types";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import Flex from "../common/flex";
 import ProductTable from "../common/product-table";
@@ -16,13 +16,20 @@ import {
 } from "@/lib/actions/order.actions";
 import { toast } from "@/hooks/use-toast";
 import { dateTimeConverter, idSlicer } from "@/lib/utils";
+import { AdminControlButton } from "./admin-control";
+import {
+  updateOrderToDelivered,
+  updateOrderToPaidByAdmin,
+} from "@/lib/actions/admin.actions";
 
 const OrderDetail = ({
   order,
   clientId,
+  isAdmin = false,
 }: {
   order: Order;
   clientId: string;
+  isAdmin?: boolean;
 }) => {
   const {
     address,
@@ -36,7 +43,14 @@ const OrderDetail = ({
     isPaid,
     paidAt,
     deliveredAt,
+    id,
   } = order;
+  const paymentMethod: PaymentResult = {
+    status: "",
+    id,
+    pricePaid: totalPrice,
+    email_address: "",
+  };
   const handleCreatePaypalOrder = async () => {
     const response = await createPaypalOrder(order.id);
     if (!response.success)
@@ -131,6 +145,26 @@ const OrderDetail = ({
                 />
               </PayPalScriptProvider>
             </>
+          )}
+          {/* admin */}
+          {isAdmin && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Admin Controls</CardTitle>
+              </CardHeader>
+              <CardContent className="space-x-2">
+                <AdminControlButton
+                  disabled={isPaid}
+                  title={["Mark as Paid", "Paid"]}
+                  action={() => updateOrderToPaidByAdmin(id, paymentMethod)}
+                />
+                <AdminControlButton
+                  disabled={isDelivered}
+                  title={["Mark as Delivered", "Delivered"]}
+                  action={() => updateOrderToDelivered(id)}
+                />
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

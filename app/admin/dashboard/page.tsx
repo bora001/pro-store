@@ -21,7 +21,6 @@ const RECENT_SALES = {
 };
 const DashboardPage = async () => {
   const summary = await getOrderSummary();
-  console.log(summary, "R");
   const summaryList = [
     {
       title: "Total Revenue",

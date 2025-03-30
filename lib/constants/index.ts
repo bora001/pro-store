@@ -1,5 +1,7 @@
 export const CONSTANTS = {
   LATEST_PRODUCT_LIMIT: 4,
+  PAGE_LIMIT: 5,
+  ADMIN: "admin",
 };
 
 export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;

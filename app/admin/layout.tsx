@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
-import { PATH } from "@/lib/constants";
+import { CONSTANTS, PATH } from "@/lib/constants";
 import { redirect } from "next/navigation";
 
 const NAV_LINK = [
@@ -17,7 +17,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  if (session?.user.role !== "admin") redirect("/");
+  if (session?.user.role !== CONSTANTS.ADMIN) redirect(PATH.HOME);
 
   return (
     <div className="flex h-screen flex-col">

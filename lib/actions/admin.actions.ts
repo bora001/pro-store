@@ -104,3 +104,24 @@ export async function updateOrderToDelivered(orderId: string) {
     return formatError(error);
   }
 }
+
+// all-products
+export async function getAllProducts({
+  page = 1,
+  limit = CONSTANTS.PAGE_LIMIT,
+}: {
+  page: number;
+  limit?: number;
+}) {
+  const product = await prisma.product.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+  const productCount = await prisma.product.count();
+  return {
+    product,
+    productCount,
+    totalPages: Math.ceil(productCount / limit),
+  };
+}

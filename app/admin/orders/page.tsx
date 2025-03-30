@@ -33,6 +33,7 @@ const AdminOrdersPage = async (props: {
     );
   return (
     <>
+      <h2 className="h2-bold my-2 mb-4">Orders</h2>
       <Table>
         <TableHeader>
           <TableRow>

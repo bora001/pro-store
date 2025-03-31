@@ -2,20 +2,25 @@ import { ReactNode } from "react";
 
 const Container = ({
   title,
+  extra,
   button,
   children,
 }: {
   title: string;
+  extra?: string | ReactNode;
   button?: ReactNode;
   children: ReactNode;
 }) => {
   return (
-    <div>
+    <div className="h-full flex flex-col">
       <div className="flex justify-between items-center my-2 mb-4">
-        <h2 className="h2-bold ">{title}</h2>
+        <div className="flex items-end gap-3">
+          <h2 className="h2-bold ">{title}</h2>
+          {extra}
+        </div>
         {button}
       </div>
-      {children}
+      <div className="h-full">{children}</div>
     </div>
   );
 };

@@ -84,15 +84,25 @@ export function URLChanger({
   params,
   key,
   value,
+  pathname,
 }: {
   params: string;
   key: string;
   value: number | string;
+  pathname?: string;
 }) {
   const query = qs.parse(params);
-  query[key] = String(value);
+
+  if (value === "" || value === undefined || value === null) {
+    delete query[key];
+  } else {
+    query[key] = String(value);
+  }
+
+  const currentPath = pathname || "/";
+
   return qs.stringifyUrl(
-    { url: window.location.pathname, query },
-    { skipNull: true }
+    { url: currentPath, query },
+    { skipNull: true, skipEmptyString: true }
   );
 }

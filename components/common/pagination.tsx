@@ -1,8 +1,9 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { URLChanger } from "@/lib/utils";
+
 type PaginationPropsType = {
   page: number | string;
   totalPages: number;
@@ -11,10 +12,12 @@ type PaginationPropsType = {
 const Pagination = ({ page, totalPages, urlParams }: PaginationPropsType) => {
   const router = useRouter();
   const params = useSearchParams();
+  const pathname = usePathname();
   const handlePagination = (type: string) => {
     const pageValue = +page + (type === "prev" ? -1 : +1);
     const newURL = URLChanger({
       params: params.toString(),
+      pathname,
       key: urlParams || "",
       value: pageValue || 1,
     });

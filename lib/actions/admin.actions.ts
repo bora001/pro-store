@@ -49,11 +49,25 @@ export async function getOrderSummary() {
 export async function getAllOrders({
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
+  query = "",
 }: {
   page: number;
   limit?: number;
+  query?: string;
 }) {
+  const queryFilter: Prisma.OrderWhereInput = {
+    user: {
+      name: {
+        contains: query,
+        mode: "insensitive",
+      },
+    },
+  };
+
   const order = await prisma.order.findMany({
+    where: {
+      ...queryFilter,
+    },
     orderBy: { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit,
@@ -109,7 +123,7 @@ export async function updateOrderToDelivered(orderId: string) {
 
 // all-products
 export async function getAllProducts({
-  // query,
+  query,
   // category,
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
@@ -119,7 +133,16 @@ export async function getAllProducts({
   query: string;
   category?: string;
 }) {
+  const queryFilter: Prisma.ProductWhereInput = {
+    name: {
+      contains: query,
+      mode: "insensitive",
+    } as Prisma.StringFilter,
+  };
   const product = await prisma.product.findMany({
+    where: {
+      ...queryFilter,
+    },
     orderBy: { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit,
@@ -193,7 +216,7 @@ export async function getProduct(id: string) {
 
 // get-users
 export async function getAllUsers({
-  // query,
+  query,
   // category,
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
@@ -203,7 +226,27 @@ export async function getAllUsers({
   query: string;
   category?: string;
 }) {
+  const queryFilter: Prisma.UserWhereInput = query
+    ? {
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: "insensitive",
+            } as Prisma.StringFilter,
+          },
+          {
+            email: {
+              contains: query,
+              mode: "insensitive",
+            } as Prisma.StringFilter,
+          },
+        ],
+      }
+    : {};
+
   const user = await prisma.user.findMany({
+    where: { ...queryFilter },
     orderBy: { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit,

@@ -4,12 +4,15 @@ import Menu from "./menu";
 import { CONFIG } from "@/lib/constants/config";
 import { PATH } from "@/lib/constants";
 import NavBar, { NavBarType } from "./nav-bar";
-import { Input } from "@/components/ui/input";
-import { SearchIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import SearchInput from "../search-input";
 
-const Header = ({ navList }: { navList?: NavBarType }) => {
+const Header = ({
+  navList,
+  isAdmin,
+}: {
+  navList?: NavBarType;
+  isAdmin?: boolean;
+}) => {
   return (
     <header className="w-full border-b">
       <div className="wrapper flex-between">
@@ -23,13 +26,7 @@ const Header = ({ navList }: { navList?: NavBarType }) => {
           </Link>
           <div>{navList && <NavBar navList={navList} />}</div>
         </div>
-        <div className={cn("flex gap-2", navList ? "" : "")}>
-          <Input placeholder="Search" />
-          <Button>
-            <SearchIcon />
-          </Button>
-        </div>
-
+        {!isAdmin && <SearchInput query="" />}
         {/* right */}
         <Menu />
       </div>

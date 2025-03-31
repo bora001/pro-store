@@ -1,4 +1,4 @@
-import Container from "@/components/common/container";
+import SearchContainer from "@/components/admin/search-container";
 import DeleteButton from "@/components/common/delete-button";
 import Pagination from "@/components/common/pagination";
 import { Badge } from "@/components/ui/badge";
@@ -26,15 +26,14 @@ const AdminUserPage = async (props: {
 }) => {
   const { page, query, category } = await props.searchParams;
   const data = await getAllUsers({ page: +page || 1, query, category });
-  if (data.user.length === 0)
-    return (
-      <div className="items-center justify-center flex h-full">
-        No users available
-      </div>
-    );
 
   return (
-    <Container title="Users">
+    <SearchContainer
+      hasList={data.user.length === 0}
+      resetPath={PATH.USERS}
+      query={query}
+      emptyText="No users available"
+    >
       <Table>
         <TableHeader>
           <TableRow>
@@ -77,7 +76,7 @@ const AdminUserPage = async (props: {
           />
         )}
       </div>
-    </Container>
+    </SearchContainer>
   );
 };
 

@@ -11,10 +11,9 @@ import { idSlicer } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { deleteProduct, getAllProducts } from "@/lib/actions/admin.actions";
-import { Button } from "@/components/ui/button";
 import { PATH } from "@/lib/constants";
 import DeleteButton from "@/components/common/delete-button";
-import Container from "@/components/common/container";
+import SearchContainer from "@/components/admin/search-container";
 
 export const metadata = {
   title: "Products",
@@ -27,20 +26,12 @@ const AdminProductPage = async (props: {
 }) => {
   const { page, query, category } = await props.searchParams;
   const data = await getAllProducts({ page: +page || 1, query, category });
-  if (data.product.length === 0)
-    return (
-      <div className="items-center justify-center flex h-full">
-        No products available
-      </div>
-    );
   return (
-    <Container
-      title="Products"
-      button={
-        <Button>
-          <Link href={PATH.CREATE_PRODUCTS}>Create Product</Link>
-        </Button>
-      }
+    <SearchContainer
+      hasList={data.product.length === 0}
+      resetPath={PATH.PRODUCTS}
+      query={query}
+      emptyText="No products available"
     >
       <Table>
         <TableHeader>
@@ -84,7 +75,7 @@ const AdminProductPage = async (props: {
           />
         )}
       </div>
-    </Container>
+    </SearchContainer>
   );
 };
 

@@ -1,4 +1,4 @@
-import Container from "@/components/common/container";
+import SearchContainer from "@/components/admin/search-container";
 import DeleteButton from "@/components/common/delete-button";
 import Pagination from "@/components/common/pagination";
 import { Badge } from "@/components/ui/badge";
@@ -23,18 +23,17 @@ const ADMIN_ORDERS = {
   HEADER: ["ID", "USER", "DATE", "TOTAL", "DELIVERED", "DETAIL"],
 };
 const AdminOrdersPage = async (props: {
-  searchParams: Promise<{ page: string }>;
+  searchParams: Promise<{ page: string; query: string }>;
 }) => {
-  const { page } = await props.searchParams;
-  const data = await getAllOrders({ page: +page || 1 });
-  if (data.order.length === 0)
-    return (
-      <div className="items-center justify-center flex h-full">
-        No orders have been placed yet
-      </div>
-    );
+  const { page, query } = await props.searchParams;
+  const data = await getAllOrders({ page: +page || 1, query });
   return (
-    <Container title="Orders">
+    <SearchContainer
+      hasList={data.order.length === 0}
+      resetPath={PATH.ORDERS}
+      query={query}
+      emptyText="No orders have been placed yet"
+    >
       <Table>
         <TableHeader>
           <TableRow>
@@ -57,7 +56,7 @@ const AdminOrdersPage = async (props: {
               </TableCell>
               <TableCell className="space-x-1">
                 <Link href={`${PATH.ORDER}/${order.id}`}>
-                  <Badge>Details</Badge>
+                  <Badge variant="outline">Details</Badge>
                 </Link>
                 <DeleteButton id={order.id} action={deleteOrder} type="badge" />
               </TableCell>
@@ -65,6 +64,7 @@ const AdminOrdersPage = async (props: {
           ))}
         </TableBody>
       </Table>
+
       <div className="flex justify-center">
         {data.totalPages > 1 && (
           <Pagination
@@ -74,7 +74,7 @@ const AdminOrdersPage = async (props: {
           />
         )}
       </div>
-    </Container>
+    </SearchContainer>
   );
 };
 

@@ -4,7 +4,7 @@ import { prisma } from "./db/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import { cookies } from "next/headers";
-import { CartItem } from "./types";
+import { CartItemType } from "./types";
 import { calcPrice } from "./lib/actions/cart.actions";
 import { PATH } from "./lib/constants";
 type User = {
@@ -76,11 +76,12 @@ export const config = {
             });
             if (!sessionCart) return token;
             if (existingCart) {
-              const updatedItems = [...existingCart.items] as CartItem[];
+              const updatedItems = [...existingCart.items] as CartItemType[];
               // merge into existing cart
-              for (const sessionItem of sessionCart.items as CartItem[]) {
+              for (const sessionItem of sessionCart.items as CartItemType[]) {
                 const existItemIndex = updatedItems.findIndex(
-                  (item: CartItem) => item.productId === sessionItem?.productId
+                  (item: CartItemType) =>
+                    item.productId === sessionItem?.productId
                 );
 
                 if (existItemIndex >= 0) {

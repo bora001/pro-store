@@ -5,7 +5,7 @@ export const CONSTANTS = {
 };
 
 export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;
-
+export const USER_ROLE = ["admin", "user"];
 export const PATH = {
   SHIPPING: "/shipping-address",
   PAYMENT: "/payment-method",

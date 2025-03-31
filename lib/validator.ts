@@ -24,6 +24,11 @@ export const insertProductSchema = z.object({
   numReviews: z.number().nonnegative().default(0),
 });
 
+// update-product
+export const updateProductSchema = insertProductSchema.extend({
+  id: z.string().min(3, "Id must be at least 3 characters long").optional(), // 🔥 id를 optional로 변경
+});
+
 // sign-in
 export const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -55,6 +60,7 @@ export const cartItemSchema = z.object({
   price: currency,
 });
 
+// update-cart
 export const insertCartSchema = z.object({
   items: z.array(cartItemSchema),
   itemPrice: currency,
@@ -80,13 +86,6 @@ export const shippingSchema = z.object({
   lng: z.number().optional(),
 });
 
-// payment
-export const paymentSchema = z.object({
-  type: z.enum(PAYMENT_METHODS, {
-    errorMap: () => ({ message: "Invalid payment method" }),
-  }),
-});
-
 // order
 export const orderSchema = z.object({
   userId: z.string().min(3, "UserId must be at least 3 characters long"),
@@ -110,6 +109,13 @@ export const orderItemSchema = z.object({
   qty: z.number().int().nonnegative("Quantity must be a positive integer"),
 });
 
+// payment
+export const paymentSchema = z.object({
+  type: z.enum(PAYMENT_METHODS, {
+    errorMap: () => ({ message: "Invalid payment method" }),
+  }),
+});
+
 // paypal-payment
 export const paymentResultSchema = z.object({
   id: z.string(),
@@ -124,7 +130,7 @@ export const userProfileSchema = z.object({
   email: z.string().email("Invalid email address"),
 });
 
-// update-product
-export const updateProductSchema = insertProductSchema.extend({
-  id: z.string().min(3, "Id must be at least 3 characters long").optional(), // 🔥 id를 optional로 변경
+export const editUserSchema = userProfileSchema.extend({
+  id: z.string().min(3, "ID must be at least 3 characters long"),
+  role: z.string().min(3, "Role must be at least 3 characters long"),
 });

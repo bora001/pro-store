@@ -2,13 +2,13 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import ProductPrice from "./product-price";
-import { ProductItem } from "@/types";
+import { ProductItemType } from "@/types";
 import { PATH } from "@/lib/constants";
 
 const ProductCard = ({
   product: { slug, images, name, brand, rating, stock, price },
 }: {
-  product: ProductItem;
+  product: ProductItemType;
 }) => {
   return (
     <Card className="w-full max-w-sm">

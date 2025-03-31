@@ -1,7 +1,7 @@
 "use client";
 
 import { userProfileSchema } from "@/lib/validator";
-import { userProfile } from "@/types";
+import { userProfileType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormMessage } from "../ui/form";
@@ -12,14 +12,14 @@ import { useSession } from "next-auth/react";
 
 const ProfileForm = () => {
   const { data, update } = useSession();
-  const form = useForm<userProfile>({
+  const form = useForm<userProfileType>({
     resolver: zodResolver(userProfileSchema),
     defaultValues: {
       name: data?.user?.name || "",
       email: data?.user?.email || "",
     },
   });
-  const onSubmit = async (values: userProfile) => {
+  const onSubmit = async (values: userProfileType) => {
     const response = await updateUserProfile(values);
     if (response.success) {
       update({ ...data, user: { ...data?.user, ...values } });

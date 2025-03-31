@@ -4,7 +4,7 @@ import ShippingForm from "@/components/shipping/shipping-form";
 import { getMyCart } from "@/lib/actions/cart.actions";
 import { getUserById } from "@/lib/actions/user.action";
 import { PATH } from "@/lib/constants";
-import { Shipping } from "@/types";
+import { ShippingType } from "@/types";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -20,7 +20,7 @@ const ShippingAddressPage = async () => {
   return (
     <>
       <CheckoutStep step="Shipping Address" />
-      <ShippingForm address={user.address as Shipping} />
+      <ShippingForm address={user.address as ShippingType} />
     </>
   );
 };

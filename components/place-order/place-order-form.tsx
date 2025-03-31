@@ -1,5 +1,5 @@
 "use client";
-import { Cart, Shipping } from "@/types";
+import { CartType, ShippingType } from "@/types";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -22,8 +22,8 @@ const PlacerOrderForm = ({
   address,
   cart,
 }: {
-  address: Shipping;
-  cart: Cart;
+  address: ShippingType;
+  cart: CartType;
 }) => {
   const searchParams = useSearchParams(); // Accessing query params
   const method = searchParams.get("method");

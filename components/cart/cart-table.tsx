@@ -1,5 +1,5 @@
 "use client";
-import { Cart } from "@/types";
+import { CartType } from "@/types";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -11,7 +11,7 @@ import ButtonWithTransition from "../custom/ButtonWithTransition";
 import { PATH } from "@/lib/constants";
 import ProductTable from "../common/product-table";
 
-const CartTable = ({ cart }: { cart?: Cart }) => {
+const CartTable = ({ cart }: { cart?: CartType }) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 

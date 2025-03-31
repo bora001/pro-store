@@ -1,6 +1,6 @@
 "use client";
 
-import { CartItem } from "@/types";
+import { CartItemType } from "@/types";
 import { Button } from "../ui/button";
 import { ToastAction } from "../ui/toast";
 import { addItemToCart } from "@/lib/actions/cart.actions";
@@ -12,7 +12,7 @@ import { useState, useTransition } from "react";
 import ButtonWithTransition from "../custom/ButtonWithTransition";
 import { PATH } from "@/lib/constants";
 
-const AddToCart = ({ item }: { item: CartItem }) => {
+const AddToCart = ({ item }: { item: CartItemType }) => {
   const router = useRouter();
   const [qty, setQty] = useState(1);
   const [isPending, startTransition] = useTransition();

@@ -3,13 +3,15 @@
 import { shippingSchema, signInSchema, signUpSchema } from "../validator";
 import { auth, signIn, signOut } from "@/auth";
 import { prisma } from "@/db/prisma";
-import { Shipping, userProfile } from "@/types";
+import { ShippingType, editUserType, userProfileType } from "@/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { hashSync } from "bcrypt-ts-edge";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 import { ZodError } from "zod";
 import { formatError, formatSuccess } from "../utils";
+import { revalidatePath } from "next/cache";
+import { PATH } from "../constants";
 
 // sign-in
 export async function signInUser(prevState: unknown, formData: FormData) {
@@ -93,7 +95,7 @@ export async function getUserById(id: string) {
 }
 
 // update-address
-export async function updateUserAddress(data: Shipping) {
+export async function updateUserAddress(data: ShippingType) {
   try {
     const session = await auth();
     const currentUser = await prisma.user.findFirst({
@@ -116,7 +118,7 @@ export async function updateUserAddress(data: Shipping) {
 }
 
 // update-user-profile
-export async function updateUserProfile(data: userProfile) {
+export async function updateUserProfile(data: userProfileType) {
   try {
     const session = await auth();
     const currentUser = await prisma.user.findFirst({
@@ -128,6 +130,32 @@ export async function updateUserProfile(data: userProfile) {
       data,
     });
     return formatSuccess("User profile is updated successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// edit-user-profile-by-admin
+export async function editUserProfile(data: editUserType) {
+  try {
+    await prisma.user.update({
+      where: { id: data.id },
+      data,
+    });
+    return formatSuccess("User is edited successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// delete-user
+export async function deleteUser(id: string) {
+  try {
+    await prisma.user.delete({
+      where: { id },
+    });
+    revalidatePath(PATH.USERS);
+    return formatSuccess("User is deleted successfully");
   } catch (error) {
     return formatError(error);
   }

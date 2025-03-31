@@ -4,7 +4,7 @@ import PlacerOrderForm from "@/components/place-order/place-order-form";
 import { getMyCart } from "@/lib/actions/cart.actions";
 import { getUserById } from "@/lib/actions/user.action";
 import { PATH } from "@/lib/constants";
-import { Shipping } from "@/types";
+import { ShippingType } from "@/types";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -21,7 +21,10 @@ const PlaceOrderPage = async () => {
   return (
     <>
       <CheckoutStep step="Place Order" />
-      <PlacerOrderForm address={user.address as Shipping} cart={cart?.data} />
+      <PlacerOrderForm
+        address={user.address as ShippingType}
+        cart={cart?.data}
+      />
     </>
   );
 };

@@ -10,7 +10,7 @@ import {
   TableHeader,
 } from "../ui/table";
 import Image from "next/image";
-import { OrderItem } from "@/types";
+import { OrderItemType } from "@/types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { PATH } from "@/lib/constants";
@@ -19,7 +19,7 @@ const ProductTable = ({
   items,
   isView,
 }: {
-  items: OrderItem[];
+  items: OrderItemType[];
   isView?: boolean;
 }) => {
   return (

@@ -9,38 +9,39 @@ import {
   paymentResultSchema,
   userProfileSchema,
   updateProductSchema,
+  editUserSchema,
 } from "@/lib/validator";
 import { z } from "zod";
 
-export type USER_ROLE = "admin" | "user";
-
-export type ProductItem = z.infer<typeof insertProductSchema> & {
+export type ProductItemType = z.infer<typeof insertProductSchema> & {
   id: string;
   rating: string;
   createdAt: Date;
 };
 
-export type Cart = z.infer<typeof insertCartSchema> & {
+export type CartType = z.infer<typeof insertCartSchema> & {
   id: string;
 };
-export type CartItem = z.infer<typeof cartItemSchema> & {};
-export type Shipping = z.infer<typeof shippingSchema>;
-export type Order = z.infer<typeof orderSchema> & {
+
+export type OrderType = z.infer<typeof orderSchema> & {
   id: string;
   createdAt: Date;
   paidAt: Date | null;
   deliveredAt: Date | null;
   isPaid: boolean;
   isDelivered: boolean;
-  orderItems: OrderItem[];
+  orderItems: OrderItemType[];
   user: {
     name: string;
     email: string;
   };
 };
-export type OrderItem = z.infer<typeof orderItemSchema>;
-export type PaymentResult = z.infer<typeof paymentResultSchema>;
-export type userProfile = z.infer<typeof userProfileSchema>;
+export type CartItemType = z.infer<typeof cartItemSchema> & {};
+export type ShippingType = z.infer<typeof shippingSchema>;
+export type OrderItemType = z.infer<typeof orderItemSchema>;
+export type PaymentResultType = z.infer<typeof paymentResultSchema>;
+export type userProfileType = z.infer<typeof userProfileSchema>;
 export type ResponseType = { success: boolean; message: string };
 export type PaymentType = (typeof PAYMENT_METHODS)[number];
 export type updateProductType = z.infer<typeof updateProductSchema>;
+export type editUserType = z.infer<typeof editUserSchema>;

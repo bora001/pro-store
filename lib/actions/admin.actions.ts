@@ -6,7 +6,7 @@ import { CONSTANTS, PATH } from "../constants";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { revalidatePath } from "next/cache";
 import { updateOrderToPaid } from "./order.actions";
-import { PaymentResult, updateProductType } from "@/types";
+import { PaymentResultType, updateProductType } from "@/types";
 import { insertProductSchema, updateProductSchema } from "../validator";
 import { z } from "zod";
 
@@ -72,7 +72,7 @@ export async function getAllOrders({
 // update-order-paid
 export async function updateOrderToPaidByAdmin(
   orderId: string,
-  paymentResult: PaymentResult
+  paymentResult: PaymentResultType
 ) {
   try {
     await updateOrderToPaid({ orderId, paymentResult });
@@ -189,4 +189,29 @@ export async function getProduct(id: string) {
   });
   if (!product) throw new Error("Product not found");
   return prismaToJs(product);
+}
+
+// get-users
+export async function getAllUsers({
+  // query,
+  // category,
+  page = 1,
+  limit = CONSTANTS.PAGE_LIMIT,
+}: {
+  page: number;
+  limit?: number;
+  query: string;
+  category?: string;
+}) {
+  const user = await prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+  const userCount = await prisma.user.count();
+  return {
+    user,
+    userCount,
+    totalPages: Math.ceil(userCount / limit),
+  };
 }

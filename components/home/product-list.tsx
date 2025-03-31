@@ -1,4 +1,4 @@
-import { ProductItem } from "@/types";
+import { ProductItemType } from "@/types";
 import ProductCard from "./product-card";
 
 const ProductList = ({
@@ -6,7 +6,7 @@ const ProductList = ({
   title,
   limit,
 }: {
-  data: ProductItem[];
+  data: ProductItemType[];
   title?: string;
   limit?: number;
 }) => {

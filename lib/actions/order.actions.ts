@@ -10,7 +10,7 @@ import { orderSchema } from "../validator";
 import { prisma } from "@/db/prisma";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { paypal } from "../paypal";
-import { PaymentResult } from "@/types";
+import { PaymentResultType } from "@/types";
 import { revalidatePath } from "next/cache";
 
 // place-order
@@ -139,7 +139,7 @@ export async function approvalPaypalOrder(
     const captureData = await paypal.capturePayment(data.orderID);
     if (
       !captureData ||
-      captureData.id !== (order.paymentResult as PaymentResult).id ||
+      captureData.id !== (order.paymentResult as PaymentResultType).id ||
       captureData.status !== "COMPLETED"
     ) {
       throw new Error("Error in paypal payment");
@@ -168,7 +168,7 @@ export async function updateOrderToPaid({
   paymentResult,
 }: {
   orderId: string;
-  paymentResult?: PaymentResult;
+  paymentResult?: PaymentResultType;
 }) {
   try {
     const order = await prisma.order.findFirst({

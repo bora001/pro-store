@@ -19,7 +19,7 @@ import Container from "@/components/common/container";
 export const metadata = {
   title: "Products",
 };
-const ADMIN_ORDERS = {
+const ADMIN_PRODUCT = {
   HEADER: ["ID", "NAME", "PRICE", "CATEGORY", "STOCK", "RATING", "DETAIL"],
 };
 const AdminProductPage = async (props: {
@@ -45,7 +45,7 @@ const AdminProductPage = async (props: {
       <Table>
         <TableHeader>
           <TableRow>
-            {ADMIN_ORDERS.HEADER.map((head) => (
+            {ADMIN_PRODUCT.HEADER.map((head) => (
               <TableHead key={head}>{head}</TableHead>
             ))}
           </TableRow>

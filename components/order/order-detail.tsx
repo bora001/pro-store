@@ -1,5 +1,5 @@
 "use client";
-import { Order, PaymentResult } from "@/types";
+import { OrderType, PaymentResultType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import Flex from "../common/flex";
@@ -27,7 +27,7 @@ const OrderDetail = ({
   clientId,
   isAdmin = false,
 }: {
-  order: Order;
+  order: OrderType;
   clientId: string;
   isAdmin?: boolean;
 }) => {
@@ -45,7 +45,7 @@ const OrderDetail = ({
     deliveredAt,
     id,
   } = order;
-  const paymentMethod: PaymentResult = {
+  const paymentMethod: PaymentResultType = {
     status: "",
     id,
     pricePaid: totalPrice,

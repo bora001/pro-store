@@ -1,4 +1,5 @@
 import OverviewChart from "@/components/admin/overview/overview-chart";
+import Container from "@/components/common/container";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -10,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getOrderSummary } from "@/lib/actions/admin.actions";
+import { PATH } from "@/lib/constants";
 import { dateTimeConverter } from "@/lib/utils";
 import { BadgeDollarSign, Barcode, CreditCard, User } from "lucide-react";
 import Link from "next/link";
@@ -44,9 +46,8 @@ const DashboardPage = async () => {
     },
   ];
   return (
-    <>
-      <div className="space-y-2">
-        <h2 className="h2-bold">Dashboard</h2>
+    <Container title="Dashboard">
+      <div className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {summaryList.map(({ text, title, icon }) => (
             <Card key={title}>
@@ -94,7 +95,7 @@ const DashboardPage = async () => {
                       </TableCell>
                       <TableCell>{order.totalPrice}</TableCell>
                       <TableCell>
-                        <Link href={`/order/${order.id}`}>
+                        <Link href={`${PATH.ORDER}/${order.id}`}>
                           <Badge>Details</Badge>
                         </Link>
                       </TableCell>
@@ -106,7 +107,7 @@ const DashboardPage = async () => {
           </Card>
         </div>
       </div>
-    </>
+    </Container>
   );
 };
 

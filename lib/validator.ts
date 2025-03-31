@@ -8,25 +8,25 @@ const currency = z
     (v) => /^\d+(\.\d{2})?$/.test(formatNumberWithDecimal(+v)),
     "Price must have exactly two decimal places"
   );
+
 // product
 export const insertProductSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters long"),
-  slug: z.string().min(3, "Slug must be at least 3 characters long"),
-  category: z.string().min(3, "Category must be at least 3 characters long"),
-  brand: z.string().min(3, "Brand must be at least 3 characters long"),
-  description: z
-    .string()
-    .min(3, "Description must be at least 3 characters long"),
-  stock: z.coerce.number(),
-  images: z.array(z.string()).min(1, "At least one image is required"),
+  name: z.string().min(3, "Name must be at least 3 characters"),
+  slug: z.string().min(3, "Slug must be at least 3 characters"),
+  category: z.string().min(3, "Category must be at least 3 characters"),
+  brand: z.string().min(3, "Brand must be at least 3 characters"),
+  description: z.string().min(3, "Description must be at least 3 characters"),
+  stock: z.coerce.number().nonnegative(),
+  images: z.array(z.string()).min(1, "Product must have at least one image"),
   isFeatured: z.boolean(),
   banner: z.string().nullable(),
   price: currency,
+  numReviews: z.number().nonnegative().default(0),
 });
 
 // sign-in
 export const signInSchema = z.object({
-  email: z.string().email("invalid email address"),
+  email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
@@ -89,7 +89,7 @@ export const paymentSchema = z.object({
 
 // order
 export const orderSchema = z.object({
-  userId: z.string().min(3, "userId must be at least 3 characters long"),
+  userId: z.string().min(3, "UserId must be at least 3 characters long"),
   payment: z.enum(PAYMENT_METHODS, {
     errorMap: () => ({ message: "Invalid payment method" }),
   }),
@@ -102,10 +102,10 @@ export const orderSchema = z.object({
 
 // orderItem
 export const orderItemSchema = z.object({
-  productId: z.string().min(3, "productId must be at least 3 characters long"),
-  slug: z.string().min(3, "slug must be at least 3 characters long"),
-  name: z.string().min(3, "name must be at least 3 characters long"),
-  image: z.string().min(3, "image must be at least 3 characters long"),
+  productId: z.string().min(3, "ProductId must be at least 3 characters long"),
+  slug: z.string().min(3, "Slug must be at least 3 characters long"),
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  image: z.string().min(3, "Image must be at least 3 characters long"),
   price: currency,
   qty: z.number().int().nonnegative("Quantity must be a positive integer"),
 });
@@ -120,6 +120,11 @@ export const paymentResultSchema = z.object({
 
 // user-profile
 export const userProfileSchema = z.object({
-  name: z.string().min(3, "name must be at least 3 characters long"),
-  email: z.string().email("invalid email address"),
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  email: z.string().email("Invalid email address"),
+});
+
+// update-product
+export const updateProductSchema = insertProductSchema.extend({
+  id: z.string().min(3, "Id must be at least 3 characters long").optional(), // 🔥 id를 optional로 변경
 });

@@ -9,7 +9,7 @@ import { hashSync } from "bcrypt-ts-edge";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 import { ZodError } from "zod";
-import { formatError } from "../utils";
+import { formatError, formatSuccess } from "../utils";
 
 // sign-in
 export async function signInUser(prevState: unknown, formData: FormData) {
@@ -35,7 +35,7 @@ export async function signOutUser() {
   const cookieStore = await cookies();
   cookieStore.delete("sessionCartId");
   await signOut();
-  return { success: true, message: "Signed out successfully" };
+  return formatSuccess("Signed out successfully");
 }
 
 // sign-up
@@ -55,7 +55,7 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
       },
     });
     await signIn("credentials", { email: user.email, password: user.password });
-    return { success: true, message: "Signed up successfully" };
+    return formatSuccess("Signed up successfully");
   } catch (error: unknown) {
     if (isRedirectError(error)) throw error;
     const data = {
@@ -109,10 +109,7 @@ export async function updateUserAddress(data: Shipping) {
       },
       data: { address },
     });
-    return {
-      success: true,
-      message: "User Address updated successfully",
-    };
+    return formatSuccess("User Address updated successfully");
   } catch (error) {
     return formatError(error);
   }
@@ -130,10 +127,7 @@ export async function updateUserProfile(data: userProfile) {
       where: { id: currentUser.id },
       data,
     });
-    return {
-      success: true,
-      message: "User profile is updated successfully",
-    };
+    return formatSuccess("User profile is updated successfully");
   } catch (error) {
     return formatError(error);
   }

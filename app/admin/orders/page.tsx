@@ -1,3 +1,4 @@
+import Container from "@/components/common/container";
 import DeleteButton from "@/components/common/delete-button";
 import Pagination from "@/components/common/pagination";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { getAllOrders } from "@/lib/actions/admin.actions";
 import { deleteOrder } from "@/lib/actions/order.actions";
+import { PATH } from "@/lib/constants";
 import { dateTimeConverter, idSlicer } from "@/lib/utils";
 import Link from "next/link";
 
@@ -32,8 +34,7 @@ const AdminOrdersPage = async (props: {
       </div>
     );
   return (
-    <>
-      <h2 className="h2-bold my-2 mb-4">Orders</h2>
+    <Container title="Orders">
       <Table>
         <TableHeader>
           <TableRow>
@@ -55,7 +56,7 @@ const AdminOrdersPage = async (props: {
                 </Badge>
               </TableCell>
               <TableCell className="space-x-1">
-                <Link href={`/order/${order.id}`}>
+                <Link href={`${PATH.ORDER}/${order.id}`}>
                   <Badge>Details</Badge>
                 </Link>
                 <DeleteButton id={order.id} action={deleteOrder} type="badge" />
@@ -73,7 +74,7 @@ const AdminOrdersPage = async (props: {
           />
         )}
       </div>
-    </>
+    </Container>
   );
 };
 

@@ -8,6 +8,7 @@ import {
   orderItemSchema,
   paymentResultSchema,
   userProfileSchema,
+  updateProductSchema,
 } from "@/lib/validator";
 import { z } from "zod";
 
@@ -42,3 +43,4 @@ export type PaymentResult = z.infer<typeof paymentResultSchema>;
 export type userProfile = z.infer<typeof userProfileSchema>;
 export type ResponseType = { success: boolean; message: string };
 export type PaymentType = (typeof PAYMENT_METHODS)[number];
+export type updateProductType = z.infer<typeof updateProductSchema>;

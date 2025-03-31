@@ -13,6 +13,7 @@ import Image from "next/image";
 import { OrderItem } from "@/types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { PATH } from "@/lib/constants";
 
 const ProductTable = ({
   items,
@@ -36,7 +37,7 @@ const ProductTable = ({
             {/* image, name */}
             <TableCell>
               <Link
-                href={`/product/${item.slug}`}
+                href={`${PATH.PRODUCT}/${item.slug}`}
                 className="flex items-center"
               >
                 <Image

@@ -24,8 +24,8 @@ export function divideByDecimal(num: number) {
   return decimal ? [int, decimal.padEnd(2, "0")] : [int, "00"];
 }
 
-// to title case
-export const toTitleCase = (str: string) =>
+// capitalize
+export const capitalize = (str: string) =>
   str.length && str.charAt(0).toUpperCase() + str.slice(1);
 
 // currency
@@ -63,6 +63,14 @@ export function formatError(error: any) {
     success: false,
     message,
     data: undefined,
+  };
+}
+
+// handle success-response
+export function formatSuccess(message: string) {
+  return {
+    success: true,
+    message,
   };
 }
 

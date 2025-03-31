@@ -85,7 +85,7 @@ const PlacerOrderForm = ({
                       {/* image */}
                       <TableCell>
                         <Link
-                          href={`/product/${item.slug}`}
+                          href={`${PATH.PRODUCT}/${item.slug}`}
                           className="flex items-center"
                         >
                           <Image

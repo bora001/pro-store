@@ -2,11 +2,13 @@
 
 import { prisma } from "@/db/prisma";
 import { Prisma } from "@prisma/client";
-import { CONSTANTS } from "../constants";
-import { formatError } from "../utils";
+import { CONSTANTS, PATH } from "../constants";
+import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { revalidatePath } from "next/cache";
 import { updateOrderToPaid } from "./order.actions";
-import { PaymentResult } from "@/types";
+import { PaymentResult, updateProductType } from "@/types";
+import { insertProductSchema, updateProductSchema } from "../validator";
+import { z } from "zod";
 
 // order-summary
 export async function getOrderSummary() {
@@ -74,8 +76,8 @@ export async function updateOrderToPaidByAdmin(
 ) {
   try {
     await updateOrderToPaid({ orderId, paymentResult });
-    revalidatePath(`/order/${orderId}`);
-    return { success: true, message: "Order updated as Paid" };
+    revalidatePath(`${PATH.ORDER}/${orderId}`);
+    return formatSuccess("Order updated as Paid");
   } catch (error) {
     return formatError(error);
   }
@@ -98,8 +100,8 @@ export async function updateOrderToDelivered(orderId: string) {
         deliveredAt: new Date(),
       },
     });
-    revalidatePath(`/order/${orderId}`);
-    return { success: true, message: "Order updated as Delivered" };
+    revalidatePath(`${PATH.ORDER}/${orderId}`);
+    return formatSuccess("Order updated as Delivered");
   } catch (error) {
     return formatError(error);
   }
@@ -107,11 +109,15 @@ export async function updateOrderToDelivered(orderId: string) {
 
 // all-products
 export async function getAllProducts({
+  // query,
+  // category,
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
 }: {
   page: number;
   limit?: number;
+  query: string;
+  category?: string;
 }) {
   const product = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
@@ -124,4 +130,63 @@ export async function getAllProducts({
     productCount,
     totalPages: Math.ceil(productCount / limit),
   };
+}
+
+// delete-products
+export async function deleteProduct(id: string) {
+  try {
+    const isExist = await prisma.product.findFirst({
+      where: { id },
+    });
+    if (!isExist) throw new Error("Product not found");
+    await prisma.product.delete({
+      where: {
+        id,
+      },
+    });
+    revalidatePath(PATH.PRODUCTS);
+    return formatSuccess("Product deleted successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// create-product
+export async function createProduct(data: z.infer<typeof insertProductSchema>) {
+  try {
+    const product = insertProductSchema.parse(data);
+    await prisma.product.create({ data: product });
+    revalidatePath(PATH.PRODUCTS);
+    return formatSuccess("Product created successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// update-product
+export async function updateProduct(data: updateProductType) {
+  try {
+    const isProductExist = await prisma.product.findFirst({
+      where: { id: data.id },
+    });
+    if (!isProductExist) throw new Error("Product not found");
+    const product = updateProductSchema.parse(data);
+    await prisma.product.update({
+      where: { id: data.id },
+      data: product,
+    });
+    revalidatePath(PATH.PRODUCTS);
+    return formatSuccess("Product updated successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// get-product
+export async function getProduct(id: string) {
+  const product = await prisma.product.findFirst({
+    where: { id },
+  });
+  if (!product) throw new Error("Product not found");
+  return prismaToJs(product);
 }

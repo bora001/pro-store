@@ -14,6 +14,7 @@ const SignUpForm = () => {
     success: false,
     message: "",
   });
+  const hasData = "data" in data;
   return (
     <form className="space-y-5" action={action}>
       <div className="space-y-3">
@@ -27,11 +28,13 @@ const SignUpForm = () => {
           name="name"
           placeholder="name"
           required
-          defaultValue={((data && data.data && data.data.name) as string) || ""}
+          defaultValue={
+            ((hasData && data.data && data.data.name) as string) || ""
+          }
         />
         <Input
           defaultValue={
-            ((data && data.data && data.data.email) as string) || ""
+            ((hasData && data.data && data.data.email) as string) || ""
           }
           type="email"
           name="email"

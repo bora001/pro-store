@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { toTitleCase } from "@/lib/utils";
+import { capitalize } from "@/lib/utils";
 
 const SYSTEM_TYPE = {
   SYSTEM: "system",
@@ -31,7 +31,7 @@ const ThemeToggle = () => {
       checked={systemTheme === type}
       onClick={() => setTheme(type)}
     >
-      {toTitleCase(type)}
+      {capitalize(type)}
     </DropdownMenuCheckboxItem>
   );
 

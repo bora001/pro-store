@@ -8,7 +8,7 @@ import { getMyCart } from "./cart.actions";
 import { getUserById } from "./user.action";
 import { orderSchema } from "../validator";
 import { prisma } from "@/db/prisma";
-import { formatError, prismaToJs } from "../utils";
+import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { paypal } from "../paypal";
 import { PaymentResult } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -61,7 +61,7 @@ export async function createOrder(payment: string | null) {
     });
 
     if (!newOrderId) throw new Error("Order is not created");
-    redirect(`/order/${newOrderId}`);
+    redirect(`${PATH.ORDER}/${newOrderId}`);
   } catch (error) {
     if (isRedirectError(error)) throw error;
     return formatError(error);
@@ -82,6 +82,7 @@ export async function getOrderInfo(orderId: string) {
         },
       },
     });
+
     return {
       success: true,
       data: prismaToJs(data),
@@ -154,11 +155,8 @@ export async function approvalPaypalOrder(
           captureData.purchase_units[0].payments?.captures[0].amount.value,
       },
     });
-    revalidatePath(`/order/${orderId}`);
-    return {
-      success: true,
-      message: "order has been paid",
-    };
+    revalidatePath(`${PATH.ORDER}/${orderId}`);
+    return formatSuccess("Order has been paid");
   } catch (error) {
     return formatError(error);
   }
@@ -246,10 +244,7 @@ export async function deleteOrder(id: string) {
       where: { id },
     });
     revalidatePath(PATH.ORDERS);
-    return {
-      success: true,
-      message: "Order is deleted successfully",
-    };
+    return formatSuccess("Order is deleted successfully");
   } catch (error) {
     return formatError(error);
   }

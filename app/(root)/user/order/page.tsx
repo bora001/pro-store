@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getUserOrder } from "@/lib/actions/order.actions";
+import { PATH } from "@/lib/constants";
 import { dateTimeConverter, idSlicer } from "@/lib/utils";
 import Link from "next/link";
 
@@ -55,7 +56,7 @@ const MyOrderPage = async (props: {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Link href={`/order/${orderItem.id}`}>
+                  <Link href={`${PATH.ORDER}/${orderItem.id}`}>
                     <Badge>Detail</Badge>
                   </Link>
                 </TableCell>

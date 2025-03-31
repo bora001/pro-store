@@ -1,7 +1,7 @@
 import { CONFIG } from "@/lib/constants/config";
 import Image from "next/image";
 
-const LogoImage = ({ size = 48 }: { size?: number }) => {
+const LogoImage = ({ size = 40 }: { size?: number }) => {
   return (
     <Image
       src="/images/logo.svg"

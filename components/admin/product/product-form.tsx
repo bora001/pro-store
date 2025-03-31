@@ -79,6 +79,7 @@ const ProductForm = ({
   const images = form.watch("images");
   const isFeatured = form.watch("isFeatured");
   const banner = form.watch("banner");
+
   return (
     <>
       <Form {...form}>
@@ -211,6 +212,7 @@ const ProductForm = ({
                   )}
                 />
                 {/* isFeatured */}
+
                 {isFeatured &&
                   (banner ? (
                     <Image

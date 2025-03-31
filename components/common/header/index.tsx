@@ -5,6 +5,7 @@ import { CONFIG } from "@/lib/constants/config";
 import { PATH } from "@/lib/constants";
 import NavBar, { NavBarType } from "./nav-bar";
 import SearchInput from "../search-input";
+import CategoryDrawer from "./category-drawer";
 
 const Header = ({
   navList,
@@ -17,7 +18,8 @@ const Header = ({
     <header className="w-full border-b">
       <div className="wrapper flex-between">
         {/* left */}
-        <div className="flex-start space-x-3">
+        <div className="flex-start gap-3">
+          <CategoryDrawer />
           <Link href={PATH.HOME} className="flex-start">
             <LogoImage />
             <span className="hidden lg:block font-bold text-2xl ml-3">

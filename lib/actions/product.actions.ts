@@ -24,3 +24,24 @@ export const getProductBySlug = async (slug: string) => {
   });
   return prismaToJs(data);
 };
+
+// get-all-category
+export const getAllCategory = async () => {
+  const data = await prisma.product.groupBy({
+    by: ["category"],
+    _count: true,
+  });
+  return data;
+};
+
+// get-feature-product
+export const getFeatureProduct = async () => {
+  const data = await prisma.product.findMany({
+    where: { isFeatured: true },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 4,
+  });
+  return prismaToJs(data);
+};

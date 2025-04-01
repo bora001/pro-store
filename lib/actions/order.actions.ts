@@ -10,11 +10,13 @@ import { orderSchema } from "../validator";
 import { prisma } from "@/db/prisma";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { paypal } from "../paypal";
-import { PaymentResultType } from "@/types";
+import { PaymentResultType, ShippingType } from "@/types";
 import { revalidatePath } from "next/cache";
+import { sendPurchaseReceipt } from "@/email";
+import { PaymentFormType } from "@/components/payment/payment-form";
 
 // place-order
-export async function createOrder(payment: string | null) {
+export async function createOrder(payment: PaymentFormType["type"]) {
   try {
     if (!payment) redirect(PATH.PAYMENT);
     const session = await auth();
@@ -208,6 +210,13 @@ export async function updateOrderToPaid({
       },
     });
     if (!updateOrder) throw new Error("Order not found");
+    sendPurchaseReceipt({
+      order: {
+        ...updateOrder,
+        address: updateOrder.address as ShippingType,
+        paymentResult: updateOrder.paymentResult as PaymentResultType,
+      },
+    });
   } catch (error) {
     return formatError(error);
   }

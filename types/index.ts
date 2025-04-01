@@ -36,6 +36,7 @@ export type OrderType = z.infer<typeof orderSchema> & {
     name: string;
     email: string;
   };
+  paymentResult: PaymentResultType;
 };
 export type CartItemType = z.infer<typeof cartItemSchema> & {};
 export type ShippingType = z.infer<typeof shippingSchema>;

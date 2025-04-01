@@ -1,5 +1,5 @@
 "use client";
-import { CartType, ShippingType } from "@/types";
+import { CartType, PaymentType, ShippingType } from "@/types";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -25,12 +25,12 @@ const PlacerOrderForm = ({
   address: ShippingType;
   cart: CartType;
 }) => {
-  const searchParams = useSearchParams(); // Accessing query params
+  const searchParams = useSearchParams();
   const method = searchParams.get("method");
   const [isPending, startTransition] = useTransition();
   const handlePlaceOrder = () => {
     startTransition(async () => {
-      await createOrder(method);
+      await createOrder(method as PaymentType);
     });
   };
   return (
@@ -111,7 +111,7 @@ const PlacerOrderForm = ({
           </Card>
         </div>
         {/*  */}
-        <div>
+        <div className="space-y-4">
           <PriceSummary
             itemPrice={cart.itemPrice}
             taxPrice={cart.taxPrice}

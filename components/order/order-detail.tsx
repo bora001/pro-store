@@ -21,15 +21,18 @@ import {
   updateOrderToDelivered,
   updateOrderToPaidByAdmin,
 } from "@/lib/actions/admin.actions";
+import StripePayment from "./stripe-payment";
 
 const OrderDetail = ({
-  order,
-  clientId,
   isAdmin = false,
+  order,
+  paypalClientId,
+  stripeClientSecret,
 }: {
-  order: OrderType;
-  clientId: string;
   isAdmin?: boolean;
+  order: OrderType;
+  paypalClientId: string;
+  stripeClientSecret: string | null;
 }) => {
   const {
     address,
@@ -75,6 +78,7 @@ const OrderDetail = ({
     if (isRejected) status = "Loading Paypal Rejected";
     return status;
   };
+
   return (
     <>
       <h1 className="py-4 text-2xl">
@@ -127,17 +131,17 @@ const OrderDetail = ({
           </Card>
         </div>
         {/* price-summary */}
-        <div>
+        <div className="space-y-4">
           <PriceSummary
             itemPrice={itemPrice}
             taxPrice={taxPrice}
             shippingPrice={shippingPrice}
             totalPrice={totalPrice}
           />
-          {/* paypal */}
+          {/* paypal-payment */}
           {!isPaid && payment === "PayPal" && (
             <>
-              <PayPalScriptProvider options={{ clientId }}>
+              <PayPalScriptProvider options={{ clientId: paypalClientId }}>
                 <LoadingPaypal />
                 <PayPalButtons
                   createOrder={handleCreatePaypalOrder}
@@ -146,7 +150,16 @@ const OrderDetail = ({
               </PayPalScriptProvider>
             </>
           )}
-          {/* admin */}
+          {/* stripe-payment */}
+          {!isPaid && payment === "Stripe" && stripeClientSecret && (
+            <StripePayment
+              orderId={order.id}
+              priceInCents={order.totalPrice}
+              clientSecret={stripeClientSecret}
+            />
+          )}
+
+          {/* admin : cash-on-delivery */}
           {isAdmin && (
             <Card>
               <CardHeader>

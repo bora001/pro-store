@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
-import { PATH } from "../constants";
+import { CONSTANTS, PATH } from "../constants";
 import { getMyCart } from "./cart.actions";
 import { getUserById } from "./user.action";
 import { orderSchema } from "../validator";
@@ -140,7 +140,7 @@ export async function approvalPaypalOrder(
     if (
       !captureData ||
       captureData.id !== (order.paymentResult as PaymentResultType).id ||
-      captureData.status !== "COMPLETED"
+      captureData.status !== CONSTANTS.COMPLETED
     ) {
       throw new Error("Error in paypal payment");
     }

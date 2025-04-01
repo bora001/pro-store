@@ -5,6 +5,7 @@ export const CONSTANTS = {
   ALL: "all",
   INIT_REVIEW_RATING: 0,
   AVG_REVIEW_RATING: 3,
+  COMPLETED: "COMPLETED",
 };
 
 export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;

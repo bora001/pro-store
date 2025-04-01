@@ -129,7 +129,7 @@ export async function getAllProducts({
   price,
   rating,
   sort,
-  limit = CONSTANTS.PAGE_LIMIT,
+  limit,
 }: {
   page: number;
   limit?: number;
@@ -161,6 +161,8 @@ export async function getAllProducts({
     default: { createdAt: "desc" },
   };
 
+  const pagination = limit ? { skip: (page - 1) * limit } : {};
+
   const product = await prisma.product.findMany({
     where: {
       ...queryFilter,
@@ -170,13 +172,13 @@ export async function getAllProducts({
     },
     orderBy: sort ? sortFilter[sort] : sortFilter.default,
     take: limit,
-    skip: (page - 1) * limit,
+    ...pagination,
   });
   const productCount = await prisma.product.count();
   return {
     product,
     productCount,
-    totalPages: Math.ceil(productCount / limit),
+    totalPages: limit ? Math.ceil(productCount / limit) : 0,
   };
 }
 

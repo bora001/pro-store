@@ -4,12 +4,14 @@ import SearchInput from "@/components/common/search-input";
 import { ReactNode } from "react";
 
 const SearchContainer = ({
+  title,
   children,
   query,
   resetPath,
   hasList,
   emptyText,
 }: {
+  title: string;
   resetPath: string;
   query: string;
   children: ReactNode;
@@ -18,7 +20,7 @@ const SearchContainer = ({
 }) => {
   return (
     <Container
-      title="Orders"
+      title={title}
       extra={<FilterIndicator query={query} resetPath={resetPath} />}
       button={
         <div className="flex gap-2">

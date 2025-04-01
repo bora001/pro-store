@@ -29,6 +29,7 @@ const AdminUserPage = async (props: {
 
   return (
     <SearchContainer
+      title="Users"
       hasList={data.user.length === 0}
       resetPath={PATH.USERS}
       query={query}

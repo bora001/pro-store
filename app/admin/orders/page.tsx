@@ -29,6 +29,7 @@ const AdminOrdersPage = async (props: {
   const data = await getAllOrders({ page: +page || 1, query });
   return (
     <SearchContainer
+      title="Orders"
       hasList={data.order.length === 0}
       resetPath={PATH.ORDERS}
       query={query}

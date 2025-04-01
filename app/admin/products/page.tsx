@@ -28,6 +28,7 @@ const AdminProductPage = async (props: {
   const data = await getAllProducts({ page: +page || 1, query, category });
   return (
     <SearchContainer
+      title="Products"
       hasList={data.product.length === 0}
       resetPath={PATH.PRODUCTS}
       query={query}

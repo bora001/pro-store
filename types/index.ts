@@ -10,6 +10,7 @@ import {
   userProfileSchema,
   updateProductSchema,
   editUserSchema,
+  addReviewSchema,
 } from "@/lib/validator";
 import { z } from "zod";
 
@@ -48,4 +49,11 @@ export type editUserType = z.infer<typeof editUserSchema>;
 export type CategoryType = {
   category: string;
   count: number;
+};
+export type reviewType = z.infer<typeof addReviewSchema> & {
+  id: string;
+  createdAt: Date;
+  user?: {
+    name: string;
+  };
 };

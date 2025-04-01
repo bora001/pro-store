@@ -130,7 +130,23 @@ export const userProfileSchema = z.object({
   email: z.string().email("Invalid email address"),
 });
 
+// edit-user
 export const editUserSchema = userProfileSchema.extend({
   id: z.string().min(3, "ID must be at least 3 characters long"),
   role: z.string().min(3, "Role must be at least 3 characters long"),
+});
+
+// add-review
+export const addReviewSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters long"),
+  description: z
+    .string()
+    .min(3, "Description must be at least 3 characters long"),
+  productId: z.string().min(3, "ProductId must be at least 3 characters long"),
+  userId: z.string().min(3, "UserId must be at least 3 characters long"),
+  rating: z.coerce
+    .number()
+    .nonnegative()
+    .min(1, "Rating must be at least 1")
+    .max(5, "Rating must be at most 5"),
 });

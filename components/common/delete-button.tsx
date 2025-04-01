@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { ReactNode, useState, useTransition } from "react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import {
@@ -15,15 +15,17 @@ import {
 } from "../ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { ResponseType } from "@/types";
-type DeleteButtonType = "button" | "badge";
+type DeleteButtonType = "button" | "badge" | "custom";
 const DeleteButton = ({
   id,
   action,
   type,
+  children,
 }: {
   id: string;
   type: DeleteButtonType;
   action: (id: string) => Promise<ResponseType>;
+  children?: ReactNode;
 }) => {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -38,17 +40,17 @@ const DeleteButton = ({
       }
     });
   };
+  const DeleteTrigger = () => {
+    if (type === "button") return <Button>Delete</Button>;
+    if (type === "badge")
+      return <Badge className="cursor-pointer">Delete</Badge>;
+    if (type === "custom") return children;
+  };
   return (
     <>
       <AlertDialog open={open} onOpenChange={setOpen}>
         {/* button */}
-        <AlertDialogTrigger asChild>
-          {type === "button" ? (
-            <Button>Delete</Button>
-          ) : (
-            <Badge className="cursor-pointer">Delete</Badge>
-          )}
-        </AlertDialogTrigger>
+        <AlertDialogTrigger asChild>{DeleteTrigger()}</AlertDialogTrigger>
         {/* modal */}
         <AlertDialogContent>
           <AlertDialogHeader>

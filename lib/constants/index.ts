@@ -3,6 +3,8 @@ export const CONSTANTS = {
   PAGE_LIMIT: 5,
   ADMIN: "admin",
   ALL: "all",
+  INIT_REVIEW_RATING: 0,
+  AVG_REVIEW_RATING: 3,
 };
 
 export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;

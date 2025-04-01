@@ -4,6 +4,7 @@ import Image from "next/image";
 import ProductPrice from "./product-price";
 import { ProductItemType } from "@/types";
 import { PATH } from "@/lib/constants";
+import RatingStar from "../common/rating-star";
 
 const ProductCard = ({
   product: { slug, images, name, brand, rating, stock, price },
@@ -31,7 +32,7 @@ const ProductCard = ({
           <h2 className="text-sm font-medium">{name}</h2>
         </Link>
         <div className="flex-between gap-4">
-          <p>{rating} Stars</p>
+          <RatingStar rating={rating} />
           {stock > 0 ? <ProductPrice price={price} /> : <p>Out of Stock</p>}
         </div>
       </CardContent>

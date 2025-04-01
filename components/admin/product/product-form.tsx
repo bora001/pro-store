@@ -13,10 +13,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { createProduct, updateProduct } from "@/lib/actions/admin.actions";
-import { PATH } from "@/lib/constants";
+import { CONSTANTS, PATH } from "@/lib/constants";
 import { UploadButton } from "@/lib/uploadthing";
 import { capitalize } from "@/lib/utils";
 import { insertProductSchema, updateProductSchema } from "@/lib/validator";
@@ -37,7 +36,7 @@ const defaultValue = {
   description: "",
   price: "0",
   stock: 0,
-  rating: 0,
+  rating: CONSTANTS.INIT_REVIEW_RATING,
   numReviews: 0,
   isFeatured: false,
   banner: null,
@@ -131,7 +130,6 @@ const ProductForm = ({
               name="brand"
             />
           </div>
-
           {/* price & stock */}
           <div className="flex flex-col gap-5 md:flex-row">
             <FormInput
@@ -240,25 +238,12 @@ const ProductForm = ({
             </Card>
           </div>
           {/* description */}
-          <div>
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      className="resize-none"
-                      placeholder="Enter Product Description"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormInput
+            type="textarea"
+            control={form.control}
+            placeholder="Enter Product Description"
+            name="description"
+          />
           {/* submit */}
           <Button type="submit" disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting

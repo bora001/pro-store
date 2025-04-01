@@ -31,7 +31,10 @@ export const getAllCategory = async () => {
     by: ["category"],
     _count: true,
   });
-  return data;
+  return data.map(({ category, _count }) => ({
+    category,
+    count: _count,
+  }));
 };
 
 // get-feature-product

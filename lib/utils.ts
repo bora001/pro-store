@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import qs from "query-string";
+import { PATH } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -99,7 +100,7 @@ export function URLChanger({
     query[key] = String(value);
   }
 
-  const currentPath = pathname || "/";
+  const currentPath = pathname || PATH.HOME;
 
   return qs.stringifyUrl(
     { url: currentPath, query },

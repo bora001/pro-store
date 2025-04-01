@@ -28,7 +28,7 @@ const Header = ({
           </Link>
           <div>{navList && <NavBar navList={navList} />}</div>
         </div>
-        {!isAdmin && <SearchInput query="" />}
+        {!isAdmin && <SearchInput path={PATH.SEARCH} />}
         {/* right */}
         <Menu />
       </div>

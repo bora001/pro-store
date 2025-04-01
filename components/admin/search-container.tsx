@@ -22,7 +22,7 @@ const SearchContainer = ({
       extra={<FilterIndicator query={query} resetPath={resetPath} />}
       button={
         <div className="flex gap-2">
-          <SearchInput query={query} />
+          <SearchInput />
         </div>
       }
     >

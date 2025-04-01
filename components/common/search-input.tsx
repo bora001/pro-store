@@ -7,14 +7,15 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { URLChanger } from "@/lib/utils";
 
-const SearchInput = ({ query = "" }: { query: string }) => {
+const SearchInput = ({ path }: { path?: string }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query") || "";
   const [searchKeyword, setSearchKeyword] = useState(query);
-  const params = useSearchParams();
   const pathname = usePathname();
   const newURL = URLChanger({
-    params: params.toString(),
-    pathname,
+    params: searchParams.toString(),
+    pathname: path || pathname,
     key: "query",
     value: searchKeyword,
   });

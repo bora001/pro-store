@@ -1,5 +1,5 @@
-import { RefreshCcw } from "lucide-react";
 import Link from "next/link";
+import ResetIcon from "../common/reset-icon";
 
 const FilterIndicator = ({
   query,
@@ -16,7 +16,7 @@ const FilterIndicator = ({
             Filter by <i>{query}</i>
           </span>
           <Link href={resetPath}>
-            <RefreshCcw width={14} className="text-gray-400 cursor-pointer" />
+            <ResetIcon />
           </Link>
         </div>
       )}

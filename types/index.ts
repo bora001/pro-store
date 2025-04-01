@@ -45,3 +45,7 @@ export type ResponseType = { success: boolean; message: string };
 export type PaymentType = (typeof PAYMENT_METHODS)[number];
 export type updateProductType = z.infer<typeof updateProductSchema>;
 export type editUserType = z.infer<typeof editUserSchema>;
+export type CategoryType = {
+  category: string;
+  count: number;
+};

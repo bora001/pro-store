@@ -2,6 +2,7 @@ export const CONSTANTS = {
   LATEST_PRODUCT_LIMIT: 4,
   PAGE_LIMIT: 5,
   ADMIN: "admin",
+  ALL: "all",
 };
 
 export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;
@@ -22,4 +23,5 @@ export const PATH = {
   CREATE_PRODUCTS: "/admin/products/create",
   USERS: "/admin/users",
   ORDERS: "/admin/orders",
+  SEARCH: "/search",
 };

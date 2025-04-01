@@ -124,14 +124,20 @@ export async function updateOrderToDelivered(orderId: string) {
 // all-products
 export async function getAllProducts({
   query,
-  // category,
+  category,
   page = 1,
+  price,
+  rating,
+  sort,
   limit = CONSTANTS.PAGE_LIMIT,
 }: {
   page: number;
   limit?: number;
   query: string;
   category?: string;
+  rating?: string;
+  sort?: string;
+  price?: string;
 }) {
   const queryFilter: Prisma.ProductWhereInput = {
     name: {
@@ -139,11 +145,30 @@ export async function getAllProducts({
       mode: "insensitive",
     } as Prisma.StringFilter,
   };
+  const categoryFilter =
+    category && category !== CONSTANTS.ALL ? { category } : {};
+  const [minPrice, maxPrice] = price ? price.split("-") : [];
+  const priceFilter =
+    price && price !== CONSTANTS.ALL
+      ? { price: { gte: minPrice, lte: maxPrice } }
+      : {};
+  const ratingFilter =
+    rating && rating !== CONSTANTS.ALL ? { rating: { gte: rating } } : {};
+  const sortFilter: Record<string, Prisma.ProductOrderByWithRelationInput> = {
+    lowest: { price: "asc" },
+    highest: { price: "desc" },
+    rating: { rating: "desc" },
+    default: { createdAt: "desc" },
+  };
+
   const product = await prisma.product.findMany({
     where: {
       ...queryFilter,
+      ...categoryFilter,
+      ...priceFilter,
+      ...ratingFilter,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: sort ? sortFilter[sort] : sortFilter.default,
     take: limit,
     skip: (page - 1) * limit,
   });

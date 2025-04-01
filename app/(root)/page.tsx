@@ -5,6 +5,8 @@ import {
   getFeatureProduct,
   getLatestProducts,
 } from "@/lib/actions/product.actions";
+import { PATH } from "@/lib/constants";
+import Link from "next/link";
 const HomePage = async () => {
   const latestProduct = await getLatestProducts();
   const featureProduct = await getFeatureProduct();
@@ -12,7 +14,11 @@ const HomePage = async () => {
     <>
       <ProductCarousel data={featureProduct} />
       <ProductList data={latestProduct} title="Newest Arrivals" />
-      <Button>button</Button>
+      <div className="flex items-center justify-center mb-6">
+        <Link href={PATH.SEARCH}>
+          <Button>View All Products</Button>
+        </Link>
+      </div>
     </>
   );
 };

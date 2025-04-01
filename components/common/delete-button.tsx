@@ -15,7 +15,9 @@ import {
 } from "../ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { ResponseType } from "@/types";
+
 type DeleteButtonType = "button" | "badge" | "custom";
+
 const DeleteButton = ({
   id,
   action,
@@ -40,17 +42,17 @@ const DeleteButton = ({
       }
     });
   };
-  const DeleteTrigger = () => {
-    if (type === "button") return <Button>Delete</Button>;
-    if (type === "badge")
-      return <Badge className="cursor-pointer">Delete</Badge>;
-    if (type === "custom") return children;
+  const DELETE_TRIGGER = {
+    button: <Button>Delete</Button>,
+    badge: <Badge className="cursor-pointer">Delete</Badge>,
+    custom: children,
   };
+
   return (
     <>
       <AlertDialog open={open} onOpenChange={setOpen}>
         {/* button */}
-        <AlertDialogTrigger asChild>{DeleteTrigger()}</AlertDialogTrigger>
+        <AlertDialogTrigger asChild>{DELETE_TRIGGER[type]}</AlertDialogTrigger>
         {/* modal */}
         <AlertDialogContent>
           <AlertDialogHeader>

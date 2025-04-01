@@ -10,6 +10,7 @@ const SearchContainer = ({
   resetPath,
   hasList,
   emptyText,
+  extraButton,
 }: {
   title: string;
   resetPath: string;
@@ -17,6 +18,7 @@ const SearchContainer = ({
   children: ReactNode;
   hasList: boolean;
   emptyText: string;
+  extraButton?: ReactNode;
 }) => {
   return (
     <Container
@@ -25,6 +27,7 @@ const SearchContainer = ({
       button={
         <div className="flex gap-2">
           <SearchInput />
+          {extraButton}
         </div>
       }
     >

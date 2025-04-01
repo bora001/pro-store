@@ -9,6 +9,7 @@ import {
 import { Input } from "../ui/input";
 import { capitalize } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
+
 type FormInputPropsType<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
@@ -16,6 +17,7 @@ type FormInputPropsType<T extends FieldValues> = {
   type?: FormInputType;
 };
 type FormInputType = "text" | "textarea" | "number";
+
 const FormInput = <T extends FieldValues>({
   control,
   name,
@@ -26,26 +28,26 @@ const FormInput = <T extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel>{capitalize(name)}</FormLabel>
-          <FormControl>
-            <div>
-              {type === "text" && (
-                <Input placeholder={placeholder} {...field} type={type} />
-              )}
-              {type === "textarea" && (
-                <Textarea
-                  className="resize-none"
-                  placeholder={placeholder}
-                  {...field}
-                />
-              )}
-            </div>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
+      render={({ field }) => {
+        const props = {
+          placeholder,
+          ...field,
+        };
+        return (
+          <FormItem className="w-full">
+            <FormLabel>{capitalize(name)}</FormLabel>
+            <FormControl>
+              <div>
+                {type === "text" && <Input {...props} type={type} />}
+                {type === "textarea" && (
+                  <Textarea {...props} className="resize-none" />
+                )}
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 };

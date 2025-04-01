@@ -17,6 +17,7 @@ import Image from "next/image";
 import { useTransition } from "react";
 import { createOrder } from "@/lib/actions/order.actions";
 import PriceSummary from "../common/price-summary";
+import { BadgeAlert } from "lucide-react";
 
 const PlacerOrderForm = ({
   address,
@@ -35,7 +36,13 @@ const PlacerOrderForm = ({
   };
   return (
     <>
-      <h1 className="py-4 text-2xl">Place Order</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="py-4 h2-bold">Place Order</h1>
+        <div className="flex gap-1 items-center text-gray-600 px-2">
+          <BadgeAlert className="mx-1" size="16" />
+          <p>Just a demo site—no real transactions occur</p>
+        </div>
+      </div>
       <div className="grid md:grid-cols-3 md:gap-5">
         <div className="md:col-span-2 overflow-x-auto space-y-4">
           {/* shipping */}

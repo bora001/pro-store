@@ -23,19 +23,17 @@ const StripeSuccessPage = async (props: {
   if (isSuccess) return redirect(`${PATH.ORDER}/${id}`);
 
   return (
-    <>
-      <div className="max-w-4wl w-full mx-auto space-y-8 h-full flex flex-col gap-6 items-center justify-center">
-        <div className="space-y-2">
-          <h2 className="h2-bold">Thanks for your purchase</h2>
-          <div>We are processing your order</div>
-          <div className="py-4">
-            <Button className="w-full">
-              <Link href={`/order/${id}`}>View Order</Link>
-            </Button>
-          </div>
+    <div className="max-w-4wl w-full mx-auto space-y-8 h-full flex flex-col gap-6 items-center justify-center">
+      <div className="space-y-2">
+        <h2 className="h2-bold">Thanks for your purchase</h2>
+        <div>We are processing your order</div>
+        <div className="py-4">
+          <Button className="w-full">
+            <Link href={`/order/${id}`}>View Order</Link>
+          </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

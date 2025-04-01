@@ -13,7 +13,7 @@ const ProductList = ({
   const productData = limit ? data.slice(0, limit) : data;
   return (
     <div className="my-10">
-      <h2 className="font-bold mb-4">{title}</h2>
+      <h2 className="h2-bold mb-4">{title}</h2>
       {productData.length === 0 ? (
         <p>No products found</p>
       ) : (

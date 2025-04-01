@@ -11,9 +11,7 @@ const Center = ({
 }) => {
   return (
     <div
-      className={`flex justify-center items-center ${className} ${
-        isFull && "h-screen w-screen"
-      }`}
+      className={`flex justify-center items-center ${className} ${isFull && "h-screen w-screen"}`}
     >
       {children}
     </div>

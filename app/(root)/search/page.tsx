@@ -44,30 +44,28 @@ const SearchPage = async (props: {
   const allCategory = await getAllCategory();
 
   return (
-    <>
-      <div className="grid md:grid-cols-5 md:gap-5">
-        <div className="filter-links">
-          <MainFilter category={allCategory} />
+    <div className="grid md:grid-cols-5 md:gap-5">
+      <div className="filter-links">
+        <MainFilter category={allCategory} />
+      </div>
+      <div className="md:col-span-4 space-y-4">
+        {/* search-keyword & sort */}
+        <div className="flex justify-between">
+          <KeywordReset query={query} params={params} />
+          <SortFilter sortBy={sort} />
         </div>
-        <div className="md:col-span-4 space-y-4">
-          {/* search-keyword & sort */}
-          <div className="flex justify-between">
-            <KeywordReset query={query} params={params} />
-            <SortFilter sortBy={sort} />
-          </div>
-          {/* product-list */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {product.product.length === 0 ? (
-              <>no product found</>
-            ) : (
-              product.product.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))
-            )}
-          </div>
+        {/* product-list */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {product.product.length === 0 ? (
+            <>no product found</>
+          ) : (
+            product.product.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -18,8 +18,15 @@ const SYSTEM_TYPE = {
   DARK: "dark",
   LIGHT: "light",
 };
+const THEME_LIST = [SYSTEM_TYPE.SYSTEM, SYSTEM_TYPE.DARK, SYSTEM_TYPE.LIGHT];
+const themeIcons = {
+  [SYSTEM_TYPE.SYSTEM]: <SunMoon />,
+  [SYSTEM_TYPE.DARK]: <MoonIcon />,
+  [SYSTEM_TYPE.LIGHT]: <SunIcon />,
+};
+
 const ThemeToggle = () => {
-  const [systemTheme, setSystemTheme] = useState<string | null>(null);
+  const [systemTheme, setSystemTheme] = useState<string>(SYSTEM_TYPE.SYSTEM);
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
@@ -39,24 +46,16 @@ const ThemeToggle = () => {
     <DropdownMenu>
       {/* trigger */}
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost">
-          {systemTheme === null && <SunMoon />}
-          {systemTheme === SYSTEM_TYPE.SYSTEM && <SunMoon />}
-          {systemTheme === SYSTEM_TYPE.DARK && <MoonIcon />}
-          {systemTheme === SYSTEM_TYPE.LIGHT && <SunIcon />}
-        </Button>
+        <Button variant="ghost">{themeIcons[systemTheme]}</Button>
       </DropdownMenuTrigger>
       {/* content */}
       <DropdownMenuContent>
         <DropdownMenuLabel>Appearance</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {SYSTEM_TYPE && (
-          <>
-            <ThemeToggleCheckboxItem type={SYSTEM_TYPE.SYSTEM} />
-            <ThemeToggleCheckboxItem type={SYSTEM_TYPE.DARK} />
-            <ThemeToggleCheckboxItem type={SYSTEM_TYPE.LIGHT} />
-          </>
-        )}
+        {SYSTEM_TYPE &&
+          THEME_LIST.map((theme) => (
+            <ThemeToggleCheckboxItem key={theme} type={theme} />
+          ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CONSTANTS, PATH } from "@/lib/constants";
-import { UserIcon } from "lucide-react";
+import { User, UserIcon } from "lucide-react";
 import UserButtonBox from "./user-buttons-box";
 
 const UserButton = async () => {
@@ -17,6 +17,7 @@ const UserButton = async () => {
     return (
       <LinkButton icon={<UserIcon />} title="Sign In" url={PATH.SIGN_IN} />
     );
+  const { name, email, role } = session.user;
 
   return (
     <DropdownMenu>
@@ -27,25 +28,24 @@ const UserButton = async () => {
             variant="ghost"
             className="relative w-8 h-8 rounded-full items-center justify-center bg-gray-200"
           >
-            {session.user?.name
-              ? session.user.name.slice(0, 1).toLocaleUpperCase()
-              : "N"}
+            {name ? name.slice(0, 1).toLocaleUpperCase() : "N"}
           </Button>
         </div>
       </DropdownMenuTrigger>
       {/* content */}
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel>
-          <div className="flex flex-col space-y-2 mb-6">
-            <div className="text-sm font-medium leading-none">
-              {session.user?.name}
+          <div className="flex flex-col space-y-2 px-2 py-3">
+            <div className="text-sm font-medium leading-none flex items-center gap-1">
+              <User size={16} />
+              {name}
             </div>
-            <div className="text-sm text-muted-foreground leading-none">
-              {session.user?.email}
-            </div>
+            <p className="text-sm text-muted-foreground leading-none">
+              {email}
+            </p>
           </div>
           {/* buttons */}
-          <UserButtonBox isAdmin={session.user?.role === CONSTANTS.ADMIN} />
+          <UserButtonBox isAdmin={role === CONSTANTS.ADMIN} />
         </DropdownMenuLabel>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -22,6 +22,7 @@ const MyOrderPage = async (props: {
   const { page } = await props.searchParams;
   const order = await getUserOrder({ page: +page || 1 });
   const TABLE_HEAD = ["ID", "DATE", "TOTAL", "PAID", "DELIVERED", "DETAILS"];
+
   return (
     <div className="space-y-2">
       <h2 className="h2-bold">My Orders</h2>
@@ -64,7 +65,6 @@ const MyOrderPage = async (props: {
             ))}
           </TableBody>
         </Table>
-
         {/* pagination */}
         <div className="flex justify-center">
           {order.totalPages > 1 && (

@@ -29,62 +29,58 @@ const ReviewList = ({
   return (
     <div className="flex-1 flex flex-col gap-3">
       {reviewList.length ? (
-        <>
-          <div className="flex flex-col gap-3">
-            {reviewList.map((review) => (
-              <Card key={review.id}>
-                <CardHeader>
-                  <div className="flex justify-between">
-                    <CardTitle>{review.title}</CardTitle>
-                    {currentUser === review.userId && (
-                      <div className="flex">
-                        <ReviewForm
-                          type="edit"
-                          review={{
-                            title: review.title,
-                            description: review.description,
-                            rating: +review.rating,
-                          }}
-                          userId={currentUser}
-                          productId={productId}
-                          button={
-                            <IconButton icon={<Pencil />} className="p-3" />
-                          }
-                        />
-
-                        <DeleteButton
-                          type="custom"
-                          id={review.id}
-                          action={deleteReview}
-                        >
-                          <IconButton icon={<Trash />} className="p-3" />
-                        </DeleteButton>
-                      </div>
-                    )}
-                  </div>
-
-                  <CardDescription>{review.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex space-x-4 text-sm text-muted-foreground items-center">
-                    {/* rating */}
-                    <RatingStar rating={review.rating} />
-                    {/* user */}
-                    <div className="flex items-center">
-                      <User className="mr-1 h-3 w-3" />
-                      {review.user ? review.user?.name : "User"}
+        <div className="flex flex-col gap-3">
+          {reviewList.map((review) => (
+            <Card key={review.id}>
+              <CardHeader>
+                <div className="flex justify-between">
+                  <CardTitle>{review.title}</CardTitle>
+                  {currentUser === review.userId && (
+                    <div className="flex">
+                      <ReviewForm
+                        type="edit"
+                        review={{
+                          title: review.title,
+                          description: review.description,
+                          rating: +review.rating,
+                        }}
+                        userId={currentUser}
+                        productId={productId}
+                        button={
+                          <IconButton icon={<Pencil />} className="p-3" />
+                        }
+                      />
+                      <DeleteButton
+                        type="custom"
+                        id={review.id}
+                        action={deleteReview}
+                      >
+                        <IconButton icon={<Trash />} className="p-3" />
+                      </DeleteButton>
                     </div>
-                    {/* date */}
-                    <div className="flex items-center">
-                      <Calendar className="mr-1 h-3 w-3" />
-                      {dayjs(review.createdAt).format("MMM DD, YYYY")}
-                    </div>
+                  )}
+                </div>
+                <CardDescription>{review.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex space-x-4 text-sm text-muted-foreground items-center">
+                  {/* rating */}
+                  <RatingStar rating={review.rating} />
+                  {/* user */}
+                  <div className="flex items-center">
+                    <User className="mr-1 h-3 w-3" />
+                    {review.user ? review.user?.name : "User"}
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </>
+                  {/* date */}
+                  <div className="flex items-center">
+                    <Calendar className="mr-1 h-3 w-3" />
+                    {dayjs(review.createdAt).format("MMM DD, YYYY")}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       ) : (
         <div className="flex items-center justify-center flex-1">
           <p>No reviews yet</p>

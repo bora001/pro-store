@@ -12,25 +12,21 @@ const PriceSummary = ({
   shippingPrice,
   totalPrice,
 }: PriceSummaryType) => {
+  const PRICE_SUMMARY = [
+    { title: "Items", value: itemPrice },
+    { title: "Tax", value: taxPrice },
+    { title: "Shipping", value: shippingPrice },
+    { title: "Total", value: totalPrice },
+  ];
   return (
     <Card>
       <CardContent className="p-4 gap-4 space-y-4">
-        <div className="flex justify-between">
-          <div>Items</div>
-          <div>{currencyFormatter.format(+itemPrice)}</div>
-        </div>
-        <div className="flex justify-between">
-          <div>Tax</div>
-          <div>{currencyFormatter.format(+taxPrice)}</div>
-        </div>
-        <div className="flex justify-between">
-          <div>Shipping</div>
-          <div>{currencyFormatter.format(+shippingPrice)}</div>
-        </div>
-        <div className="flex justify-between">
-          <div>Total</div>
-          <div>{currencyFormatter.format(+totalPrice)}</div>
-        </div>
+        {PRICE_SUMMARY.map(({ title, value }) => (
+          <div className="flex justify-between" key={title}>
+            <div className="font-semibold">{title}</div>
+            <div>{currencyFormatter.format(+value)}</div>
+          </div>
+        ))}
       </CardContent>
     </Card>
   );

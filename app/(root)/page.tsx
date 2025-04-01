@@ -1,4 +1,5 @@
 import ProductList from "@/components/home/product-list";
+import ShoppingBenefits from "@/components/home/shopping-benefits";
 import ProductCarousel from "@/components/product/product-carousel";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,7 @@ const HomePage = async () => {
   return (
     <>
       <ProductCarousel data={featureProduct} />
+      <ShoppingBenefits />
       <ProductList data={latestProduct} title="Newest Arrivals" />
       <div className="flex items-center justify-center mb-6">
         <Link href={PATH.SEARCH}>

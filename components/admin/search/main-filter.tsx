@@ -72,7 +72,6 @@ const MainFilter = ({ category }: { category: CategoryType[] }) => {
           </>
         }
       />
-
       {/* price */}
       <FilterItem
         type="price"

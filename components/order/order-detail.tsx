@@ -22,6 +22,7 @@ import {
   updateOrderToPaidByAdmin,
 } from "@/lib/actions/admin.actions";
 import StripePayment from "./stripe-payment";
+import { Wrench } from "lucide-react";
 
 const OrderDetail = ({
   isAdmin = false,
@@ -163,7 +164,10 @@ const OrderDetail = ({
           {isAdmin && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Admin Controls</CardTitle>
+                <CardTitle className="text-base flex gap-2 items-center">
+                  <Wrench size={18} />
+                  <p>Admin Controls</p>
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-x-2">
                 <AdminControlButton

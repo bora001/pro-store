@@ -27,18 +27,16 @@ const OrderInfoPage = async (props: { params: Promise<{ id: string }> }) => {
     client_secret = paymentIntent.client_secret;
   }
   return (
-    <>
-      <OrderDetail
-        isAdmin={session?.user.role === CONSTANTS.ADMIN}
-        paypalClientId={process.env.PAYPAL_CLIENT_ID || ""}
-        stripeClientSecret={client_secret}
-        order={{
-          ...order.data,
-          address: order.data.address as ShippingType,
-          payment: order.data.payment as PaymentFormType["type"],
-        }}
-      />
-    </>
+    <OrderDetail
+      isAdmin={session?.user.role === CONSTANTS.ADMIN}
+      paypalClientId={process.env.PAYPAL_CLIENT_ID || ""}
+      stripeClientSecret={client_secret}
+      order={{
+        ...order.data,
+        address: order.data.address as ShippingType,
+        payment: order.data.payment as PaymentFormType["type"],
+      }}
+    />
   );
 };
 

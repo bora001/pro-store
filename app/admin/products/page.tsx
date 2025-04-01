@@ -14,6 +14,7 @@ import { deleteProduct, getAllProducts } from "@/lib/actions/admin.actions";
 import { PATH } from "@/lib/constants";
 import DeleteButton from "@/components/common/delete-button";
 import SearchContainer from "@/components/admin/search-container";
+import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: "Products",
@@ -33,6 +34,11 @@ const AdminProductPage = async (props: {
       resetPath={PATH.PRODUCTS}
       query={query}
       emptyText="No products available"
+      extraButton={
+        <Link href={PATH.CREATE_PRODUCTS}>
+          <Button>Create Product</Button>
+        </Link>
+      }
     >
       <Table>
         <TableHeader>

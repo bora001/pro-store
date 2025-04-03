@@ -152,3 +152,25 @@ export async function deleteReview(reviewId: string) {
     return formatError(error);
   }
 }
+
+// has-purchase-history
+export async function hasPurchaseHistory(productId: string) {
+  try {
+    const session = await auth();
+    if (!session) throw new Error("Not authenticated");
+    const hasPreviousOrder = await prisma.order.findFirst({
+      where: {
+        userId: session.user.id,
+        orderItems: {
+          some: {
+            productId: productId,
+          },
+        },
+      },
+    });
+    if (!hasPreviousOrder) throw new Error("Review available after purchase");
+    return formatSuccess("Successfully retrieved user's history");
+  } catch (error) {
+    return formatError(error);
+  }
+}

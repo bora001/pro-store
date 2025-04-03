@@ -5,6 +5,7 @@ import { PATH } from "@/lib/constants";
 import ReviewList from "./review-list";
 import {
   getAllReviews,
+  hasPurchaseHistory,
   hasUserReviewByProduct,
 } from "@/lib/actions/review.actions";
 import { auth } from "@/auth";
@@ -21,9 +22,10 @@ const ReviewSection = async ({
   const wroteReview = await hasUserReviewByProduct(productId);
   const session = await auth();
   const userId = session?.user.id;
+  const { success: purchaseHistory } = await hasPurchaseHistory(productId);
 
   const writeReview = (
-    <div className={wroteReview.data ? "hidden" : "block"}>
+    <div className={wroteReview.data || !purchaseHistory ? "hidden" : "block"}>
       <ReviewForm
         userId={userId}
         productId={productId}

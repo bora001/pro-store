@@ -22,6 +22,7 @@ import { insertProductSchema, updateProductSchema } from "@/lib/validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import { z } from "zod";
@@ -50,6 +51,8 @@ const ProductForm = ({
   product?: z.infer<typeof insertProductSchema>;
   productId?: string;
 }) => {
+  const [isUploading, setIsUploading] = useState(false);
+
   const router = useRouter();
   const isEdit = type === "edit";
   const form = useForm<z.infer<typeof insertProductSchema>>({
@@ -168,10 +171,13 @@ const ProductForm = ({
                       <FormControl>
                         <UploadButton
                           endpoint="imageUploader"
-                          onClientUploadComplete={(res: { url: string }[]) =>
-                            form.setValue("images", [...images, res[0].url])
-                          }
+                          onUploadBegin={() => setIsUploading(true)}
+                          onClientUploadComplete={(res: { url: string }[]) => {
+                            form.setValue("images", [...images, res[0].url]);
+                            setIsUploading(false);
+                          }}
                           onUploadError={(error) => {
+                            setIsUploading(false);
                             toast({
                               variant: "destructive",
                               description: error.message,
@@ -221,10 +227,13 @@ const ProductForm = ({
                 ) : (
                   <UploadButton
                     endpoint="imageUploader"
-                    onClientUploadComplete={(res: { url: string }[]) =>
-                      form.setValue("banner", res[0].url)
-                    }
+                    onUploadBegin={() => setIsUploading(true)}
+                    onClientUploadComplete={(res: { url: string }[]) => {
+                      form.setValue("banner", res[0].url);
+                      setIsUploading(false);
+                    }}
                     onUploadError={(error) => {
+                      setIsUploading(false);
                       toast({
                         variant: "destructive",
                         description: error.message,
@@ -243,7 +252,10 @@ const ProductForm = ({
           name="description"
         />
         {/* submit */}
-        <Button type="submit" disabled={form.formState.isSubmitting}>
+        <Button
+          type="submit"
+          disabled={form.formState.isSubmitting || isUploading}
+        >
           {form.formState.isSubmitting
             ? "Submitting"
             : `${capitalize(type)} Product`}

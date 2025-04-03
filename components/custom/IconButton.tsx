@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Button, ButtonProps } from "../ui/button";
+import { cn } from "@/lib/utils";
 
 interface IconButtonProps extends ButtonProps {
   icon: ReactNode;
@@ -13,7 +14,11 @@ const IconButton = ({
   onClick,
 }: IconButtonProps) => {
   return (
-    <Button variant={variant} className={className} onClick={onClick}>
+    <Button
+      variant={variant}
+      className={cn(className, variant === "default" && "hover:text-white")}
+      onClick={onClick}
+    >
       {icon} {text}
     </Button>
   );

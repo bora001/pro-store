@@ -15,6 +15,7 @@ import IconButton from "../custom/IconButton";
 import ReviewForm from "./review-form";
 import DeleteButton from "../common/delete-button";
 import { deleteReview } from "@/lib/actions/review.actions";
+import ListContainer from "../common/list-container";
 
 const ReviewList = ({
   productId,
@@ -28,7 +29,7 @@ const ReviewList = ({
 }) => {
   return (
     <div className="flex-1 flex flex-col gap-3">
-      {reviewList.length ? (
+      <ListContainer listLength={reviewList.length} title="No reviews yet">
         <div className="flex flex-col gap-3">
           {reviewList.map((review) => (
             <Card key={review.id}>
@@ -81,11 +82,7 @@ const ReviewList = ({
             </Card>
           ))}
         </div>
-      ) : (
-        <div className="flex items-center justify-center flex-1">
-          <p>No reviews yet</p>
-        </div>
-      )}
+      </ListContainer>
     </div>
   );
 };

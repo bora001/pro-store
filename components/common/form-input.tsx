@@ -24,6 +24,8 @@ const FormInput = <T extends FieldValues>({
   placeholder,
   type = "text",
 }: FormInputPropsType<T>) => {
+  const isTextArea = type === "textarea";
+
   return (
     <FormField
       control={control}
@@ -38,9 +40,10 @@ const FormInput = <T extends FieldValues>({
             <FormLabel>{capitalize(name)}</FormLabel>
             <FormControl>
               <div>
-                {type === "text" && <Input {...props} type={type} />}
-                {type === "textarea" && (
+                {isTextArea ? (
                   <Textarea {...props} className="resize-none" />
+                ) : (
+                  <Input {...props} type={type} />
                 )}
               </div>
             </FormControl>

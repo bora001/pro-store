@@ -9,8 +9,9 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { updateUserProfile } from "@/lib/actions/user.action";
 import { useSession } from "next-auth/react";
-
+import { useRouter } from "next/navigation";
 const ProfileForm = () => {
+  const router = useRouter();
   const { data, update } = useSession();
   const form = useForm<userProfileType>({
     resolver: zodResolver(userProfileSchema),
@@ -22,7 +23,8 @@ const ProfileForm = () => {
   const onSubmit = async (values: userProfileType) => {
     const response = await updateUserProfile(values);
     if (response.success) {
-      update({ ...data, user: { ...data?.user, ...values } });
+      await update({ ...data, user: { ...data?.user, ...values } });
+      router.refresh();
     } else {
       form.setError("email", { message: response.message });
     }

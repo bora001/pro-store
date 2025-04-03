@@ -15,12 +15,19 @@ import { useRouter } from "next/navigation";
 import { PATH } from "@/lib/constants";
 
 type ShippingFormType = z.infer<typeof shippingSchema>;
+const defaultValues = {
+  name: "",
+  address: "",
+  city: "",
+  postalCode: "",
+  country: "",
+};
 const ShippingForm = ({ address }: { address?: ShippingType }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const form = useForm<ShippingFormType>({
     resolver: zodResolver(shippingSchema),
-    defaultValues: address,
+    defaultValues: address || defaultValues,
   });
   const onSubmit = (values: ShippingFormType) => {
     startTransition(async () => {

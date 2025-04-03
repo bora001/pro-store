@@ -11,10 +11,12 @@ import Autoplay from "embla-carousel-autoplay";
 import Link from "next/link";
 import Image from "next/image";
 import { useRef } from "react";
+import { cn } from "@/lib/utils";
 const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
+  const isAutoplayEnabled = data.length > 1;
   const plugin = useRef(
     Autoplay({
-      active: true,
+      active: isAutoplayEnabled,
       delay: 2500,
       playOnInit: true,
       stopOnInteraction: true,
@@ -22,35 +24,52 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
     })
   );
   return (
-    <Carousel
-      className="w-full mb-12"
-      opts={{ loop: true }}
-      plugins={[plugin.current]}
-      onMouseEnter={plugin.current.stop}
-      onMouseLeave={() => plugin.current.play()}
-    >
-      <CarouselContent>
-        {data.map(({ id, slug, banner, name }) => (
-          <CarouselItem key={id}>
-            <Link href={`/product/${slug}`}>
-              <div className="relative mx-auto">
-                <Image
-                  src={banner!}
-                  height={0}
-                  width={0}
-                  alt={`${name} banner`}
-                  className="w-full h-auto"
-                  sizes="100vw"
-                />
-                <div className="absolute inset-0 flex items-end justify-center"></div>
-              </div>
-            </Link>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
+    <>
+      {!data.length ? (
+        <div className="h-80 overflow-y-hidden">
+          <Image
+            width={1280}
+            height={854}
+            src="/images/sunflower-8881536_1280.jpg"
+            alt="default banner"
+          />
+        </div>
+      ) : (
+        <Carousel
+          className={cn("w-full mb-12", !data.length && "hidden")}
+          opts={{ loop: true }}
+          plugins={[plugin.current]}
+          onMouseEnter={() => isAutoplayEnabled && plugin.current.stop()}
+          onMouseLeave={() => isAutoplayEnabled && plugin.current.play()}
+        >
+          <CarouselContent>
+            {data.map(({ id, slug, banner, name }) => (
+              <CarouselItem key={id}>
+                <Link href={`/product/${slug}`}>
+                  <div className="relative mx-auto">
+                    <Image
+                      src={banner!}
+                      height={0}
+                      width={0}
+                      alt={`${name} banner`}
+                      className="w-full h-auto"
+                      sizes="100vw"
+                    />
+                    <div className="absolute inset-0 flex items-end justify-center"></div>
+                  </div>
+                </Link>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {isAutoplayEnabled && (
+            <>
+              <CarouselPrevious />
+              <CarouselNext />
+            </>
+          )}
+        </Carousel>
+      )}
+    </>
   );
 };
 

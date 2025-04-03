@@ -67,7 +67,7 @@ const PlacerOrderForm = ({
               <h2 className="text-xl pb-4">Payment Method</h2>
               <p>{method}</p>
               <div className="mt-3">
-                <Link href={PATH.SHIPPING}>
+                <Link href={PATH.PAYMENT}>
                   <Button variant="outline">Edit</Button>
                 </Link>
               </div>

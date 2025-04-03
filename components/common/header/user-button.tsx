@@ -18,7 +18,6 @@ const UserButton = async () => {
       <LinkButton icon={<UserIcon />} title="Sign In" url={PATH.SIGN_IN} />
     );
   const { name, email, role } = session.user;
-
   return (
     <DropdownMenu>
       {/* trigger */}
@@ -36,7 +35,10 @@ const UserButton = async () => {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-2 px-2 py-3">
-            <div className="text-sm font-medium leading-none flex items-center gap-1">
+            <div
+              className="text-sm font-medium leading-none flex items-center gap-1"
+              key={name}
+            >
               <User size={16} />
               {name}
             </div>

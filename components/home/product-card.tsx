@@ -5,6 +5,7 @@ import ProductPrice from "./product-price";
 import { ProductItemType } from "@/types";
 import { PATH } from "@/lib/constants";
 import RatingStar from "../common/rating-star";
+import { Badge } from "../ui/badge";
 
 const ProductCard = ({
   product: { slug, images, name, brand, rating, stock, price },
@@ -29,11 +30,15 @@ const ProductCard = ({
       <CardContent className="p-4 grid gap-4">
         <p className="text-xs">{brand}</p>
         <Link href={`${PATH.PRODUCT}/${slug}`}>
-          <h2 className="text-sm font-medium">{name}</h2>
+          <h2 className="text-sm font-medium line-clamp-2 h-[38px]">{name}</h2>
         </Link>
         <div className="flex-between gap-4">
           <RatingStar rating={rating} />
-          {stock > 0 ? <ProductPrice price={price} /> : <p>Out of Stock</p>}
+          {stock > 0 ? (
+            <ProductPrice price={price} />
+          ) : (
+            <Badge variant="destructive">Out of Stock</Badge>
+          )}
         </div>
       </CardContent>
     </Card>

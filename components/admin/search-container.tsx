@@ -2,6 +2,7 @@ import FilterIndicator from "@/components/admin/filter-indicator";
 import Container from "@/components/common/container";
 import SearchInput from "@/components/common/search-input";
 import { ReactNode } from "react";
+import EmptyBox from "../common/empty-box";
 
 const SearchContainer = ({
   title,
@@ -32,9 +33,7 @@ const SearchContainer = ({
       }
     >
       {hasList ? (
-        <div className="flex h-full w-full justify-center items-center">
-          <p>{emptyText}</p>
-        </div>
+        <EmptyBox title={emptyText} />
       ) : (
         <div className="h-full flex flex-col justify-between">{children}</div>
       )}

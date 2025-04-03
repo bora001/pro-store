@@ -2,7 +2,7 @@
 
 import { addReviewSchema } from "@/lib/validator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -55,15 +55,17 @@ const ReviewForm = ({
 }) => {
   const isEdit = type === "edit";
   const [open, setOpen] = useState(false);
+  const defaultValues = {
+    productId,
+    userId,
+    title: review?.title || "",
+    description: review?.description || "",
+    rating: review?.rating || CONSTANTS.AVG_REVIEW_RATING,
+  };
+
   const form = useForm<z.infer<typeof addReviewSchema>>({
     resolver: zodResolver(addReviewSchema),
-    defaultValues: {
-      productId,
-      userId,
-      title: review?.title || "",
-      description: review?.description || "",
-      rating: review?.rating || CONSTANTS.AVG_REVIEW_RATING,
-    },
+    defaultValues,
   });
 
   const onSubmit = async (values: z.infer<typeof addReviewSchema>) => {
@@ -71,13 +73,17 @@ const ReviewForm = ({
       ...values,
       productId,
     });
-
     toast({
       variant: success ? "default" : "destructive",
       description: message,
     });
     if (success) setOpen(false);
   };
+
+  useEffect(() => {
+    if (!open) form.reset(defaultValues);
+  }, [open]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Button

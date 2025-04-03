@@ -1,10 +1,11 @@
 import KeywordReset from "@/components/admin/search/keyword-reset";
 import MainFilter from "@/components/admin/search/main-filter";
 import SortFilter from "@/components/admin/search/sort-filter";
+import ListContainer from "@/components/common/list-container";
 import ProductCard from "@/components/home/product-card";
 import { getAllProducts } from "@/lib/actions/admin.actions";
 import { getAllCategory } from "@/lib/actions/product.actions";
-import { CONSTANTS } from "@/lib/constants";
+import { CONSTANTS, PATH } from "@/lib/constants";
 
 export type SearchPageParamsType = {
   query?: string;
@@ -42,7 +43,6 @@ const SearchPage = async (props: {
   });
 
   const allCategory = await getAllCategory();
-
   return (
     <div className="grid md:grid-cols-5 md:gap-5">
       <div className="filter-links">
@@ -55,15 +55,18 @@ const SearchPage = async (props: {
           <SortFilter sortBy={sort} />
         </div>
         {/* product-list */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {product.product.length === 0 ? (
-            <>no product found</>
-          ) : (
-            product.product.map((product) => (
+        <ListContainer
+          title="No product found"
+          href={PATH.HOME}
+          linkText="Back to home"
+          listLength={product.product.length}
+        >
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {product.product.map((product) => (
               <ProductCard key={product.id} product={product} />
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        </ListContainer>
       </div>
     </div>
   );

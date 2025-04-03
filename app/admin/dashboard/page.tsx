@@ -1,5 +1,6 @@
 import OverviewChart from "@/components/admin/overview/overview-chart";
 import Container from "@/components/common/container";
+import ListContainer from "@/components/common/list-container";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -27,7 +28,7 @@ const DashboardPage = async () => {
     {
       title: "Total Revenue",
       icon: <BadgeDollarSign />,
-      text: `$ ${summary.totalSales._sum.totalPrice}`,
+      text: `$ ${summary.totalSales._sum.totalPrice || 0}`,
     },
     {
       title: "Sales",
@@ -69,7 +70,12 @@ const DashboardPage = async () => {
               <CardTitle>Overview</CardTitle>
             </CardHeader>
             <CardContent>
-              <OverviewChart data={summary.salesData} />
+              <ListContainer
+                listLength={summary.salesData.length}
+                title="No Sales Data"
+              >
+                <OverviewChart data={summary.salesData} />
+              </ListContainer>
             </CardContent>
           </Card>
           {/* recent-sales */}
@@ -78,31 +84,36 @@ const DashboardPage = async () => {
               <CardTitle>Recent Sales</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    {RECENT_SALES.HEADER.map((head) => (
-                      <TableHead key={head}>{head}</TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {summary.latestSales.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell>{order.user.name}</TableCell>
-                      <TableCell>
-                        {dateTimeConverter(order.createdAt)}
-                      </TableCell>
-                      <TableCell>{order.totalPrice}</TableCell>
-                      <TableCell>
-                        <Link href={`${PATH.ORDER}/${order.id}`}>
-                          <Badge>Details</Badge>
-                        </Link>
-                      </TableCell>
+              <ListContainer
+                listLength={summary.latestSales.length}
+                title="No Sales Data"
+              >
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {RECENT_SALES.HEADER.map((head) => (
+                        <TableHead key={head}>{head}</TableHead>
+                      ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {summary.latestSales.map((order) => (
+                      <TableRow key={order.id}>
+                        <TableCell>{order.user.name}</TableCell>
+                        <TableCell>
+                          {dateTimeConverter(order.createdAt)}
+                        </TableCell>
+                        <TableCell>{order.totalPrice}</TableCell>
+                        <TableCell>
+                          <Link href={`${PATH.ORDER}/${order.id}`}>
+                            <Badge>Details</Badge>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ListContainer>
             </CardContent>
           </Card>
         </div>

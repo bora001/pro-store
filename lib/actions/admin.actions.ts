@@ -9,6 +9,7 @@ import { updateOrderToPaid } from "./order.actions";
 import { PaymentResultType, updateProductType } from "@/types";
 import { insertProductSchema, updateProductSchema } from "../validator";
 import { z } from "zod";
+import { deleteImage } from "./image.actions";
 
 // order-summary
 export async function getOrderSummary() {
@@ -189,6 +190,10 @@ export async function deleteProduct(id: string) {
       where: { id },
     });
     if (!isExist) throw new Error("Product not found");
+    await deleteImage(isExist.images, "product");
+    if (isExist.banner) {
+      await deleteImage([isExist.banner], "banner");
+    }
     await prisma.product.delete({
       where: {
         id,

@@ -1,4 +1,4 @@
-import { Control, FieldValues, Path } from "react-hook-form";
+import { FieldValues, Path, useFormContext } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -11,7 +11,6 @@ import { capitalize } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 
 type FormInputPropsType<T extends FieldValues> = {
-  control: Control<T>;
   name: Path<T>;
   placeholder: string;
   type?: FormInputType;
@@ -19,11 +18,12 @@ type FormInputPropsType<T extends FieldValues> = {
 type FormInputType = "text" | "textarea" | "number";
 
 const FormInput = <T extends FieldValues>({
-  control,
   name,
   placeholder,
   type = "text",
 }: FormInputPropsType<T>) => {
+  const { control } = useFormContext();
+
   const isTextArea = type === "textarea";
 
   return (

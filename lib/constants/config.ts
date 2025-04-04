@@ -3,4 +3,5 @@ export const CONFIG = {
   APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION,
   APP_URL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   SENDER_EMAIL: process.env.SENDER_EMAIL || "onboarding@resend.dev",
+  IMAGE_URL: process.env.NEXT_PUBLIC_AWS_S3_URL || "/",
 };

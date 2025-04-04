@@ -1,12 +1,4 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-
-const s3 = new S3Client({
-  region: process.env.AWS_S3_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
+import { uploadImage } from "@/lib/actions/image.actions";
 
 export async function POST(req: Request) {
   try {
@@ -19,16 +11,7 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
-    const buffer = Buffer.from(file, "base64");
-    const params = {
-      Bucket: process.env.AWS_S3_BUCKET_NAME!,
-      Key: `${folder}/${fileName}`,
-      Body: buffer,
-      ContentType: fileType,
-    };
-
-    await s3.send(new PutObjectCommand(params));
+    await uploadImage(file, folder, fileName, fileType);
     return new Response(
       JSON.stringify({ message: "File uploaded successfully", fileName }),
       { status: 200 }

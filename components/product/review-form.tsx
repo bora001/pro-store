@@ -104,14 +104,9 @@ const ReviewForm = ({
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <FormInput
-                control={form.control}
-                placeholder="Enter Title"
-                name="title"
-              />
+              <FormInput placeholder="Enter Title" name="title" />
               <FormInput
                 type="textarea"
-                control={form.control}
                 placeholder="Enter Description"
                 name="description"
               />

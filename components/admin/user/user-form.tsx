@@ -45,16 +45,8 @@ const EditUserForm = ({ user }: { user: editUserType }) => {
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className="space-y-8">
-        <FormInput
-          control={form.control}
-          placeholder="Enter Email"
-          name="email"
-        />
-        <FormInput
-          control={form.control}
-          placeholder="Enter Name"
-          name="name"
-        />
+        <FormInput placeholder="Enter Email" name="email" />
+        <FormInput placeholder="Enter Name" name="name" />
         <FormField
           control={form.control}
           name="role"

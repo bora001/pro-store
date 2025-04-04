@@ -28,5 +28,6 @@ export const PATH = {
   ORDERS: "/admin/orders",
   SEARCH: "/search",
   API_GET_PRESIGNED_URL: "/api/get-presigned-url",
-  API_UPLOAD_IMAGE: "/api/upload-image",
+  API_UPLOAD_IMAGE: "/api/image/upload",
+  API_DELETE_IMAGE: "/api/image/delete",
 };

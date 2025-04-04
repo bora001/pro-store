@@ -2,7 +2,7 @@
 
 import { ReactNode, useState, useTransition } from "react";
 import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { Button, ButtonProps } from "../ui/button";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -15,20 +15,31 @@ import {
 } from "../ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { ResponseType } from "@/types";
+import { redirect } from "next/navigation";
 
 type DeleteButtonType = "button" | "badge" | "custom";
+
+type DeleteButtonButtonProps = Omit<ButtonProps, "type">;
+
+interface DeleteButtonPropsBase {
+  id: string;
+  type: DeleteButtonType;
+  action: (id: string) => Promise<ResponseType>;
+  children?: ReactNode;
+  returnPath?: string;
+}
+type DeleteButtonPropsType =
+  | (DeleteButtonPropsBase & { type: "button" } & DeleteButtonButtonProps)
+  | DeleteButtonPropsBase;
 
 const DeleteButton = ({
   id,
   action,
   type,
   children,
-}: {
-  id: string;
-  type: DeleteButtonType;
-  action: (id: string) => Promise<ResponseType>;
-  children?: ReactNode;
-}) => {
+  returnPath,
+  ...props
+}: DeleteButtonPropsType) => {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const onDelete = () => {
@@ -41,9 +52,10 @@ const DeleteButton = ({
         toast({ variant: "destructive", description: message });
       }
     });
+    if (returnPath) redirect(returnPath);
   };
   const DELETE_TRIGGER = {
-    button: <Button>Delete</Button>,
+    button: <Button {...props}>Delete</Button>,
     badge: <Badge className="cursor-pointer">Delete</Badge>,
     custom: children,
   };

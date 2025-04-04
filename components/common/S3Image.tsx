@@ -2,9 +2,7 @@
 import { cn } from "@/lib/utils";
 import { ClassValue } from "clsx";
 import Image, { ImageProps } from "next/image";
-import { useEffect, useState } from "react";
-import { Skeleton } from "../ui/skeleton";
-import { PATH } from "@/lib/constants";
+import { CONFIG } from "@/lib/constants/config";
 
 type BaseS3ImageProps = Omit<
   ImageProps,
@@ -36,37 +34,17 @@ const S3Image = ({
   size,
   ...props
 }: DimensionProps | SizeProps) => {
-  const [imageUrl, setImageUrl] = useState<string>("/");
-  useEffect(() => {
-    async function fetchPresignedUrl() {
-      try {
-        const res = await fetch(
-          `${PATH.API_GET_PRESIGNED_URL}?fileName=${fileName}&folder=${folder}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch presigned URL");
-        const data = await res.json();
-        setImageUrl(data.url);
-      } catch (error) {
-        console.error("이미지 로드 실패:", error);
-      }
-    }
-
-    fetchPresignedUrl();
-  }, [fileName]);
-
   return (
     <div
       className={cn(`aspect-[${width}/${height}] overflow-y-hidden`, className)}
     >
-      <Skeleton className={cn(imageUrl && "animate-none")}>
-        <Image
-          {...props}
-          width={size || width}
-          height={size || height}
-          src={imageUrl}
-          alt={fileName}
-        />
-      </Skeleton>
+      <Image
+        {...props}
+        width={size || width}
+        height={size || height}
+        src={`https://${CONFIG.IMAGE_URL}/${folder}/${fileName}`}
+        alt={fileName}
+      />
     </div>
   );
 };

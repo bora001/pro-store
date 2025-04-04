@@ -34,10 +34,10 @@ const ReviewList = ({
           {reviewList.map((review) => (
             <Card key={review.id}>
               <CardHeader>
-                <div className="flex justify-between">
+                <div className="flex justify-between min-h-12 items-center">
                   <CardTitle>{review.title}</CardTitle>
                   {currentUser === review.userId && (
-                    <div className="flex">
+                    <div className="flex ">
                       <ReviewForm
                         type="edit"
                         review={{

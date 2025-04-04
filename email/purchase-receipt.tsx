@@ -61,9 +61,6 @@ const PurchaseReceipt = ({ order }: { order: Omit<OrderType, "payment"> }) => {
             <Section className="border border-solid border-gray-500 rounded-lg p-5 md:p-6">
               {order.orderItems.map(
                 ({ productId, name, qty, price, image }) => {
-                  const src = image.startsWith("/")
-                    ? `${CONFIG.APP_URL}${image}`
-                    : image;
                   return (
                     <Row
                       key={productId}
@@ -73,7 +70,7 @@ const PurchaseReceipt = ({ order }: { order: Omit<OrderType, "payment"> }) => {
                         <Img
                           width="50"
                           className="rounded"
-                          src={src}
+                          src={`${CONFIG.IMAGE_URL}/product/${image}`}
                           alt={name}
                         />
                       </Column>

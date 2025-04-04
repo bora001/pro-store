@@ -17,8 +17,8 @@ const ProductList = ({
 }) => {
   const productData = limit ? data.slice(0, limit) : data;
   return (
-    <div className={cn(className, "my-10")}>
-      <h2 className="h2-bold mb-4">{title}</h2>
+    <div className={cn(className, "py-2")}>
+      <h2 className="h2-bold mb-6">{title}</h2>
       <ListContainer listLength={productData.length} title="No products found">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {productData.map((product) => (

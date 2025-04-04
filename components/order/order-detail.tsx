@@ -13,6 +13,7 @@ import {
 import {
   approvalPaypalOrder,
   createPaypalOrder,
+  sendEmailReceipt,
 } from "@/lib/actions/order.actions";
 import { toast } from "@/hooks/use-toast";
 import { dateTimeConverter, idSlicer } from "@/lib/utils";
@@ -22,7 +23,9 @@ import {
   updateOrderToPaidByAdmin,
 } from "@/lib/actions/admin.actions";
 import StripePayment from "./stripe-payment";
-import { Wrench } from "lucide-react";
+import { Mail, Wrench } from "lucide-react";
+import IconButton from "../custom/IconButton";
+import { useTransition } from "react";
 
 const OrderDetail = ({
   isAdmin = false,
@@ -35,6 +38,8 @@ const OrderDetail = ({
   paypalClientId: string;
   stripeClientSecret: string | null;
 }) => {
+  const [isPending, startTransition] = useTransition();
+
   const {
     address,
     orderItems,
@@ -80,6 +85,16 @@ const OrderDetail = ({
     return status;
   };
 
+  const sendEmail = () => {
+    startTransition(async () => {
+      const response = await sendEmailReceipt(id);
+      toast({
+        variant: response.success ? "default" : "destructive",
+        description: String(response.message),
+      });
+    });
+  };
+
   return (
     <>
       <h1 className="py-4 text-2xl">
@@ -118,7 +133,7 @@ const OrderDetail = ({
                 )}
               </Flex>
               <p>
-                {address.address} {address.city} {address.postalCode}{" "}
+                {address.address}, {address.city}, {address.postalCode},{" "}
                 {address.country}
               </p>
             </CardContent>
@@ -159,6 +174,15 @@ const OrderDetail = ({
               clientSecret={stripeClientSecret}
             />
           )}
+          {/* email-receipt */}
+          <IconButton
+            disabled={isPending}
+            onClick={sendEmail}
+            variant="default"
+            className="w-full"
+            text="Send Receipt"
+            icon={<Mail />}
+          />
 
           {/* admin : cash-on-delivery */}
           {isAdmin && (

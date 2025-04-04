@@ -101,7 +101,6 @@ export async function createPaypalOrder(orderId: string) {
       where: { id: orderId },
     });
     if (!order) throw new Error("order not found");
-
     const paypalOrder = await paypal.createOrder(+order.totalPrice);
     await prisma.order.update({
       where: { id: orderId },
@@ -210,13 +209,33 @@ export async function updateOrderToPaid({
       },
     });
     if (!updateOrder) throw new Error("Order not found");
-    sendPurchaseReceipt({
-      order: {
-        ...updateOrder,
-        address: updateOrder.address as ShippingType,
-        paymentResult: updateOrder.paymentResult as PaymentResultType,
+  } catch (error) {
+    return formatError(error);
+  }
+}
+// email-receipt
+export async function sendEmailReceipt(orderId: string) {
+  try {
+    const data = await prisma.order.findFirst({
+      where: {
+        id: orderId,
+      },
+      include: {
+        orderItems: true,
+        user: {
+          select: { name: true, email: true },
+        },
       },
     });
+    if (!data) throw new Error("Order not found");
+    await sendPurchaseReceipt({
+      order: {
+        ...data,
+        address: data.address as ShippingType,
+        paymentResult: data.paymentResult as PaymentResultType,
+      },
+    });
+    return formatSuccess("Email sent successfully");
   } catch (error) {
     return formatError(error);
   }

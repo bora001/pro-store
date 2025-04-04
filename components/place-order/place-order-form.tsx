@@ -13,11 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import Image from "next/image";
 import { useTransition } from "react";
 import { createOrder } from "@/lib/actions/order.actions";
 import PriceSummary from "../common/price-summary";
 import { BadgeAlert } from "lucide-react";
+import S3Image from "../common/S3Image";
+
+const PLACE_ORDER_IMAGE_SIZE = 50;
 
 const PlacerOrderForm = ({
   address,
@@ -85,7 +87,7 @@ const PlacerOrderForm = ({
                     <TableHead className="text-right">Price</TableHead>
                   </TableRow>
                 </TableHeader>
-                {/* body */}
+                {/* body : image + qty + price */}
                 <TableBody>
                   {cart.items.map((item) => (
                     <TableRow key={item.slug}>
@@ -95,11 +97,11 @@ const PlacerOrderForm = ({
                           href={`${PATH.PRODUCT}/${item.slug}`}
                           className="flex items-center"
                         >
-                          <Image
-                            src={item.image}
+                          <S3Image
+                            folder="product"
+                            fileName={item.image}
                             alt={item.name}
-                            width={50}
-                            height={50}
+                            size={PLACE_ORDER_IMAGE_SIZE}
                           />
                           <span className="px-2">{item.name}</span>
                         </Link>
@@ -117,7 +119,7 @@ const PlacerOrderForm = ({
             </CardContent>
           </Card>
         </div>
-        {/*  */}
+        {/* summary + place-order */}
         <div className="space-y-4">
           <PriceSummary
             itemPrice={cart.itemPrice}

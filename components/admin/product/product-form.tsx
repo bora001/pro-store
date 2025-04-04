@@ -1,5 +1,4 @@
 "use client";
-
 import FormInput from "@/components/common/form-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,18 +15,18 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { createProduct, updateProduct } from "@/lib/actions/admin.actions";
 import { CONSTANTS, PATH } from "@/lib/constants";
-import { UploadButton } from "@/lib/uploadthing";
 import { capitalize } from "@/lib/utils";
 import { insertProductSchema, updateProductSchema } from "@/lib/validator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import { z } from "zod";
+import ProductFormImageInput from "./product-form-image-input";
 
 type ProductFormType = "create" | "edit";
+
 const defaultValue = {
   name: "",
   slug: "",
@@ -42,6 +41,7 @@ const defaultValue = {
   isFeatured: false,
   banner: null,
 };
+
 const ProductForm = ({
   type,
   product,
@@ -51,25 +51,99 @@ const ProductForm = ({
   product?: z.infer<typeof insertProductSchema>;
   productId?: string;
 }) => {
-  const [isUploading, setIsUploading] = useState(false);
-
+  const [files, setFiles] = useState<File[]>([]);
+  const [banners, setBanners] = useState<File[]>([]);
   const router = useRouter();
   const isEdit = type === "edit";
   const form = useForm<z.infer<typeof insertProductSchema>>({
     resolver: isEdit
       ? zodResolver(updateProductSchema)
       : zodResolver(insertProductSchema),
-
     defaultValues: product && isEdit ? product : defaultValue,
   });
+
+  const handleUpload = async (folder: string, files: File[]) => {
+    if (!files.length) return [];
+
+    const uploadPromises = files.map((file) => {
+      return new Promise<string>(async (resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onerror = () => {
+          console.error("FileReader error:", reader.error);
+          reject("File reading failed");
+        };
+
+        reader.onloadend = async () => {
+          const base64File = reader.result?.toString().split(",")[1];
+          if (!base64File) {
+            console.error("Base64 conversion failed");
+            reject("Error : Base64 conversion failed!");
+            return;
+          }
+
+          try {
+            const response = await fetch(PATH.API_UPLOAD_IMAGE, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                file: base64File,
+                fileName: file.name,
+                fileType: file.type,
+                folder,
+              }),
+            });
+
+            const responseBody = await response.text();
+            const result = responseBody ? JSON.parse(responseBody) : null;
+
+            if (response.ok) {
+              resolve(result?.fileName || file.name);
+            } else {
+              reject(
+                result?.error || `Upload failed (status: ${response.status})`
+              );
+            }
+          } catch (error) {
+            console.error("Upload error:", error);
+            reject(error);
+          }
+        };
+      });
+    });
+
+    try {
+      const uploadedFiles = await Promise.all(uploadPromises);
+      return uploadedFiles;
+    } catch (error) {
+      console.error("Upload failed:", error);
+      return [];
+    }
+  };
+
   const onSubmit = form.handleSubmit(async (values) => {
+    const formData = { ...values };
+    if (!images.length) {
+      if (!files.length) {
+        return form.setError("images", {
+          message: "Product must have at least one image",
+        });
+      }
+      const uploadedFiles = await handleUpload("product", files);
+      if (!uploadedFiles.length) return;
+      formData.images = uploadedFiles;
+    }
+    if (banners.length) {
+      const uploadedBanners = await handleUpload("banner", banners);
+      formData.banner = uploadedBanners[0];
+    }
     if (isEdit && !productId) {
       router.push(PATH.PRODUCTS);
       return;
     }
     const { success, message } = isEdit
-      ? await updateProduct({ ...values, id: productId! })
-      : await createProduct(values);
+      ? await updateProduct({ ...formData, id: productId! })
+      : await createProduct(formData);
 
     if (!success) {
       toast({ variant: "destructive", description: message });
@@ -156,36 +230,13 @@ const ProductForm = ({
               <FormItem className="w-full">
                 <FormLabel>Images</FormLabel>
                 <Card>
-                  <CardContent className="space-y-2 mt-2 min-h-48">
-                    <div className="flex-start space-x-2">
-                      {images.map((image) => (
-                        <Image
-                          key={String(image)}
-                          src={String(image)}
-                          alt="product image"
-                          className="w-20 h-20 object-cover object-center rounded-sm"
-                          width={100}
-                          height={100}
-                        />
-                      ))}
-                      <FormControl>
-                        <UploadButton
-                          endpoint="imageUploader"
-                          onUploadBegin={() => setIsUploading(true)}
-                          onClientUploadComplete={(res: { url: string }[]) => {
-                            form.setValue("images", [...images, res[0].url]);
-                            setIsUploading(false);
-                          }}
-                          onUploadError={(error) => {
-                            setIsUploading(false);
-                            toast({
-                              variant: "destructive",
-                              description: error.message,
-                            });
-                          }}
-                        />
-                      </FormControl>
-                    </div>
+                  <CardContent className="space-y-2 mt-2">
+                    <ProductFormImageInput
+                      folder="product"
+                      files={files}
+                      setFiles={setFiles}
+                      images={images}
+                    />
                   </CardContent>
                 </Card>
                 <FormMessage />
@@ -194,7 +245,7 @@ const ProductForm = ({
           />
         </div>
         {/* feature */}
-        <div className="upload-field">
+        <div>
           Featured Product
           <Card>
             <CardContent className="space-y-2 mt-2">
@@ -215,32 +266,17 @@ const ProductForm = ({
                 )}
               />
               {/* isFeatured */}
-              {isFeatured &&
-                (banner ? (
-                  <Image
-                    src={banner}
-                    alt="banner image"
-                    width={1920}
-                    height={680}
-                    className="w-full object-cover object-center rounded-sm"
-                  />
-                ) : (
-                  <UploadButton
-                    endpoint="imageUploader"
-                    onUploadBegin={() => setIsUploading(true)}
-                    onClientUploadComplete={(res: { url: string }[]) => {
-                      form.setValue("banner", res[0].url);
-                      setIsUploading(false);
-                    }}
-                    onUploadError={(error) => {
-                      setIsUploading(false);
-                      toast({
-                        variant: "destructive",
-                        description: error.message,
-                      });
-                    }}
-                  />
-                ))}
+              {isFeatured && (
+                <ProductFormImageInput
+                  noMultiple
+                  folder="banner"
+                  files={banners}
+                  setFiles={setBanners}
+                  width={1920}
+                  height={562}
+                  images={banner ? [banner] : []}
+                />
+              )}
             </CardContent>
           </Card>
         </div>
@@ -252,10 +288,7 @@ const ProductForm = ({
           name="description"
         />
         {/* submit */}
-        <Button
-          type="submit"
-          disabled={form.formState.isSubmitting || isUploading}
-        >
+        <Button type="submit" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting
             ? "Submitting"
             : `${capitalize(type)} Product`}

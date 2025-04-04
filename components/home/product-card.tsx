@@ -1,11 +1,13 @@
 import { Card, CardContent, CardHeader } from "../ui/card";
 import Link from "next/link";
-import Image from "next/image";
 import ProductPrice from "./product-price";
 import { ProductItemType } from "@/types";
 import { PATH } from "@/lib/constants";
 import RatingStar from "../common/rating-star";
 import { Badge } from "../ui/badge";
+import S3Image from "../common/S3Image";
+
+const PRODUCT_CARD_IMAGE_SIZE = 306;
 
 const ProductCard = ({
   product: { slug, images, name, brand, rating, stock, price },
@@ -15,14 +17,13 @@ const ProductCard = ({
   return (
     <Card className="w-full max-w-sm">
       {/* header */}
-      <CardHeader className="p-0 items-center">
+      <CardHeader className="items-center p-0">
         <Link href={`${PATH.PRODUCT}/${slug}`}>
-          <Image
-            src={images[0]}
+          <S3Image
+            folder="product"
+            fileName={String(images[0])}
             alt={name}
-            height={300}
-            width={300}
-            priority={true}
+            size={PRODUCT_CARD_IMAGE_SIZE}
           />
         </Link>
       </CardHeader>

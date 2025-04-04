@@ -12,6 +12,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
+import S3Image from "../common/S3Image";
+
+const BANNER_SIZE = {
+  width: 1920,
+  height: 562,
+};
+
 const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
   const isAutoplayEnabled = data.length > 1;
   const plugin = useRef(
@@ -24,12 +31,12 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
     })
   );
   return (
-    <>
+    <div>
       {!data.length ? (
         <div className="h-80 overflow-y-hidden">
           <Image
-            width={1280}
-            height={854}
+            width={BANNER_SIZE.width}
+            height={BANNER_SIZE.height}
             src="/images/sunflower-8881536_1280.jpg"
             alt="default banner"
           />
@@ -46,17 +53,13 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
             {data.map(({ id, slug, banner, name }) => (
               <CarouselItem key={id}>
                 <Link href={`/product/${slug}`}>
-                  <div className="relative mx-auto">
-                    <Image
-                      src={banner!}
-                      height={0}
-                      width={0}
-                      alt={`${name} banner`}
-                      className="w-full h-auto"
-                      sizes="100vw"
-                    />
-                    <div className="absolute inset-0 flex items-end justify-center"></div>
-                  </div>
+                  <S3Image
+                    folder="banner"
+                    fileName={banner!}
+                    width={BANNER_SIZE.width}
+                    height={BANNER_SIZE.height}
+                    alt={`${name} banner`}
+                  />
                 </Link>
               </CarouselItem>
             ))}
@@ -69,7 +72,7 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
           )}
         </Carousel>
       )}
-    </>
+    </div>
   );
 };
 

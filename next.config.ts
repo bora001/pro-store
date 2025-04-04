@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "utfs.io",
+        hostname: process.env.AWS_S3_URL || "",
         port: "",
       },
     ],

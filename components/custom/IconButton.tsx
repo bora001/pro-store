@@ -12,9 +12,11 @@ const IconButton = ({
   text,
   variant = "ghost",
   onClick,
+  ...props
 }: IconButtonProps) => {
   return (
     <Button
+      {...props}
       variant={variant}
       className={cn(className, variant === "default" && "hover:text-white")}
       onClick={onClick}

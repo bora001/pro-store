@@ -9,11 +9,13 @@ import {
   TableHead,
   TableHeader,
 } from "../ui/table";
-import Image from "next/image";
 import { OrderItemType } from "@/types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { PATH } from "@/lib/constants";
+import S3Image from "./S3Image";
+
+const PRODUCT_TABLE_IMAGE_SIZE = 50;
 
 const ProductTable = ({
   items,
@@ -40,11 +42,11 @@ const ProductTable = ({
                 href={`${PATH.PRODUCT}/${item.slug}`}
                 className="flex items-center"
               >
-                <Image
-                  src={item.image}
+                <S3Image
+                  folder="product"
+                  fileName={item.image}
                   alt={item.name}
-                  width={50}
-                  height={50}
+                  size={PRODUCT_TABLE_IMAGE_SIZE}
                 />
                 <span className="px-2">{item.name}</span>
               </Link>

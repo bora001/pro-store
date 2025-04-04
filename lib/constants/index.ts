@@ -27,4 +27,6 @@ export const PATH = {
   USERS: "/admin/users",
   ORDERS: "/admin/orders",
   SEARCH: "/search",
+  API_GET_PRESIGNED_URL: "/api/get-presigned-url",
+  API_UPLOAD_IMAGE: "/api/upload-image",
 };

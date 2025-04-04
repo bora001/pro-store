@@ -1,8 +1,10 @@
 "use client";
-import Image from "next/image";
 import { useState } from "react";
 import Flex from "../common/flex";
 import { cn } from "@/lib/utils";
+import S3Image from "../common/S3Image";
+
+const PRODUCT_IMAGE_SIZE = 1000;
 
 const ProductImages = ({
   images,
@@ -14,12 +16,11 @@ const ProductImages = ({
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
   return (
     <div className="space-y-4">
-      <Image
-        src={images[currentImgIdx]}
-        alt={`${name}_image`}
-        width={1000}
-        height={1000}
-        className="min-h-[300px]"
+      <S3Image
+        folder="product"
+        fileName={images[currentImgIdx]}
+        alt={name}
+        size={PRODUCT_IMAGE_SIZE}
       />
       <Flex>
         {images.map((image, index) => (
@@ -31,11 +32,11 @@ const ProductImages = ({
               currentImgIdx === index && "border-orange-500"
             )}
           >
-            <Image
-              src={image}
+            <S3Image
+              folder="product"
+              fileName={image}
               alt={`${name}_image_${index}`}
-              width={100}
-              height={100}
+              size={PRODUCT_IMAGE_SIZE / 10}
             />
           </div>
         ))}

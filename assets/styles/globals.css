@@ -101,13 +101,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-/* uploadthing */
-
-html.dark .upload-field .text-white {
-  color: #fff !important;
-}
-
-.upload-field .text-white {
-  color: #000 !important;
-}

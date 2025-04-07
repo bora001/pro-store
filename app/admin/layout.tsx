@@ -9,6 +9,7 @@ const NAV_LINK = [
   { title: "Products", href: PATH.PRODUCTS },
   { title: "Orders", href: PATH.ORDERS },
   { title: "Users", href: PATH.USERS },
+  { title: "Deals", href: PATH.DEALS },
 ];
 
 export default async function AdminLayout({

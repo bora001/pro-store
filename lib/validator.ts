@@ -150,3 +150,25 @@ export const addReviewSchema = z.object({
     .min(1, "Rating must be at least 1")
     .max(5, "Rating must be at most 5"),
 });
+
+// add-deal
+export const addDealSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters long"),
+  type: z.string().min(3, "Type must be at least 3 characters long"),
+  description: z
+    .string()
+    .min(3, "Description must be at least 3 characters long"),
+  productId: z.string().min(3, "ProductId must be at least 3 characters long"),
+  discount: z.coerce
+    .number()
+    .nonnegative()
+    .min(1, "Rating must be at least 1")
+    .max(99, "Rating must be at most 99"),
+  endTime: z.coerce
+    .date()
+    .nullable()
+    .refine((val) => val !== null, {
+      message: "End time is required",
+    }),
+  isActive: z.boolean(),
+});

@@ -11,6 +11,9 @@ export async function getLatestProducts() {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      Deal: true,
+    },
   });
   return prismaToJs(data);
 }
@@ -20,6 +23,16 @@ export const getProductBySlug = async (slug: string) => {
   const data = await prisma.product.findUnique({
     where: {
       slug,
+    },
+    include: {
+      Deal: {
+        where: {
+          product: {
+            slug,
+          },
+          endTime: { gte: new Date() },
+        },
+      },
     },
   });
   return prismaToJs(data);
@@ -44,6 +57,7 @@ export const getFeatureProduct = async () => {
     orderBy: {
       createdAt: "desc",
     },
+    include: { Deal: true },
     take: 4,
   });
   return prismaToJs(data);

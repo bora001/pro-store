@@ -6,8 +6,12 @@ import { CONSTANTS, PATH } from "../constants";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { revalidatePath } from "next/cache";
 import { updateOrderToPaid } from "./order.actions";
-import { PaymentResultType, updateProductType } from "@/types";
-import { insertProductSchema, updateProductSchema } from "../validator";
+import { PaymentResultType, addDealType, updateProductType } from "@/types";
+import {
+  addDealSchema,
+  insertProductSchema,
+  updateProductSchema,
+} from "../validator";
 import { z } from "zod";
 import { deleteImage } from "./image.actions";
 
@@ -124,7 +128,7 @@ export async function updateOrderToDelivered(orderId: string) {
 
 // all-products
 export async function getAllProducts({
-  query,
+  query = "",
   category,
   page = 1,
   price,
@@ -132,9 +136,9 @@ export async function getAllProducts({
   sort,
   limit,
 }: {
-  page: number;
+  page?: number;
   limit?: number;
-  query: string;
+  query?: string;
   category?: string;
   rating?: string;
   sort?: string;
@@ -170,6 +174,9 @@ export async function getAllProducts({
       ...categoryFilter,
       ...priceFilter,
       ...ratingFilter,
+    },
+    include: {
+      Deal: true,
     },
     orderBy: sort ? sortFilter[sort] : sortFilter.default,
     take: limit,
@@ -289,4 +296,119 @@ export async function getAllUsers({
     userCount,
     totalPages: Math.ceil(userCount / limit),
   };
+}
+
+// get-all-deals
+export async function getAllDeals({
+  page = 1,
+  limit = CONSTANTS.PAGE_LIMIT,
+}: {
+  page: number;
+  limit?: number;
+}) {
+  const deal = await prisma.deal.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      product: {
+        include: {
+          Deal: true,
+        },
+      },
+    },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+  if (!deal) throw new Error("Deal not found");
+
+  return deal;
+}
+
+// get-deal
+export async function getDeal({
+  id,
+  isActive,
+}: {
+  id?: string;
+  isActive?: boolean;
+}) {
+  try {
+    const hasId = id ? { id } : {};
+    const hasActive = isActive ? { isActive } : {};
+    const deal = await prisma.deal.findFirst({
+      where: { ...hasId, ...hasActive },
+      include: {
+        product: {
+          include: {
+            Deal: true,
+          },
+        },
+      },
+    });
+    if (!deal) throw new Error("Deal not found");
+    return {
+      success: true,
+      data: prismaToJs(deal),
+    };
+  } catch (error) {
+    return formatError(error);
+  }
+}
+// create-deal
+export async function createDeal(values: z.infer<typeof addDealSchema>) {
+  try {
+    const data = addDealSchema.parse(values);
+    if (!data.endTime) {
+      throw new Error("End time is required.");
+    }
+    await prisma.deal.create({
+      data: { ...data, endTime: data.endTime },
+    });
+    revalidatePath(PATH.DEALS);
+    return formatSuccess("Deal created successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// update-deal
+export async function updateDeal(data: Partial<addDealType>) {
+  try {
+    if (!data.id) throw new Error("ID is undefined");
+
+    const deals = await prisma.deal.findFirst({
+      where: { id: data.id },
+    });
+    if (!deals) throw new Error("Deal not found");
+    const { endTime, productId: _productId, product: _product, ...rest } = data;
+    await prisma.deal.update({
+      where: { id: data.id },
+      data: {
+        ...rest,
+        ...(endTime && { endTime }),
+      },
+    });
+    revalidatePath(PATH.DEALS);
+    return formatSuccess("Deal updated successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// delete-deal
+export async function deleteDeal(id: string) {
+  try {
+    const isExist = await prisma.deal.findFirst({
+      where: { id },
+    });
+    if (!isExist) throw new Error("Deal not found");
+    await prisma.deal.delete({
+      where: {
+        id,
+      },
+    });
+    revalidatePath(PATH.DEALS);
+    return formatSuccess("Deal deleted successfully");
+  } catch (error) {
+    return formatError(error);
+  }
 }

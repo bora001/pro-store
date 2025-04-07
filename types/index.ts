@@ -11,6 +11,7 @@ import {
   updateProductSchema,
   editUserSchema,
   addReviewSchema,
+  addDealSchema,
 } from "@/lib/validator";
 import { z } from "zod";
 
@@ -18,6 +19,7 @@ export type ProductItemType = z.infer<typeof insertProductSchema> & {
   id: string;
   rating: string;
   createdAt: Date;
+  Deal: addDealType[];
 };
 
 export type CartType = z.infer<typeof insertCartSchema> & {
@@ -57,4 +59,8 @@ export type reviewType = z.infer<typeof addReviewSchema> & {
   user?: {
     name: string;
   };
+};
+export type addDealType = z.infer<typeof addDealSchema> & {
+  id: string;
+  product?: ProductItemType;
 };

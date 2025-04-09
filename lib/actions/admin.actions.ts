@@ -413,7 +413,7 @@ export async function updateDeal(data: Partial<addDealType>) {
     const isOtherActive = await prisma.deal.findFirst({
       where: { isActive: true },
     });
-    if (isOtherActive && isOtherActive.id !== data.id)
+    if (isOtherActive && isOtherActive.id !== data.id && data.isActive)
       throw new Error("Active deal already exists.");
     const deals = await prisma.deal.findFirst({
       where: { id: data.id },

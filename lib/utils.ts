@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import qs from "query-string";
 import { PATH } from "./constants";
+import { CartItemType, addDealType } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -36,6 +37,17 @@ export const currencyFormatter = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 2,
 });
 
+// discount-price
+export const discountPrice = (
+  price: number, // original-price
+  discount?: number,
+  condition?: boolean // discount-condition
+) => {
+  return condition
+    ? Math.round(price * ((100 - (discount || 0)) / 100) * 100) / 100
+    : price;
+};
+
 // full date + time
 export const dateTimeConverter = (time: Date | null) => {
   return dayjs(time).format("MMM DD, YYYY hh:mm A");
@@ -50,8 +62,11 @@ export function formatError(error: any) {
   let message = "";
   if (isZodError) {
     message = Object.keys(error.errors)
-      .map((field) => error.errors[field].message)
-      .join(". ");
+      .map((field) => {
+        const { path, message } = error.errors[field];
+        return `${path}[${message}]`;
+      })
+      .join(", ");
   } else if (isPrismaError) {
     const field = error.meta?.target ? error.meta.target[0] : "Field";
     const errorFiled = field.charAt(0).toUpperCase() + field.slice(1);
@@ -100,10 +115,69 @@ export function URLChanger({
     query[key] = String(value);
   }
 
-  const currentPath = pathname || PATH.HOME;
-
   return qs.stringifyUrl(
-    { url: currentPath, query },
+    { url: pathname || PATH.HOME, query },
     { skipNull: true, skipEmptyString: true }
   );
 }
+
+// calculate time
+export const calculateTime = (endTime: string) => {
+  const MILLISECONDS = {
+    day: 1000 * 60 * 60 * 24,
+    hour: 1000 * 60 * 60,
+    minute: 1000 * 60,
+    second: 1000,
+  };
+
+  const diff = +new Date(endTime) - +new Date();
+  if (diff <= 0) return null;
+
+  return {
+    days: Math.floor(diff / MILLISECONDS.day),
+    hours: Math.floor((diff / MILLISECONDS.hour) % 24),
+    minutes: Math.floor((diff / MILLISECONDS.minute) % 60),
+    seconds: Math.floor((diff / MILLISECONDS.second) % 60),
+  };
+};
+
+// local-date-time
+export const toDatetimeLocalValue = (value: string | Date): string => {
+  const date = new Date(value);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  const [year, month, day, hours, minutes] = [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+    pad(date.getHours()),
+    pad(date.getMinutes()),
+  ];
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
+// calculate-price
+export const calculatePrice = (
+  items: CartItemType[],
+  deal?: addDealType,
+  isActiveDeal?: boolean
+) => {
+  const itemPrice = items.reduce((acc, cur) => {
+    return (
+      acc +
+      (cur.productId === deal?.productId && isActiveDeal
+        ? +cur.price * cur.qty * ((100 - deal.discount) / 100)
+        : +cur.price * cur.qty)
+    );
+  }, 0);
+
+  const shippingPrice = itemPrice > 100 ? 0 : 10;
+  const taxPrice = +(itemPrice * 0.15).toFixed(2);
+  const totalPrice = itemPrice + shippingPrice + taxPrice;
+  return {
+    Items: itemPrice,
+    Shipping: shippingPrice,
+    Tax: taxPrice,
+    Total: totalPrice,
+  };
+};

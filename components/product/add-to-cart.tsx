@@ -9,10 +9,19 @@ import { useRouter } from "next/navigation";
 import { Minus, Plus } from "lucide-react";
 import Flex from "../common/flex";
 import { useState, useTransition } from "react";
-import ButtonWithTransition from "../custom/ButtonWithTransition";
 import { PATH } from "@/lib/constants";
+import { ClassValue } from "clsx";
+import { cn } from "@/lib/utils";
 
-const AddToCart = ({ item }: { item: CartItemType }) => {
+const AddToCart = ({
+  item,
+  noQty,
+  className,
+}: {
+  item: CartItemType;
+  noQty?: boolean;
+  className?: ClassValue;
+}) => {
   const router = useRouter();
   const [qty, setQty] = useState(1);
   const [isPending, startTransition] = useTransition();
@@ -40,28 +49,32 @@ const AddToCart = ({ item }: { item: CartItemType }) => {
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <Flex className="justify-between">
-        <Button
-          variant="outline"
-          onClick={() => setQty((prev) => prev - 1)}
-          disabled={qty === 1}
-        >
-          <Minus />
-        </Button>
-        <span className="w-12 text-center">{qty}</span>
-        <Button
-          variant="outline"
-          onClick={() => setQty((prev) => prev + 1)}
-          disabled={qty === 99}
-        >
-          <Plus />
-        </Button>
-      </Flex>
-      <ButtonWithTransition
-        isPending={isPending}
-        title="Add to Cart"
+      {!noQty && (
+        <Flex className="justify-between">
+          <Button
+            variant="outline"
+            onClick={() => setQty((prev) => prev - 1)}
+            disabled={qty === 1}
+          >
+            <Minus />
+          </Button>
+          <span className="w-12 text-center">{qty}</span>
+          <Button
+            variant="outline"
+            onClick={() => setQty((prev) => prev + 1)}
+            disabled={qty === 99}
+          >
+            <Plus />
+          </Button>
+        </Flex>
+      )}
+      <Button
+        className={cn(className)}
+        disabled={isPending}
         onClick={handleAddCart}
-      />
+      >
+        Add to Cart
+      </Button>
     </div>
   );
 };

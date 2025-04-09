@@ -58,19 +58,17 @@ export const cartItemSchema = z.object({
   qty: z.number().int().nonnegative("Quantity must be a positive integer"),
   image: z.string().min(3, "Image must be at least 3 characters long"),
   price: currency,
+  discount: z.coerce.number().optional(),
 });
 
 // update-cart
 export const insertCartSchema = z.object({
   items: z.array(cartItemSchema),
-  itemPrice: currency,
-  totalPrice: currency,
-  shippingPrice: currency,
-  taxPrice: currency,
   sessionCartId: z
     .string()
     .min(3, "Session cart ID must be at least 3 characters long"),
   userId: z.string().optional().nullable(),
+  itemsCount: z.number(),
 });
 
 // shipping

@@ -9,20 +9,25 @@ import {
   TableHead,
   TableHeader,
 } from "../ui/table";
-import { OrderItemType } from "@/types";
+import { OrderItemType, addDealType } from "@/types";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, discountPrice } from "@/lib/utils";
 import { PATH } from "@/lib/constants";
 import S3Image from "./S3Image";
+import DiscountBadge from "../product/discount-badge";
 
 const PRODUCT_TABLE_IMAGE_SIZE = 50;
 
 const ProductTable = ({
   items,
   isView,
+  deal,
+  isActiveDeal,
 }: {
   items: OrderItemType[];
   isView?: boolean;
+  deal?: addDealType;
+  isActiveDeal?: boolean;
 }) => {
   return (
     <Table>
@@ -34,38 +39,54 @@ const ProductTable = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {items.map((item) => (
-          <TableRow key={item.slug}>
-            {/* image, name */}
-            <TableCell>
-              <Link
-                href={`${PATH.PRODUCT}/${item.slug}`}
-                className="flex items-center"
-              >
-                <S3Image
-                  folder="product"
-                  fileName={item.image}
-                  alt={item.name}
-                  size={PRODUCT_TABLE_IMAGE_SIZE}
-                />
-                <span className="px-2">{item.name}</span>
-              </Link>
-            </TableCell>
-            {/* quantity */}
-            <TableCell
-              className={cn(" gap-2", isView ? "text-center" : "flex-center")}
-            >
-              <ItemQtyChanger item={item} isView={isView} />
-            </TableCell>
-            {/* price */}
-            <TableCell className="text-center">$ {item.price}</TableCell>
-            {!isView && (
+        {items.map((item) => {
+          const { productId: dealID, discount: deal_discount } = deal || {};
+          const { name, slug, image, productId, price } = item;
+          const isOrdered = item.dealInfo?.productId === productId;
+          const discountCondition =
+            (productId === dealID && isActiveDeal) ||
+            item.dealInfo?.productId === productId;
+          const discount = isOrdered ? item.dealInfo?.discount : deal_discount;
+          return (
+            <TableRow key={slug}>
+              {/* image, name */}
               <TableCell>
-                <ItemRemoveButton item={item} />
+                <Link
+                  href={`${PATH.PRODUCT}/${slug}`}
+                  className="flex items-center"
+                >
+                  <S3Image
+                    folder="product"
+                    fileName={image}
+                    alt={name}
+                    size={PRODUCT_TABLE_IMAGE_SIZE}
+                  />
+                  <div>
+                    <span className="px-2 ">{name}</span>
+                    {discountCondition && (
+                      <DiscountBadge discount={discount || 0} />
+                    )}
+                  </div>
+                </Link>
               </TableCell>
-            )}
-          </TableRow>
-        ))}
+              {/* quantity */}
+              <TableCell
+                className={cn(" gap-2", isView ? "text-center" : "flex-center")}
+              >
+                <ItemQtyChanger item={item} isView={isView} />
+              </TableCell>
+              {/* price */}
+              <TableCell className="text-center">
+                $ {discountPrice(+price, discount, discountCondition)}
+              </TableCell>
+              {!isView && (
+                <TableCell>
+                  <ItemRemoveButton item={item} />
+                </TableCell>
+              )}
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );

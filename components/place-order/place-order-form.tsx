@@ -1,5 +1,5 @@
 "use client";
-import { CartType, PaymentType, ShippingType } from "@/types";
+import { CartType, PaymentType, ShippingType, addDealType } from "@/types";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -13,29 +13,51 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { createOrder } from "@/lib/actions/order.actions";
-import PriceSummary from "../common/price-summary";
 import { BadgeAlert } from "lucide-react";
 import S3Image from "../common/S3Image";
+import { calculatePrice, discountPrice } from "@/lib/utils";
+import ProductDealTimer from "../product/product-deal-timer";
+import PriceSummaryWithArray from "../common/price-summary-with-array";
+import { toast } from "@/hooks/use-toast";
+import DiscountBadge from "../product/discount-badge";
 
 const PLACE_ORDER_IMAGE_SIZE = 50;
 
 const PlacerOrderForm = ({
   address,
   cart,
+  deal,
 }: {
   address: ShippingType;
   cart: CartType;
+  deal?: addDealType;
 }) => {
   const searchParams = useSearchParams();
   const method = searchParams.get("method");
+  const [price, setPrice] = useState<[string, number][]>([]);
+  const [isActiveDeal, setIsActiveDeal] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const { address: detail_address, city, postalCode, country, name } = address;
+  const { discount, endTime } = deal || {};
+
   const handlePlaceOrder = () => {
     startTransition(async () => {
-      await createOrder(method as PaymentType);
+      const { success, message } = await createOrder(method as PaymentType);
+      toast({
+        variant: success ? "default" : "destructive",
+        description: message,
+      });
     });
   };
+
+  useEffect(() => {
+    setPrice(
+      Object.entries(calculatePrice(cart?.items || [], deal, isActiveDeal))
+    );
+  }, [cart?.items, deal, isActiveDeal]);
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -51,10 +73,9 @@ const PlacerOrderForm = ({
           <Card>
             <CardContent className="p-4 gap-4">
               <h2 className="text-xl pb-4">Shipping Address</h2>
-              <p>{address.name}</p>
+              <p>{name}</p>
               <p>
-                {address.address}, {address.city}, {address.postalCode},{" "}
-                {address.country}
+                {detail_address}, {city}, {postalCode}, {country}
               </p>
               <div className="mt-3">
                 <Link href={PATH.SHIPPING}>
@@ -89,31 +110,47 @@ const PlacerOrderForm = ({
                 </TableHeader>
                 {/* body : image + qty + price */}
                 <TableBody>
-                  {cart.items.map((item) => (
-                    <TableRow key={item.slug}>
-                      {/* image */}
-                      <TableCell>
-                        <Link
-                          href={`${PATH.PRODUCT}/${item.slug}`}
-                          className="flex items-center"
-                        >
-                          <S3Image
-                            folder="product"
-                            fileName={item.image}
-                            alt={item.name}
-                            size={PLACE_ORDER_IMAGE_SIZE}
-                          />
-                          <span className="px-2">{item.name}</span>
-                        </Link>
-                      </TableCell>
-                      {/* qty */}
-                      <TableCell>{item.qty}</TableCell>
-                      {/* price */}
-                      <TableCell className="text-right">
-                        $ {item.price}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {cart.items.map(
+                    ({ productId, slug, name, image, qty, price }) => {
+                      const discountCondition =
+                        productId === deal?.productId && isActiveDeal;
+
+                      return (
+                        <TableRow key={slug}>
+                          {/* image */}
+                          <TableCell>
+                            <Link
+                              href={`${PATH.PRODUCT}/${slug}`}
+                              className="flex items-center"
+                            >
+                              <S3Image
+                                folder="product"
+                                fileName={image}
+                                alt={name}
+                                size={PLACE_ORDER_IMAGE_SIZE}
+                              />
+                              <div>
+                                <span className="px-2">{name}</span>
+                                {discountCondition && (
+                                  <DiscountBadge discount={discount || 0} />
+                                )}
+                              </div>
+                            </Link>
+                          </TableCell>
+                          {/* qty */}
+                          <TableCell>{qty}</TableCell>
+                          {/* price */}
+                          <TableCell className="text-right">
+                            {`$ ${discountPrice(
+                              +price,
+                              discount,
+                              discountCondition
+                            )}`}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -121,12 +158,19 @@ const PlacerOrderForm = ({
         </div>
         {/* summary + place-order */}
         <div className="space-y-4">
-          <PriceSummary
-            itemPrice={cart.itemPrice}
-            taxPrice={cart.taxPrice}
-            shippingPrice={cart.shippingPrice}
-            totalPrice={cart.totalPrice}
-          />
+          <Card className="overflow-hidden space-y-4">
+            <ProductDealTimer
+              endTime={String(endTime || "")}
+              className="relative"
+              setIsActiveDeal={setIsActiveDeal}
+              noRound
+            />
+            <CardContent>
+              <div className="space-y-1">
+                <PriceSummaryWithArray price={price} />
+              </div>
+            </CardContent>
+          </Card>
           <Button
             className="w-full"
             onClick={handlePlaceOrder}

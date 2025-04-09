@@ -43,7 +43,7 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
         </div>
       ) : (
         <Carousel
-          className={cn("w-full mb-12", !data.length && "hidden")}
+          className={cn("w-full mb-2", !data.length && "hidden")}
           opts={{ loop: true }}
           plugins={[plugin.current]}
           onMouseEnter={() => isAutoplayEnabled && plugin.current.stop()}

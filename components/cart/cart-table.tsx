@@ -1,19 +1,28 @@
 "use client";
-import { CartType } from "@/types";
+import { CartType, addDealType } from "@/types";
 import { Card, CardContent } from "../ui/card";
-import { currencyFormatter } from "@/lib/utils";
+import { calculatePrice } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import ButtonWithTransition from "../custom/ButtonWithTransition";
 import { PATH } from "@/lib/constants";
 import ProductTable from "../common/product-table";
 import Container from "../common/container";
 import ListContainer from "../common/list-container";
+import ProductDealTimer from "../product/product-deal-timer";
+import PriceSummaryWithArray from "../common/price-summary-with-array";
 
-const CartTable = ({ cart }: { cart?: CartType }) => {
+const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
   const [isPending, startTransition] = useTransition();
+  const [isActiveDeal, setIsActiveDeal] = useState(false);
   const router = useRouter();
+  const [price, setPrice] = useState<[string, number][]>([]);
+  useEffect(() => {
+    setPrice(
+      Object.entries(calculatePrice(cart?.items || [], deal, isActiveDeal))
+    );
+  }, [cart?.items, deal, isActiveDeal]);
 
   return (
     <Container title="Shopping Cart">
@@ -26,21 +35,29 @@ const CartTable = ({ cart }: { cart?: CartType }) => {
         {cart && (
           <div className="grid md:grid-cols-4 md:gap-5">
             <div className="overflow-x-auto md:col-span-3">
-              <ProductTable items={cart.items} />
+              <ProductTable
+                items={cart.items}
+                deal={deal}
+                isActiveDeal={isActiveDeal}
+              />
             </div>
             {/* cart detail */}
-            <Card>
-              <CardContent className="p-4 gap-3">
-                <div className="pb-3 text-xl">
+            <Card className="overflow-hidden">
+              <ProductDealTimer
+                endTime={String(deal?.endTime || "")}
+                className="relative"
+                setIsActiveDeal={setIsActiveDeal}
+                noRound
+              />
+              <CardContent className="p-4 gap-3 ">
+                <div className="text-xl space-y-5 mb-5">
                   <p className="space-x-2">
                     <span>Total</span>
                     <span className="text-gray-500 text-base">
                       ({cart.items.reduce((acc, cur) => acc + cur.qty, 0)})
                     </span>
                   </p>
-                  <p className="font-bold text-right mx-1">
-                    {currencyFormatter.format(+cart.itemPrice)}
-                  </p>
+                  <PriceSummaryWithArray price={price} />
                 </div>
                 <ButtonWithTransition
                   isPending={isPending}

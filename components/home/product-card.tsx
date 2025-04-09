@@ -10,10 +10,11 @@ import S3Image from "../common/S3Image";
 const PRODUCT_CARD_IMAGE_SIZE = 306;
 
 const ProductCard = ({
-  product: { slug, images, name, brand, rating, stock, price },
+  product: { slug, images, name, brand, rating, stock, price, Deal },
 }: {
   product: ProductItemType;
 }) => {
+  const endTime = String(Deal?.[0]?.endTime || "");
   return (
     <Card className="w-full max-w-sm">
       {/* header */}
@@ -36,7 +37,11 @@ const ProductCard = ({
         <div className="flex-between gap-4">
           <RatingStar rating={rating} />
           {stock > 0 ? (
-            <ProductPrice price={price} />
+            <ProductPrice
+              discount={Deal?.[0]?.discount}
+              endTime={endTime}
+              price={price}
+            />
           ) : (
             <Badge variant="destructive">Out of Stock</Badge>
           )}

@@ -12,7 +12,12 @@ export async function getLatestProducts() {
       createdAt: "desc",
     },
     include: {
-      Deal: true,
+      Deal: {
+        where: {
+          isActive: true,
+          endTime: { gte: new Date() },
+        },
+      },
     },
   });
   return prismaToJs(data);

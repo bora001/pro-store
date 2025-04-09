@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import CheckoutStep from "@/components/cart/checkout-step";
 import PlacerOrderForm from "@/components/place-order/place-order-form";
+import { hasIncludedDeal } from "@/lib/actions/admin.actions";
 import { getMyCart } from "@/lib/actions/cart.actions";
 import { getUserById } from "@/lib/actions/user.action";
 import { PATH } from "@/lib/constants";
@@ -17,6 +18,7 @@ const PlaceOrderPage = async () => {
   if (!cart?.data || !cart.data.items.length) redirect(PATH.CART);
   const user = await getUserById(session?.user?.id);
   if (!user.address) redirect(PATH.SHIPPING);
+  const { data } = await hasIncludedDeal({ items: cart?.data?.items || [] });
 
   return (
     <>
@@ -24,6 +26,7 @@ const PlaceOrderPage = async () => {
       <PlacerOrderForm
         address={user.address as ShippingType}
         cart={cart?.data}
+        deal={data}
       />
     </>
   );

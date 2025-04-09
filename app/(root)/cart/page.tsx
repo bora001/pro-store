@@ -1,4 +1,5 @@
 import CartTable from "@/components/cart/cart-table";
+import { hasIncludedDeal } from "@/lib/actions/admin.actions";
 import { getMyCart } from "@/lib/actions/cart.actions";
 
 export const metadata = {
@@ -6,7 +7,8 @@ export const metadata = {
 };
 const CartPage = async () => {
   const cart = await getMyCart();
-  return <CartTable cart={cart?.data} />;
+  const { data } = await hasIncludedDeal({ items: cart?.data?.items || [] });
+  return <CartTable cart={cart?.data} deal={data} />;
 };
 
 export default CartPage;

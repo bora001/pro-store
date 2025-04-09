@@ -1,7 +1,9 @@
+import DealCountDown from "@/components/home/deal-countdown";
 import ProductList from "@/components/home/product-list";
 import ShoppingBenefits from "@/components/home/shopping-benefits";
 import ProductCarousel from "@/components/product/product-carousel";
 import { Button } from "@/components/ui/button";
+import { getDeal } from "@/lib/actions/admin.actions";
 import {
   getFeatureProduct,
   getLatestProducts,
@@ -11,10 +13,13 @@ import Link from "next/link";
 const HomePage = async () => {
   const latestProduct = await getLatestProducts();
   const featureProduct = await getFeatureProduct();
+  const { data: deal } = await getDeal({ isActive: true });
+
   return (
-    <div className="space-y-3">
+    <div className={"space-y-6 my-4"}>
       <ProductCarousel data={featureProduct} />
       <ShoppingBenefits />
+      <DealCountDown deal={deal} />
       <ProductList
         data={latestProduct}
         title="Newest Arrivals"

@@ -1,6 +1,6 @@
 import OrderDetail from "@/components/order/order-detail";
 import { getOrderInfo } from "@/lib/actions/order.actions";
-import { ShippingType } from "@/types";
+import { OrderItemType, ShippingType } from "@/types";
 import { notFound } from "next/navigation";
 import { PaymentFormType } from "@/components/payment/payment-form";
 import { auth } from "@/auth";
@@ -33,6 +33,7 @@ const OrderInfoPage = async (props: { params: Promise<{ id: string }> }) => {
       stripeClientSecret={client_secret}
       order={{
         ...order.data,
+        orderItems: order.data.orderItems as OrderItemType[],
         address: order.data.address as ShippingType,
         payment: order.data.payment as PaymentFormType["type"],
       }}

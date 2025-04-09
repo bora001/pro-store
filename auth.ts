@@ -5,7 +5,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import { cookies } from "next/headers";
 import { CartItemType } from "./types";
-import { calcPrice } from "./lib/actions/cart.actions";
 import { PATH } from "./lib/constants";
 type User = {
   id: string;
@@ -97,7 +96,6 @@ export const config = {
                 where: { id: existingCart.id },
                 data: {
                   items: updatedItems,
-                  ...(await calcPrice(updatedItems)),
                 },
               });
               // delete sessionCart

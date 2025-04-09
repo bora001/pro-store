@@ -6,9 +6,10 @@ import { Card, CardContent } from "../ui/card";
 import AddToCart from "./add-to-cart";
 import { Badge } from "../ui/badge";
 import { ProductItemType } from "@/types";
+import ProductDealTimer from "./product-deal-timer";
 
 const ProductSection = ({ product }: { product: ProductItemType }) => {
-  const { brand, name, price, images, id, slug } = product;
+  const { brand, name, price, images, id, slug, Deal } = product;
   const inStock = product.stock > 0;
   const cartProps = {
     productId: id,
@@ -18,11 +19,15 @@ const ProductSection = ({ product }: { product: ProductItemType }) => {
     qty: 1,
     image: images[0],
   };
+  const isDeal = Deal.length > 0;
+  const endTime = String(Deal[0]?.endTime || "");
+
   return (
     <section>
       <div className="grid grid-cols-1 md:grid-cols-5">
         {/* image */}
-        <div className="col-span-2">
+        <div className="col-span-2 relative">
+          {isDeal && <ProductDealTimer endTime={endTime} type={Deal[0].type} />}
           <ProductImages images={images} name={name} />
         </div>
         {/* detail : brand + category + name + rating + review + price + description */}
@@ -41,6 +46,8 @@ const ProductSection = ({ product }: { product: ProductItemType }) => {
           {/* price */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <ProductPrice
+              discount={Deal[0]?.discount}
+              endTime={endTime}
               price={price}
               className="rounded-full bg-green-100 text-green-700 px-4 py-2"
             />
@@ -53,7 +60,11 @@ const ProductSection = ({ product }: { product: ProductItemType }) => {
           <CardContent className="p-4 space-y-4">
             <div className="flex justify-between">
               <div>Price</div>
-              <ProductPrice price={price} />
+              <ProductPrice
+                discount={Deal[0]?.discount}
+                endTime={String(Deal[0]?.endTime || "")}
+                price={price}
+              />
             </div>
             <div className="flex justify-between">
               <div>Status</div>

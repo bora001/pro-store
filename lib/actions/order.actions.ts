@@ -10,10 +10,40 @@ import { orderSchema } from "../validator";
 import { prisma } from "@/db/prisma";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { paypal } from "../paypal";
-import { PaymentResultType, ShippingType } from "@/types";
+import {
+  CartItemType,
+  OrderItemType,
+  PaymentResultType,
+  ShippingType,
+  addDealType,
+} from "@/types";
 import { revalidatePath } from "next/cache";
 import { sendPurchaseReceipt } from "@/email";
 import { PaymentFormType } from "@/components/payment/payment-form";
+import { hasIncludedDeal } from "./admin.actions";
+
+export async function calcPrice(item: CartItemType[], deal?: addDealType) {
+  const itemPrice = item.reduce((acc, item) => {
+    return (
+      acc +
+      (deal?.productId === item.productId
+        ? +item.price * item.qty * ((100 - deal.discount) / 100)
+        : +item.price * item.qty)
+    );
+  }, 0);
+  const shippingPrice = itemPrice > 100 ? 0 : 10;
+  const taxPrice = +(itemPrice * 0.15);
+  const totalPrice = itemPrice + shippingPrice + taxPrice;
+
+  const format = (value: number) => value.toFixed(2);
+
+  return {
+    itemPrice: format(itemPrice),
+    shippingPrice: format(shippingPrice),
+    taxPrice: format(taxPrice),
+    totalPrice: format(totalPrice),
+  };
+}
 
 // place-order
 export async function createOrder(payment: PaymentFormType["type"]) {
@@ -26,37 +56,37 @@ export async function createOrder(payment: PaymentFormType["type"]) {
     if (!cart || !cart.data?.items.length) redirect(PATH.CART);
     const user = await getUserById(userId);
     if (!user.address) redirect(PATH.SHIPPING);
+    const activeDeal = await hasIncludedDeal({ items: cart.data.items });
+    const cart_price = await calcPrice(cart.data.items, activeDeal.data);
     const order = orderSchema.parse({
       userId: user.id,
       address: user.address,
       payment,
-      itemPrice: cart.data.itemPrice,
-      taxPrice: cart.data.taxPrice,
-      shippingPrice: cart.data.shippingPrice,
-      totalPrice: cart.data.totalPrice,
+      ...cart_price,
     });
 
     const newOrderId = await prisma.$transaction(async (tx) => {
       const newOrder = await tx.order.create({
         data: order,
       });
+      const { productId } = activeDeal.data || {};
 
       await tx.orderItem.createMany({
-        data: cart.data.items.map((item) => ({
-          ...item,
-          price: item.price,
-          orderId: newOrder.id,
-        })),
+        data: cart.data.items.map(({ discount: _discount, ...item }) => {
+          const hasDeal = productId === item.productId;
+          return {
+            ...item,
+            price: item.price,
+            orderId: newOrder.id,
+            dealInfo: hasDeal ? activeDeal.data : {},
+          };
+        }),
       });
 
       await tx.cart.update({
         where: { id: cart.data.id },
         data: {
           items: [],
-          totalPrice: 0,
-          taxPrice: 0,
-          shippingPrice: 0,
-          itemPrice: 0,
         },
       });
       return newOrder.id;
@@ -231,6 +261,7 @@ export async function sendEmailReceipt(orderId: string) {
     await sendPurchaseReceipt({
       order: {
         ...data,
+        orderItems: data.orderItems as OrderItemType[],
         address: data.address as ShippingType,
         paymentResult: data.paymentResult as PaymentResultType,
       },

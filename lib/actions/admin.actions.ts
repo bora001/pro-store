@@ -6,7 +6,12 @@ import { CONSTANTS, PATH } from "../constants";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { revalidatePath } from "next/cache";
 import { updateOrderToPaid } from "./order.actions";
-import { PaymentResultType, addDealType, updateProductType } from "@/types";
+import {
+  CartItemType,
+  PaymentResultType,
+  addDealType,
+  updateProductType,
+} from "@/types";
 import {
   addDealSchema,
   insertProductSchema,
@@ -408,6 +413,33 @@ export async function deleteDeal(id: string) {
     });
     revalidatePath(PATH.DEALS);
     return formatSuccess("Deal deleted successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// deal-included
+export async function hasIncludedDeal({
+  items,
+  dealOptions,
+}: {
+  items: CartItemType[];
+  dealOptions?: Prisma.DealWhereInput;
+}) {
+  const productId = items.map((item) => item.productId);
+  try {
+    const deal = await prisma.deal.findMany({
+      where: {
+        productId: { in: productId },
+        isActive: true,
+        ...dealOptions,
+      },
+    });
+    if (!deal.length) throw new Error("Deal not found");
+    return {
+      success: true,
+      data: prismaToJs(deal[0]),
+    };
   } catch (error) {
     return formatError(error);
   }

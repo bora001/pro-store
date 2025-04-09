@@ -1,5 +1,5 @@
 "use client";
-import { OrderType, PaymentResultType, addDealType } from "@/types";
+import { OrderType, PaymentResultType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import Flex from "../common/flex";

@@ -7,12 +7,20 @@ import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { PAYMENT_METHODS } from "@/lib/constants";
 import { Button } from "../ui/button";
+import { toast } from "@/hooks/use-toast";
 export type PaymentFormType = z.infer<typeof paymentSchema>;
 
 const PaymentForm = () => {
   const router = useRouter();
   const [currentMethod, setCurrentMethod] = useState<PaymentFormType["type"]>();
   const placeOrder = () => {
+    if (!currentMethod) {
+      toast({
+        variant: "destructive",
+        description: "Please select a payment methods",
+      });
+      return;
+    }
     router.push(`/place-order?method=${currentMethod}`);
   };
   return (

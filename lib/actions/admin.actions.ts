@@ -379,7 +379,11 @@ export async function createDeal(values: z.infer<typeof addDealSchema>) {
 export async function updateDeal(data: Partial<addDealType>) {
   try {
     if (!data.id) throw new Error("ID is undefined");
-
+    const isOtherActive = await prisma.deal.findFirst({
+      where: { isActive: true },
+    });
+    if (isOtherActive && isOtherActive.id !== data.id)
+      throw new Error("Active deal already exists.");
     const deals = await prisma.deal.findFirst({
       where: { id: data.id },
     });

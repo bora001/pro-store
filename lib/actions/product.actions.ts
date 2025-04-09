@@ -35,6 +35,7 @@ export const getProductBySlug = async (slug: string) => {
           product: {
             slug,
           },
+          isActive: true,
           endTime: { gte: new Date() },
         },
       },

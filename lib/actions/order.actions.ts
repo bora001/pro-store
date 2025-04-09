@@ -56,7 +56,10 @@ export async function createOrder(payment: PaymentFormType["type"]) {
     if (!cart || !cart.data?.items.length) redirect(PATH.CART);
     const user = await getUserById(userId);
     if (!user.address) redirect(PATH.SHIPPING);
-    const activeDeal = await hasIncludedDeal({ items: cart.data.items });
+    const activeDeal = await hasIncludedDeal({
+      items: cart.data.items,
+      dealOptions: { endTime: { gte: new Date() } },
+    });
     const cart_price = await calcPrice(cart.data.items, activeDeal.data);
     const order = orderSchema.parse({
       userId: user.id,

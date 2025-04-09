@@ -47,7 +47,7 @@ const AdminDealsPage = async (props: {
   const currentDate = new Date();
   const { page, query, category } = await props.searchParams;
   const data = await getAllProducts({ page: +page || 1, query, category });
-  const deals = await getAllDeals({ page: +page || 1 });
+  const deals = await getAllDeals({ page: +page || 1, query });
 
   return (
     <SearchContainer

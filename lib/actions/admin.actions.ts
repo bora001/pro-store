@@ -307,10 +307,38 @@ export async function getAllUsers({
 export async function getAllDeals({
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
+  query,
 }: {
   page: number;
   limit?: number;
+  query: string;
 }) {
+  const queryFilter: Prisma.DealWhereInput = query
+    ? {
+        OR: [
+          {
+            title: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+          {
+            description: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+          {
+            product: {
+              name: {
+                contains: query,
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
+      }
+    : {};
   const deal = await prisma.deal.findMany({
     orderBy: { createdAt: "desc" },
     include: {
@@ -319,6 +347,9 @@ export async function getAllDeals({
           Deal: true,
         },
       },
+    },
+    where: {
+      ...queryFilter,
     },
     take: limit,
     skip: (page - 1) * limit,

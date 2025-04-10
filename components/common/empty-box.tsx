@@ -10,7 +10,8 @@ const EmptyBox = ({ title, href, linkText }: EmptyBoxPropsType) => {
   return (
     <div className="flex-1 justify-center gap-3 w-full h-full flex flex-col items-center">
       <PackageOpen size={36} />
-      {title}
+      <span>{title}</span>
+
       {href && linkText && (
         <Link href={href}>
           <Button>{linkText}</Button>

@@ -9,7 +9,8 @@ import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
 
 const CredentialSignInForm = () => {
-  const callbackUrl = useSearchParams().get("callbackUrl");
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
   const [data, action] = useActionState(signInUser, {
     success: false,
     message: "",
@@ -24,15 +25,19 @@ const CredentialSignInForm = () => {
           value={callbackUrl || PATH.HOME}
         />
         <Input
-          defaultValue={((data && data && data.data?.email) as string) || ""}
+          defaultValue={(data?.data?.email as string) || ""}
           type="email"
           name="email"
           placeholder="email@example.com"
           required
         />
-        <Input type="password" name="password" placeholder="password" />
+        <Input
+          type="password"
+          name="password"
+          placeholder="password"
+          required
+        />
       </div>
-
       <FormSubmitButton text={["Signing...", "Sign In"]} />
       <p className="text-center text-destructive text-sm">
         {data && data.message}

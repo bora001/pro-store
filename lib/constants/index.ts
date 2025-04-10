@@ -11,16 +11,19 @@ export const CONSTANTS = {
 export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;
 export const USER_ROLE = ["admin", "user"];
 export const PATH = {
-  SHIPPING: "/shipping-address",
-  PAYMENT: "/payment-method",
-  CART: "/cart",
+  HOME: "/",
   SIGN_UP: "/sign-up",
   SIGN_IN: "/sign-in",
+  PRODUCT: "/product",
+  CART: "/cart",
+  SEARCH: "/search",
+
+  ORDER: "/order",
+  SHIPPING: "/shipping-address",
+  PAYMENT: "/payment-method",
   MY_ORDER: "/user/order",
   MY_PROFILE: "/user/profile",
-  PRODUCT: "/product",
-  ORDER: "/order",
-  HOME: "/",
+
   DASHBOARD: "/admin/dashboard",
   PRODUCTS: "/admin/products",
   CREATE_PRODUCTS: "/admin/products/create",
@@ -28,7 +31,7 @@ export const PATH = {
   USERS: "/admin/users",
   ORDERS: "/admin/orders",
   DEALS: "/admin/deals",
-  SEARCH: "/search",
+
   API_GET_PRESIGNED_URL: "/api/get-presigned-url",
   API_UPLOAD_IMAGE: "/api/image/upload",
   API_DELETE_IMAGE: "/api/image/delete",

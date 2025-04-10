@@ -35,7 +35,11 @@ const ItemQtyChanger = ({
     <Flex className="justify-between">
       {TYPE.map((type) =>
         type === "qty" ? (
-          <span key={type} className="w-12 text-center">
+          <span
+            key={type}
+            className="w-12 text-center"
+            data-testid="product-qty"
+          >
             {item.qty}
           </span>
         ) : (
@@ -45,6 +49,7 @@ const ItemQtyChanger = ({
             variant="outline"
             onClick={() => handleItemQty(type)}
             disabled={isPending}
+            data-testid={`handle-qty-${type}`}
           >
             {type === "plus" ? <Plus /> : <Minus />}
           </Button>

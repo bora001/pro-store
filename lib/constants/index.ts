@@ -6,6 +6,9 @@ export const CONSTANTS = {
   INIT_REVIEW_RATING: 0,
   AVG_REVIEW_RATING: 3,
   COMPLETED: "COMPLETED",
+  FREE_SHIPPING_THRESHOLD: 100,
+  SHIPPING_FEE: 10,
+  TAX_RATE: 0.15,
 };
 
 export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;

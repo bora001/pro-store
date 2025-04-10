@@ -11,10 +11,11 @@ import {
 } from "../ui/table";
 import { OrderItemType, addDealType } from "@/types";
 import Link from "next/link";
-import { cn, discountPrice } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { PATH } from "@/lib/constants";
 import S3Image from "./S3Image";
 import DiscountBadge from "../product/discount-badge";
+import { discountPrice } from "@/utils/price/discountPrice";
 
 const PRODUCT_TABLE_IMAGE_SIZE = 50;
 
@@ -62,7 +63,9 @@ const ProductTable = ({
                     size={PRODUCT_TABLE_IMAGE_SIZE}
                   />
                   <div>
-                    <span className="px-2 ">{name}</span>
+                    <span className="px-2" data-testid="product-name">
+                      {name}
+                    </span>
                     {discountCondition && (
                       <DiscountBadge discount={discount || 0} />
                     )}

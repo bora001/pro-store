@@ -9,7 +9,11 @@ const DiscountBadge = ({
   discount: number;
   className?: ClassValue;
 }) => {
-  return <Badge className={cn("bg-red-600", className)}>{discount}% OFF</Badge>;
+  return (
+    <Badge className={cn("bg-red-600 cursor-default", className)}>
+      {discount}% OFF
+    </Badge>
+  );
 };
 
 export default DiscountBadge;

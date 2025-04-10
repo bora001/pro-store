@@ -3,7 +3,7 @@ import Image from "next/image";
 import { CardContent } from "../ui/card";
 import { PATH } from "@/lib/constants";
 import { CONFIG } from "@/lib/constants/config";
-import { cn, discountPrice } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import AddToCart from "../product/add-to-cart";
 import DealCountdownTimer from "./deal-countdown-timer";
 import { addDealType } from "@/types";
@@ -11,6 +11,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import DiscountBadge from "../product/discount-badge";
+import { discountPrice } from "@/utils/price/discountPrice";
 
 const DealCountdownContent = ({
   deal,
@@ -84,7 +85,7 @@ const DealCountdownContent = ({
                   <Button>View Product</Button>
                 </Link>
                 <AddToCart
-                  className="bg-red-600 text-white"
+                  className="bg-red-600 text-white hover:bg-red-700"
                   noQty
                   item={{
                     name: deal.product?.name || "",

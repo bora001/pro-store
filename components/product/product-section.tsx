@@ -21,7 +21,6 @@ const ProductSection = ({ product }: { product: ProductItemType }) => {
   };
   const isDeal = Deal.length > 0;
   const endTime = String(Deal[0]?.endTime || "");
-
   return (
     <section>
       <div className="grid grid-cols-1 md:grid-cols-5">
@@ -68,7 +67,10 @@ const ProductSection = ({ product }: { product: ProductItemType }) => {
             </div>
             <div className="flex justify-between">
               <div>Status</div>
-              <Badge variant={inStock ? "outline" : "destructive"}>
+              <Badge
+                variant={inStock ? "outline" : "destructive"}
+                data-testid="product-status"
+              >
                 {inStock ? "In Stock" : "Out of Stock"}
               </Badge>
             </div>

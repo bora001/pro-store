@@ -10,40 +10,12 @@ import { orderSchema } from "../validator";
 import { prisma } from "@/db/prisma";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { paypal } from "../paypal";
-import {
-  CartItemType,
-  OrderItemType,
-  PaymentResultType,
-  ShippingType,
-  addDealType,
-} from "@/types";
+import { OrderItemType, PaymentResultType, ShippingType } from "@/types";
 import { revalidatePath } from "next/cache";
 import { sendPurchaseReceipt } from "@/email";
 import { PaymentFormType } from "@/components/payment/payment-form";
 import { hasIncludedDeal } from "./admin.actions";
-
-export async function calcPrice(item: CartItemType[], deal?: addDealType) {
-  const itemPrice = item.reduce((acc, item) => {
-    return (
-      acc +
-      (deal?.productId === item.productId
-        ? +item.price * item.qty * ((100 - deal.discount) / 100)
-        : +item.price * item.qty)
-    );
-  }, 0);
-  const shippingPrice = itemPrice > 100 ? 0 : 10;
-  const taxPrice = +(itemPrice * 0.15);
-  const totalPrice = itemPrice + shippingPrice + taxPrice;
-
-  const format = (value: number) => value.toFixed(2);
-
-  return {
-    itemPrice: format(itemPrice),
-    shippingPrice: format(shippingPrice),
-    taxPrice: format(taxPrice),
-    totalPrice: format(totalPrice),
-  };
-}
+import { calculatePrice } from "@/utils/price/calculate-price";
 
 // place-order
 export async function createOrder(payment: PaymentFormType["type"]) {
@@ -60,7 +32,7 @@ export async function createOrder(payment: PaymentFormType["type"]) {
       items: cart.data.items,
       dealOptions: { endTime: { gte: new Date() } },
     });
-    const cart_price = await calcPrice(cart.data.items, activeDeal.data);
+    const cart_price = calculatePrice(cart.data.items, activeDeal.data);
     const order = orderSchema.parse({
       userId: user.id,
       address: user.address,

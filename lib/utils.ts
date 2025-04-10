@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import qs from "query-string";
 import { PATH } from "./constants";
-import { CartItemType, addDealType } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -36,17 +35,6 @@ export const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   minimumFractionDigits: 2,
 });
-
-// discount-price
-export const discountPrice = (
-  price: number, // original-price
-  discount?: number,
-  condition?: boolean // discount-condition
-) => {
-  return condition
-    ? Math.round(price * ((100 - (discount || 0)) / 100) * 100) / 100
-    : price;
-};
 
 // full date + time
 export const dateTimeConverter = (time: Date | null) => {
@@ -154,30 +142,4 @@ export const toDatetimeLocalValue = (value: string | Date): string => {
   ];
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
-};
-
-// calculate-price
-export const calculatePrice = (
-  items: CartItemType[],
-  deal?: addDealType,
-  isActiveDeal?: boolean
-) => {
-  const itemPrice = items.reduce((acc, cur) => {
-    return (
-      acc +
-      (cur.productId === deal?.productId && isActiveDeal
-        ? +cur.price * cur.qty * ((100 - deal.discount) / 100)
-        : +cur.price * cur.qty)
-    );
-  }, 0);
-
-  const shippingPrice = itemPrice > 100 ? 0 : 10;
-  const taxPrice = +(itemPrice * 0.15).toFixed(2);
-  const totalPrice = itemPrice + shippingPrice + taxPrice;
-  return {
-    Items: itemPrice,
-    Shipping: shippingPrice,
-    Tax: taxPrice,
-    Total: totalPrice,
-  };
 };

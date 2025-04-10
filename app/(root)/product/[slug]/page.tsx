@@ -12,7 +12,6 @@ const ProductDetailPage = async (props: {
   const { slug } = await props.params;
   const product = await getProductBySlug(slug);
   if (!product) notFound();
-
   return (
     <div className=" flex flex-col h-full">
       {/* product */}

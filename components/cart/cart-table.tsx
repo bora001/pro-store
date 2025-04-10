@@ -1,7 +1,6 @@
 "use client";
 import { CartType, addDealType } from "@/types";
 import { Card, CardContent } from "../ui/card";
-import { calculatePrice } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -12,12 +11,13 @@ import Container from "../common/container";
 import ListContainer from "../common/list-container";
 import ProductDealTimer from "../product/product-deal-timer";
 import PriceSummaryWithArray from "../common/price-summary-with-array";
+import { calculatePrice } from "@/utils/price/calculate-price";
 
 const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
   const [isPending, startTransition] = useTransition();
   const [isActiveDeal, setIsActiveDeal] = useState(false);
   const router = useRouter();
-  const [price, setPrice] = useState<[string, number][]>([]);
+  const [price, setPrice] = useState<[string, string][]>([]);
   useEffect(() => {
     setPrice(
       Object.entries(calculatePrice(cart?.items || [], deal, isActiveDeal))

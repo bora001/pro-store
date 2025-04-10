@@ -1,8 +1,9 @@
 "use client";
-import { cn, discountPrice, divideByDecimal } from "@/lib/utils";
+import { cn, divideByDecimal } from "@/lib/utils";
 import Text from "../custom/Text";
 import OriginalPrice from "./original-price";
 import { useState } from "react";
+import { discountPrice } from "@/utils/price/discountPrice";
 
 const ProductPrice = ({
   unit = "$",

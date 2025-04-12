@@ -22,6 +22,7 @@ const ItemRemoveButton = ({ item }: { item: CartItemType }) => {
   };
   return (
     <IconButton
+      aria-label="item-remove-button"
       disabled={isPending}
       icon={<Trash2 width={15} />}
       onClick={() => handleDeleteItem()}

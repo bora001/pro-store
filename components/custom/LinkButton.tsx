@@ -14,12 +14,12 @@ const LinkButton = ({
   url: string;
 }) => {
   return (
-    <Button {...props}>
-      <Link href={url} className="flex gap-3 items-center">
+    <Link href={url} className="flex gap-4 items-center">
+      <Button {...props}>
         {icon}
         <p>{title}</p>
-      </Link>
-    </Button>
+      </Button>
+    </Link>
   );
 };
 

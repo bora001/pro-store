@@ -45,8 +45,10 @@ const ThemeToggle = () => {
   return (
     <DropdownMenu>
       {/* trigger */}
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost">{themeIcons[systemTheme]}</Button>
+      <DropdownMenuTrigger asChild role="button">
+        <Button variant="ghost" aria-label="theme-toggle">
+          {themeIcons[systemTheme]}
+        </Button>
       </DropdownMenuTrigger>
       {/* content */}
       <DropdownMenuContent>

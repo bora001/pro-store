@@ -21,7 +21,7 @@ const UserButton = async () => {
   return (
     <DropdownMenu>
       {/* trigger */}
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild role="button">
         <div className="flex items-center">
           <Button
             variant="ghost"

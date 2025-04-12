@@ -55,6 +55,7 @@ const ReviewList = ({
                         type="custom"
                         id={review.id}
                         action={deleteReview}
+                        buttonLabel="delete-review-button"
                       >
                         <IconButton icon={<Trash />} className="p-3" />
                       </DeleteButton>

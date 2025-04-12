@@ -9,7 +9,7 @@ import { PATH } from "@/lib/constants";
 import ProductTable from "../common/product-table";
 import Container from "../common/container";
 import ListContainer from "../common/list-container";
-import ProductDealTimer from "../product/product-deal-timer";
+import ProductDealTimer from "../product/product-deal-timer/product-deal-timer";
 import PriceSummaryWithArray from "../common/price-summary-with-array";
 import { calculatePrice } from "@/utils/price/calculate-price";
 

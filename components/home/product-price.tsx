@@ -25,9 +25,10 @@ const ProductPrice = ({
   const [isActiveDeal, setIsActiveDeal] = useState(
     endTime ? endTime?.length > 0 : false
   );
+  const isActive = endTime && isActiveDeal;
   return (
     <div className={"flex gap-1"}>
-      {(endTime || isActiveDeal) && (
+      {isActive && (
         <OriginalPrice
           setIsActiveDeal={setIsActiveDeal}
           endTime={endTime || ""}
@@ -42,8 +43,8 @@ const ProductPrice = ({
           className
         )}
       >
-        <Text size="xs">{unit}</Text> {whole}
-        <Text size="xs">.{fraction}</Text>
+        <Text size="xs">{unit}</Text> {isActive ? whole : original_whole}
+        <Text size="xs">.{isActive ? fraction : original_fraction}</Text>
       </div>
     </div>
   );

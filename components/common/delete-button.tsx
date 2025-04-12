@@ -27,6 +27,7 @@ interface DeleteButtonPropsBase {
   action: (id: string) => Promise<ResponseType>;
   children?: ReactNode;
   returnPath?: string;
+  buttonLabel: string;
 }
 type DeleteButtonPropsType =
   | (DeleteButtonPropsBase & { type: "button" } & DeleteButtonButtonProps)
@@ -38,6 +39,7 @@ const DeleteButton = ({
   type,
   children,
   returnPath,
+  buttonLabel,
   ...props
 }: DeleteButtonPropsType) => {
   const [open, setOpen] = useState(false);
@@ -64,7 +66,9 @@ const DeleteButton = ({
     <>
       <AlertDialog open={open} onOpenChange={setOpen}>
         {/* button */}
-        <AlertDialogTrigger asChild>{DELETE_TRIGGER[type]}</AlertDialogTrigger>
+        <AlertDialogTrigger asChild aria-label={buttonLabel}>
+          {DELETE_TRIGGER[type]}
+        </AlertDialogTrigger>
         {/* modal */}
         <AlertDialogContent>
           <AlertDialogHeader>

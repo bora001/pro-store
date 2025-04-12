@@ -18,7 +18,7 @@ import { createOrder } from "@/lib/actions/order.actions";
 import { BadgeAlert } from "lucide-react";
 import S3Image from "../common/S3Image";
 import { cn } from "@/lib/utils";
-import ProductDealTimer from "../product/product-deal-timer";
+import ProductDealTimer from "../product/product-deal-timer/product-deal-timer";
 import PriceSummaryWithArray from "../common/price-summary-with-array";
 import { toast } from "@/hooks/use-toast";
 import DiscountBadge from "../product/discount-badge";

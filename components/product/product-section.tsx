@@ -6,7 +6,7 @@ import { Card, CardContent } from "../ui/card";
 import AddToCart from "./add-to-cart";
 import { Badge } from "../ui/badge";
 import { ProductItemType } from "@/types";
-import ProductDealTimer from "./product-deal-timer";
+import ProductDealTimer from "./product-deal-timer/product-deal-timer";
 
 const ProductSection = ({ product }: { product: ProductItemType }) => {
   const { brand, name, price, images, id, slug, Deal } = product;

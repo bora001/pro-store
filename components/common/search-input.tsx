@@ -43,6 +43,7 @@ const SearchInput = ({ path }: { path?: string }) => {
       <Link
         href={newURL}
         className="bg-black px-3 flex items-center justify-center rounded-sm"
+        aria-label="search"
       >
         <SearchIcon color="white" width={16} />
       </Link>

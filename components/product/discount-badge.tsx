@@ -10,7 +10,7 @@ const DiscountBadge = ({
   className?: ClassValue;
 }) => {
   return (
-    <Badge className={cn("bg-red-600 cursor-default", className)}>
+    <Badge variant="destructive" className={cn("cursor-default", className)}>
       {discount}% OFF
     </Badge>
   );

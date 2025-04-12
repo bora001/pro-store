@@ -102,7 +102,12 @@ const AdminDealsPage = async (props: {
                       Edit
                     </Badge>
                   </Link>
-                  <DeleteButton type="badge" id={deal.id} action={deleteDeal} />
+                  <DeleteButton
+                    type="badge"
+                    id={deal.id}
+                    action={deleteDeal}
+                    buttonLabel="delete-deal-button"
+                  />
                 </TableCell>
               </TableRow>
             );

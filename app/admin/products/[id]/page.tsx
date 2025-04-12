@@ -26,6 +26,7 @@ const EditProductPage = async (props: { params: Promise<{ id: string }> }) => {
             id={product.id}
             returnPath={PATH.PRODUCTS}
             action={deleteProduct}
+            buttonLabel="delete-product-button"
           />
         }
       />

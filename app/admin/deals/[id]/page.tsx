@@ -33,6 +33,7 @@ const EditDealPage = async (props: { params: Promise<{ id: string }> }) => {
             id={deals.id}
             returnPath={PATH.DEALS}
             action={deleteDeal}
+            buttonLabel="delete-deal-button"
           />
         }
       />

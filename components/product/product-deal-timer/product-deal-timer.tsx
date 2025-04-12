@@ -1,11 +1,18 @@
 "use client";
 import useGetCountdown from "@/hooks/use-get-countdown";
-import { Badge } from "../ui/badge";
+import { Badge } from "../../ui/badge";
 import { Clock } from "lucide-react";
 import { capitalize, cn } from "@/lib/utils";
 import { ClassValue } from "clsx";
-import { Dispatch, SetStateAction, useEffect } from "react";
-
+import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
+import dynamic from "next/dynamic";
+const ProductDealTimerContent = dynamic(
+  () => import("./product-deal-timer-content"),
+  {
+    loading: () => <></>,
+    ssr: false,
+  }
+);
 const ProductDealTimer = ({
   endTime,
   type = "limited",
@@ -20,10 +27,14 @@ const ProductDealTimer = ({
   setIsActiveDeal?: Dispatch<SetStateAction<boolean>>;
 }) => {
   const time = useGetCountdown(endTime, "array");
-  const trimmedTime = [...time];
-  while (trimmedTime.length > 2 && trimmedTime[0] === "00") {
-    trimmedTime.shift();
-  }
+  const trimmedTime = useMemo(() => {
+    const result = [...time];
+    while (result.length > 2 && result[0] === "00") {
+      result.shift();
+    }
+    return result;
+  }, [time]);
+
   useEffect(() => {
     if (setIsActiveDeal) {
       setIsActiveDeal(time.length > 0);
@@ -43,18 +54,7 @@ const ProductDealTimer = ({
       >
         <Clock size={16} />
         <p>{capitalize(type)}</p>
-        <div className="flex gap-1">
-          {trimmedTime.map((item, index) => (
-            <div key={`${item}_${index}`} className={cn("flex gap-1")}>
-              <span>{item}</span>
-              <span
-                className={`${index === trimmedTime.length - 1 ? "hidden" : "block"} `}
-              >
-                :
-              </span>
-            </div>
-          ))}
-        </div>
+        <ProductDealTimerContent trimmedTime={trimmedTime} />
       </Badge>
     </div>
   );

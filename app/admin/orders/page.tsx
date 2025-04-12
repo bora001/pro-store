@@ -59,7 +59,12 @@ const AdminOrdersPage = async (props: {
                 <Link href={`${PATH.ORDER}/${order.id}`}>
                   <Badge variant="outline">Details</Badge>
                 </Link>
-                <DeleteButton id={order.id} action={deleteOrder} type="badge" />
+                <DeleteButton
+                  id={order.id}
+                  action={deleteOrder}
+                  type="badge"
+                  buttonLabel="delete-order-button"
+                />
               </TableCell>
             </TableRow>
           ))}

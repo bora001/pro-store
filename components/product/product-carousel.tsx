@@ -39,6 +39,7 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
             height={BANNER_SIZE.height}
             src="/images/sunflower-8881536_1280.jpg"
             alt="default banner"
+            priority
           />
         </div>
       ) : (
@@ -59,6 +60,7 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
                     width={BANNER_SIZE.width}
                     height={BANNER_SIZE.height}
                     alt={`${name} banner`}
+                    priority
                   />
                 </Link>
               </CarouselItem>

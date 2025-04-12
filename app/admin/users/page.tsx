@@ -62,7 +62,12 @@ const AdminUserPage = async (props: {
                     Edit
                   </Badge>
                 </Link>
-                <DeleteButton type="badge" id={id} action={deleteUser} />
+                <DeleteButton
+                  type="badge"
+                  id={id}
+                  action={deleteUser}
+                  buttonLabel="delete-user-button"
+                />
               </TableCell>
             </TableRow>
           ))}

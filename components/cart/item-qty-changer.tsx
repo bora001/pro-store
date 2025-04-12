@@ -50,6 +50,7 @@ const ItemQtyChanger = ({
             onClick={() => handleItemQty(type)}
             disabled={isPending}
             data-testid={`handle-qty-${type}`}
+            aria-label={`${type}-item-qty`}
           >
             {type === "plus" ? <Plus /> : <Minus />}
           </Button>

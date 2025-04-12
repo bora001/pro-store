@@ -21,6 +21,7 @@ const ProductImages = ({
         fileName={images[currentImgIdx]}
         alt={name}
         size={PRODUCT_IMAGE_SIZE}
+        priority
       />
       <Flex>
         {images.map((image, index) => (

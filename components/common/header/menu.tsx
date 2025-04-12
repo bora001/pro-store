@@ -30,7 +30,10 @@ const Menu = () => {
       <nav className="hidden md:flex w-full max-w-xs gap-1">{MenuContent}</nav>
       <nav className="md:hidden">
         <Sheet>
-          <SheetTrigger className="align-middle">
+          <SheetTrigger
+            className="align-middle"
+            aria-label="mobile-menu-button"
+          >
             <EllipsisVertical />
           </SheetTrigger>
           <SheetContent className="flex flex-col items-start">

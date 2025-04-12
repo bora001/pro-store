@@ -55,6 +55,7 @@ const AddToCart = ({
             variant="outline"
             onClick={() => setQty((prev) => prev - 1)}
             disabled={qty === 1}
+            aria-label="decrease-item-qty"
           >
             <Minus />
           </Button>
@@ -63,6 +64,7 @@ const AddToCart = ({
             variant="outline"
             onClick={() => setQty((prev) => prev + 1)}
             disabled={qty === 99}
+            aria-label="increase-item-qty"
           >
             <Plus />
           </Button>

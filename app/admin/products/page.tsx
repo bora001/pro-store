@@ -67,6 +67,7 @@ const AdminProductPage = async (props: {
                   type="badge"
                   id={product.id}
                   action={deleteProduct}
+                  buttonLabel="delete-product-button"
                 />
               </TableCell>
             </TableRow>

@@ -16,6 +16,7 @@ import { PATH } from "@/lib/constants";
 import S3Image from "./S3Image";
 import DiscountBadge from "../product/discount-badge";
 import { discountPrice } from "@/utils/price/discountPrice";
+import { Badge } from "../ui/badge";
 
 const PRODUCT_TABLE_IMAGE_SIZE = 50;
 
@@ -48,8 +49,9 @@ const ProductTable = ({
             (productId === dealID && isActiveDeal) ||
             item.dealInfo?.productId === productId;
           const discount = isOrdered ? item.dealInfo?.discount : deal_discount;
+          const noQty = item.qty === 0;
           return (
-            <TableRow key={slug}>
+            <TableRow key={slug} className={noQty ? "text-gray-400" : ""}>
               {/* image, name */}
               <TableCell>
                 <Link
@@ -61,6 +63,7 @@ const ProductTable = ({
                     fileName={image}
                     alt={name}
                     size={PRODUCT_TABLE_IMAGE_SIZE}
+                    className={noQty ? "grayscale" : ""}
                   />
                   <div>
                     <span className="px-2" data-testid="product-name">
@@ -73,10 +76,12 @@ const ProductTable = ({
                 </Link>
               </TableCell>
               {/* quantity */}
-              <TableCell
-                className={cn(" gap-2", isView ? "text-center" : "flex-center")}
-              >
-                <ItemQtyChanger item={item} isView={isView} />
+              <TableCell className={cn("h-auto text-center max-w-32")}>
+                {noQty ? (
+                  <Badge className="bg-gray-400 break-keep">Sold out</Badge>
+                ) : (
+                  <ItemQtyChanger item={item} isView={isView} />
+                )}
               </TableCell>
               {/* price */}
               <TableCell className="text-center">

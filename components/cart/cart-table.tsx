@@ -12,6 +12,7 @@ import ListContainer from "../common/list-container";
 import ProductDealTimer from "../product/product-deal-timer/product-deal-timer";
 import PriceSummaryWithArray from "../common/price-summary-with-array";
 import { calculatePrice } from "@/utils/price/calculate-price";
+import { toast } from "@/hooks/use-toast";
 
 const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
   const [isPending, startTransition] = useTransition();
@@ -23,6 +24,20 @@ const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
       Object.entries(calculatePrice(cart?.items || [], deal, isActiveDeal))
     );
   }, [cart?.items, deal, isActiveDeal]);
+
+  const startOrder = () => {
+    startTransition(() => {
+      const validCart = cart?.items.every((item) => item.qty > 0);
+      if (!validCart) {
+        toast({
+          variant: "destructive",
+          description: "Please remove sold out items from cart",
+        });
+        return;
+      }
+      router.push(PATH.SHIPPING);
+    });
+  };
 
   return (
     <Container title="Shopping Cart">
@@ -56,16 +71,14 @@ const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
                   <p className="space-x-2">
                     <span>Total</span>
                     <span className="text-gray-500 text-base">
-                      ({cart.items.reduce((acc, cur) => acc + cur.qty, 0)})
+                      ({cart.itemsCount})
                     </span>
                   </p>
                   <PriceSummaryWithArray price={price} />
                 </div>
                 <ButtonWithTransition
                   isPending={isPending}
-                  onClick={() =>
-                    startTransition(() => router.push(PATH.SHIPPING))
-                  }
+                  onClick={startOrder}
                   leftIcon={<ArrowRight />}
                   title="Proceed to Checkout"
                 />

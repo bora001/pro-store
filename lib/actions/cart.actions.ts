@@ -50,7 +50,7 @@ export async function addItemToCart(data: CartItemType, qty: number) {
 
       if (existItem) {
         if (product.stock < existItem.qty + qty)
-          throw new Error("Not enough stock");
+          throw new Error("Can't add more of this item");
         existItem.qty = existItem.qty + qty;
         existItem.discount = deal?.discount;
       } else {
@@ -93,11 +93,25 @@ export async function getMyCart() {
     });
 
     if (!cart) return undefined;
+    const cartItem = cartItemSchema.array().parse(cart.items);
+    const items = await Promise.all(
+      cartItem.map(async (item) => {
+        const product = await prisma.product.findUnique({
+          where: { id: item.productId },
+        });
+        const InStock = !!product && product.stock >= item.qty;
+        return {
+          ...item,
+          qty: InStock ? item.qty : 0,
+        };
+      })
+    );
+
     return {
       success: true,
       data: prismaToJs({
         ...cart,
-        items: cart.items as CartItemType[],
+        items,
       }),
     };
   } catch (error) {
@@ -119,8 +133,8 @@ export async function modifyItemQtyToCart(data: CartItemType, qty: number) {
       (prev: CartItemType) => prev.productId === cartItem.productId
     );
     if (existItem) {
-      if (product.stock < existItem.qty) {
-        return formatSuccess("Not enough stock");
+      if (product.stock < existItem.qty + qty) {
+        return formatSuccess("Can't add more of this item");
       }
       existItem.qty = qty;
       await prisma.cart.update({

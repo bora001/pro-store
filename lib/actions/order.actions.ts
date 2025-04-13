@@ -10,7 +10,12 @@ import { orderSchema } from "../validator";
 import { prisma } from "@/db/prisma";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { paypal } from "../paypal";
-import { OrderItemType, PaymentResultType, ShippingType } from "@/types";
+import {
+  OrderItemType,
+  PaymentResultType,
+  ProductItemType,
+  ShippingType,
+} from "@/types";
 import { revalidatePath } from "next/cache";
 import { sendPurchaseReceipt } from "@/email";
 import { PaymentFormType } from "@/components/payment/payment-form";
@@ -41,6 +46,24 @@ export async function createOrder(payment: PaymentFormType["type"]) {
     });
 
     const newOrderId = await prisma.$transaction(async (tx) => {
+      for (const item of cart.data.items) {
+        const [product]: ProductItemType[] = await tx.$queryRawUnsafe(
+          `SELECT * FROM "Product" WHERE id = $1 FOR UPDATE`,
+          item.productId
+        );
+
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.qty } },
+        });
+
+        if (!product || product.stock < item.qty || !item.qty) {
+          throw new Error(
+            "One or more items in your cart are no longer available"
+          );
+        }
+      }
+
       const newOrder = await tx.order.create({
         data: order,
       });

@@ -40,7 +40,9 @@ export type OrderType = z.infer<typeof orderSchema> & {
   };
   paymentResult: PaymentResultType;
 };
-export type CartItemType = z.infer<typeof cartItemSchema> & {};
+export type CartItemType = z.infer<typeof cartItemSchema> & {
+  InStock?: boolean;
+};
 export type ShippingType = z.infer<typeof shippingSchema>;
 export type OrderItemType = z.infer<typeof orderItemSchema> & {
   dealInfo?: addDealType | null;

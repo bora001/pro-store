@@ -116,6 +116,7 @@ const PlacerOrderForm = ({
                     ({ productId, slug, name, image, qty, price }) => {
                       const discountCondition =
                         productId === deal?.productId && isActiveDeal;
+                      const noQty = qty === 0;
 
                       return (
                         <TableRow key={slug}>
@@ -130,6 +131,7 @@ const PlacerOrderForm = ({
                                 fileName={image}
                                 alt={name}
                                 size={PLACE_ORDER_IMAGE_SIZE}
+                                className={noQty ? "grayscale" : ""}
                               />
                               <div>
                                 <span className="px-2">{name}</span>

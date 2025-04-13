@@ -19,7 +19,8 @@ const OverviewChart = ({ data }: { data: ChartDataType[] }) => {
   return (
     <div className="relative h-[350px] mt-3">
       <div
-        className={`absolute h-full bg-white z-50 w-[${CONSTANTS.HEADER_HEIGHT}px] left-0 top-0`}
+        style={{ width: `${CONSTANTS.HEADER_HEIGHT}px` }}
+        className={`absolute h-full bg-white z-50 left-0 top-0`}
       >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>

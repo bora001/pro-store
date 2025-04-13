@@ -10,7 +10,10 @@ export default function RootLayout({
   return (
     <div className="flex h-screen flex-col">
       <Header />
-      <main className={`flex-1 wrapper mt-[${CONSTANTS.HEADER_HEIGHT}px]`}>
+      <main
+        className={`flex-1 wrapper`}
+        style={{ marginTop: `${CONSTANTS.HEADER_HEIGHT}px` }}
+      >
         {children}
       </main>
       <Footer />

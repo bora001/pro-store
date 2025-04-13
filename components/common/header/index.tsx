@@ -16,7 +16,10 @@ const Header = ({
 }) => {
   return (
     <header
-      className={`w-full border-b h-[${CONSTANTS.HEADER_HEIGHT}] fixed z-50 bg-white/85 backdrop-blur dark:bg-black/85 dark:border-gray-800`}
+      style={{
+        height: `${CONSTANTS.HEADER_HEIGHT}px`,
+      }}
+      className={`w-full border-b fixed z-50 bg-white/85 backdrop-blur dark:bg-black/85 dark:border-gray-800`}
     >
       <div className="wrapper flex-between">
         {/* left */}

@@ -23,7 +23,11 @@ export const AdminControlButton = ({
     });
   };
   return (
-    <Button disabled={isPending || disabled} onClick={onControl}>
+    <Button
+      disabled={isPending || disabled}
+      onClick={onControl}
+      variant="secondary"
+    >
       {disabled ? inactive : active}
     </Button>
   );

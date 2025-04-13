@@ -32,8 +32,9 @@ const SearchInput = ({ path }: { path?: string }) => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex gap-2">
       <Input
+        className="border-t-0 border-r-0 border-l-0 border-b-1 rounded-none"
         value={searchKeyword}
         placeholder="Search"
         onKeyDown={handleKeyDown}

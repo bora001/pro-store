@@ -15,7 +15,7 @@ const Container = ({
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center my-2 mb-4">
         <div className="flex items-end gap-3">
-          <h2 className="h2-bold ">{title}</h2>
+          <h2 className="h2-bold">{title}</h2>
           {extra}
         </div>
         {button}

@@ -25,7 +25,7 @@ const UserButton = async () => {
         <div className="flex items-center">
           <Button
             variant="ghost"
-            className="relative w-8 h-8 rounded-full items-center justify-center bg-gray-200"
+            className="relative w-8 h-8 rounded-full items-center justify-center bg-gray-200 dark:bg-gray-600"
           >
             {name ? name.slice(0, 1).toLocaleUpperCase() : "N"}
           </Button>
@@ -34,15 +34,15 @@ const UserButton = async () => {
       {/* content */}
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel>
-          <div className="flex flex-col space-y-2 px-2 py-3">
+          <div className="flex flex-col space-y-3 px-2 py-4">
             <div
-              className="text-sm font-medium leading-none flex items-center gap-1"
+              className="text-sm leading-none flex items-center gap-1"
               key={name}
             >
               <User size={16} />
               {name}
             </div>
-            <p className="text-sm text-muted-foreground leading-none">
+            <p className="text-sm text-muted-foreground leading-none font-normal">
               {email}
             </p>
           </div>

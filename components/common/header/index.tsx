@@ -2,7 +2,7 @@ import Link from "next/link";
 import LogoImage from "../logo";
 import Menu from "./menu";
 import { CONFIG } from "@/lib/constants/config";
-import { PATH } from "@/lib/constants";
+import { CONSTANTS, PATH } from "@/lib/constants";
 import NavBar, { NavBarType } from "./nav-bar";
 import SearchInput from "../search-input";
 import CategoryDrawer from "./category-drawer";
@@ -15,7 +15,9 @@ const Header = ({
   isAdmin?: boolean;
 }) => {
   return (
-    <header className="w-full border-b">
+    <header
+      className={`w-full border-b h-[${CONSTANTS.HEADER_HEIGHT}] fixed z-50 bg-white/85 backdrop-blur dark:bg-black/85 dark:border-gray-800`}
+    >
       <div className="wrapper flex-between">
         {/* left */}
         <div className="flex-start gap-3">

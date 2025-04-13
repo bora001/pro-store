@@ -14,7 +14,13 @@ import {
 import { getOrderSummary } from "@/lib/actions/admin.actions";
 import { PATH } from "@/lib/constants";
 import { dateTimeConverter } from "@/lib/utils";
-import { BadgeDollarSign, Barcode, CreditCard, User } from "lucide-react";
+import {
+  BadgeDollarSign,
+  Barcode,
+  ChevronRight,
+  CreditCard,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 export const metadata = {
   title: "Dashboard",
@@ -29,41 +35,47 @@ const DashboardPage = async () => {
       title: "Total Revenue",
       icon: <BadgeDollarSign />,
       text: `$ ${summary.totalSales._sum.totalPrice || 0}`,
+      link: PATH.DASHBOARD,
     },
     {
       title: "Sales",
       icon: <CreditCard />,
       text: `${summary.orderCount}`,
+      link: PATH.ORDERS,
     },
     {
       title: "Customers",
       icon: <User />,
       text: `${summary.userCount}`,
+      link: PATH.USERS,
     },
     {
       title: "Product",
       icon: <Barcode />,
       text: `${summary.productCount}`,
+      link: PATH.PRODUCTS,
     },
   ];
   return (
     <Container title="Dashboard">
       <div className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {summaryList.map(({ text, title, icon }) => (
+          {summaryList.map(({ text, title, icon, link }) => (
             <Card key={title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{title}</CardTitle>
-                {icon}
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{text}</div>
-              </CardContent>
+              <Link href={link}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-2 pb-2">
+                  <CardTitle className="text-sm font-medium">{title}</CardTitle>
+                  {icon}
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{text}</div>
+                </CardContent>
+              </Link>
             </Card>
           ))}
         </div>
         {/* bottom */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="grid gap-4 grid-cols-2 xl:grid-cols-7">
           {/* overview */}
           <Card className="col-span-4">
             <CardHeader>
@@ -79,9 +91,18 @@ const DashboardPage = async () => {
             </CardContent>
           </Card>
           {/* recent-sales */}
-          <Card className="col-span-3">
+          <Card className="col-span-4 xl:col-span-3">
             <CardHeader>
-              <CardTitle>Recent Sales</CardTitle>
+              <CardTitle className="flex justify-between">
+                <p>Recent Sales</p>
+                <Link
+                  href={PATH.ORDERS}
+                  className="text-sm text-gray-500"
+                  aria-label="more sales"
+                >
+                  <ChevronRight />
+                </Link>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ListContainer

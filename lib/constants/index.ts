@@ -9,6 +9,7 @@ export const CONSTANTS = {
   FREE_SHIPPING_THRESHOLD: 100,
   SHIPPING_FEE: 10,
   TAX_RATE: 0.15,
+  HEADER_HEIGHT: 80,
 };
 
 export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;

@@ -23,7 +23,9 @@ export default async function AdminLayout({
   return (
     <div className="flex h-screen flex-col">
       <Header navList={NAV_LINK} isAdmin={true} />
-      <main className="flex-1 wrapper">{children}</main>
+      <main className={`flex-1 wrapper mt-[${CONSTANTS.HEADER_HEIGHT}px]`}>
+        {children}
+      </main>
       <Footer />
     </div>
   );

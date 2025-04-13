@@ -19,7 +19,7 @@ const UserButtonBox = ({ isAdmin }: { isAdmin: boolean }) => {
       {USER_BUTTON.map(({ action, title }) => (
         <Button
           key={title}
-          className="flex gap-3 justify-start w-full "
+          className="flex gap-3 justify-start w-full border-none bg-gray-100"
           onClick={action}
           variant="outline"
         >

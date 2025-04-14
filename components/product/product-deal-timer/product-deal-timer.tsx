@@ -5,14 +5,8 @@ import { Clock } from "lucide-react";
 import { capitalize, cn } from "@/lib/utils";
 import { ClassValue } from "clsx";
 import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
-import dynamic from "next/dynamic";
-const ProductDealTimerContent = dynamic(
-  () => import("./product-deal-timer-content"),
-  {
-    loading: () => <></>,
-    ssr: false,
-  }
-);
+import ProductDealTimerContent from "./product-deal-timer-content";
+
 const ProductDealTimer = ({
   endTime,
   type = "limited",

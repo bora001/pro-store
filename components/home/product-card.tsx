@@ -25,6 +25,7 @@ const ProductCard = ({
             fileName={String(images[0])}
             alt={name}
             size={PRODUCT_CARD_IMAGE_SIZE}
+            priority
           />
         </Link>
       </CardHeader>

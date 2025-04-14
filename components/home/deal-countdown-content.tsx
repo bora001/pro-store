@@ -64,6 +64,7 @@ const DealCountdownContent = ({
               </p>
               <DealCountdownTimer
                 endTime={String(deal.endTime) || ""}
+                isActiveDeal={isActiveDeal}
                 setIsActiveDeal={setIsActiveDeal}
               />
               <div className="flex items-center gap-2 my-2">

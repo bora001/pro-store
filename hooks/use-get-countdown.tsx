@@ -10,16 +10,18 @@ type CountdownResult<T extends CountdownType> = {
   array: CountdownArray;
   object: CountdownObject;
 }[T];
-
+const INITIAL_TIME = { days: 0, hours: 0, minutes: 0, seconds: 0 };
 function useGetCountdown<T extends CountdownType>(
   endTime: string,
   type: T = "object" as T
 ): CountdownResult<T> {
-  const [timeLeft, setTimeLeft] = useState(() => calculateTime(endTime));
+  const [timeLeft, setTimeLeft] = useState(
+    () => calculateTime(endTime) || INITIAL_TIME
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(calculateTime(endTime));
+      setTimeLeft(calculateTime(endTime) || INITIAL_TIME);
     }, 1000);
     return () => clearInterval(timer);
   }, [endTime]);
@@ -34,11 +36,10 @@ function useGetCountdown<T extends CountdownType>(
     ) || [];
   if (type === "array") return timeArray as CountdownResult<T>;
 
-  const timeObj =
-    ["DAYS", "HRS", "MINS", "SECS"].map((label, index) => ({
-      label,
-      value: timeArray[index],
-    })) || {};
+  const timeObj = ["DAYS", "HRS", "MINS", "SECS"].map((label, index) => ({
+    label,
+    value: timeArray[index],
+  }));
   return timeObj as CountdownResult<T>;
 }
 

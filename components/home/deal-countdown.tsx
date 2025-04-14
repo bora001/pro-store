@@ -1,3 +1,4 @@
+"use client";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlarmClock } from "lucide-react";
 import { addDealType } from "@/types";

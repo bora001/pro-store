@@ -1,0 +1,4 @@
+FROM typesense/typesense:28.0
+RUN mkdir -p /data
+EXPOSE 3000 
+CMD ["--data-dir", "/data", "--api-key", "$TYPESENSE_API_KEY", "--enable-cors"]

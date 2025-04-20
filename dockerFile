@@ -1,4 +1,5 @@
-FROM typesense/typesense:28.0
+FROM typesense/typesense:0.25.1
 RUN mkdir -p /data
-EXPOSE 3000 
-CMD ["--data-dir", "/data", "--api-key", "$TYPESENSE_API_KEY", "--enable-cors"]
+COPY typesense-server.ini /typesense-server.ini
+CMD ["/opt/typesense-server", "--config=/typesense-server.ini", "--listen-port=10000"]
+EXPOSE 10000

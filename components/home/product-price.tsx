@@ -2,8 +2,8 @@
 import { cn, divideByDecimal } from "@/lib/utils";
 import Text from "../custom/Text";
 import OriginalPrice from "./original-price";
-import { useState } from "react";
 import { discountPrice } from "@/utils/price/discountPrice";
+import useGetCountdown from "@/hooks/use-get-countdown";
 
 const ProductPrice = ({
   unit = "$",
@@ -18,21 +18,19 @@ const ProductPrice = ({
   endTime?: string;
   discount?: number;
 }) => {
+  const { isEnded } = useGetCountdown(endTime || "", "array");
+
   const [whole, fraction] = divideByDecimal(
     discountPrice(+price, discount, !!discount)
   );
   const [original_whole, original_fraction] = divideByDecimal(+price);
-  const [isActiveDeal, setIsActiveDeal] = useState(
-    endTime ? endTime?.length > 0 : false
-  );
 
-  const isActive = endTime && isActiveDeal;
+  const isActive = endTime && !isEnded;
   return (
     <div className={"flex gap-1"}>
       {isActive && (
         <OriginalPrice
-          setIsActiveDeal={setIsActiveDeal}
-          endTime={endTime || ""}
+          isEnd={isEnded}
           price={`${unit}
           ${original_whole}.${original_fraction}`}
         />

@@ -6,6 +6,7 @@ import { PATH } from "@/lib/constants";
 import RatingStar from "../common/rating-star";
 import { Badge } from "../ui/badge";
 import S3Image from "../common/S3Image";
+import ProductDiscountBadge from "../product/product-discount-badge";
 
 const PRODUCT_CARD_IMAGE_SIZE = 306;
 
@@ -16,11 +17,16 @@ const ProductCard = ({
 }) => {
   const endTime = String(Deal?.[0]?.endTime || "");
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm ">
       {/* header */}
-      <CardHeader className="items-center p-0">
+      <div className="relative">
+        <ProductDiscountBadge endTime={endTime} discount={Deal[0]?.discount} />
+      </div>
+
+      <CardHeader className="items-center p-0 ">
         <Link href={`${PATH.PRODUCT}/${slug}`}>
           <S3Image
+            className="rounded-2xl"
             folder="product"
             fileName={String(images[0])}
             alt={name}

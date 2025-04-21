@@ -181,7 +181,12 @@ export async function getAllProducts({
       ...ratingFilter,
     },
     include: {
-      Deal: true,
+      Deal: {
+        where: {
+          isActive: true,
+          endTime: { gte: new Date() },
+        },
+      },
     },
     orderBy: sort ? sortFilter[sort] : sortFilter.default,
     take: limit,
@@ -189,7 +194,7 @@ export async function getAllProducts({
   });
   const productCount = await prisma.product.count();
   return {
-    product,
+    product: prismaToJs(product),
     productCount,
     totalPages: limit ? Math.ceil(productCount / limit) : 0,
   };

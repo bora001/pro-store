@@ -25,6 +25,7 @@ const ProductPrice = ({
   const [isActiveDeal, setIsActiveDeal] = useState(
     endTime ? endTime?.length > 0 : false
   );
+
   const isActive = endTime && isActiveDeal;
   return (
     <div className={"flex gap-1"}>

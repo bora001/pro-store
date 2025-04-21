@@ -26,7 +26,11 @@ const ProductSection = ({ product }: { product: ProductItemType }) => {
       <div className="grid grid-cols-1 md:grid-cols-5">
         {/* image */}
         <div className="col-span-2 relative">
-          {isDeal && <ProductDealTimer endTime={endTime} type={Deal[0].type} />}
+          <ProductDealTimer
+            isActiveDeal={isDeal}
+            endTime={endTime}
+            type={Deal[0]?.type}
+          />
           <ProductImages images={images} name={name} />
         </div>
         {/* detail : brand + category + name + rating + review + price + description */}

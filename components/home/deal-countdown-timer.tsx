@@ -12,14 +12,14 @@ const DealCountdownTimer = ({
   setIsActiveDeal?: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const timeParts = useGetCountdown(endTime, "object");
+  const { time: timeParts, isEnded } = useGetCountdown(endTime, "object");
 
   useEffect(() => {
     setIsMounted(true);
     if (setIsActiveDeal) {
-      setIsActiveDeal(timeParts.length > 0);
+      setIsActiveDeal(!isEnded);
     }
-  }, [setIsActiveDeal, timeParts]);
+  }, [setIsActiveDeal, isEnded]);
 
   return (
     <div className="flex gap-4">

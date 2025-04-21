@@ -163,14 +163,13 @@ const PlacerOrderForm = ({
         {/* summary + place-order */}
         <div className="space-y-4">
           <Card className={cn("overflow-hidden")}>
-            {deal && (
-              <ProductDealTimer
-                endTime={String(endTime || "")}
-                className="relative"
-                setIsActiveDeal={setIsActiveDeal}
-                noRound
-              />
-            )}
+            <ProductDealTimer
+              isActiveDeal={deal && isActiveDeal}
+              endTime={String(endTime || "")}
+              className="relative"
+              setIsActiveDeal={setIsActiveDeal}
+              noRound
+            />
             <CardContent>
               <div className={cn("space-y-1 mt-5")}>
                 <PriceSummaryWithArray price={price} />

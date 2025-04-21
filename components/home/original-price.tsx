@@ -12,12 +12,10 @@ const OriginalPrice = ({
   price: string;
   setIsActiveDeal: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const time = useGetCountdown(endTime || "", "array");
+  const { time, isEnded } = useGetCountdown(endTime || "", "array");
   useEffect(() => {
-    if (!time.length) {
-      setIsActiveDeal(false);
-    }
-  }, [setIsActiveDeal, time]);
+    setIsActiveDeal(!isEnded);
+  }, [setIsActiveDeal, isEnded]);
 
   return (
     <div

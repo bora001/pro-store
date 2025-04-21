@@ -13,14 +13,16 @@ const ProductDealTimer = ({
   className,
   noRound,
   setIsActiveDeal,
+  isActiveDeal = true,
 }: {
   endTime: string;
   type?: string;
   className?: ClassValue;
   noRound?: boolean;
+  isActiveDeal?: boolean;
   setIsActiveDeal?: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const time = useGetCountdown(endTime, "array");
+  const { time, isEnded } = useGetCountdown(endTime, "array");
   const trimmedTime = useMemo(() => {
     const result = [...time];
     while (result.length > 2 && result[0] === "00") {
@@ -31,13 +33,16 @@ const ProductDealTimer = ({
 
   useEffect(() => {
     if (setIsActiveDeal) {
-      setIsActiveDeal(time.length > 0);
+      setIsActiveDeal(!isEnded);
     }
-  }, [setIsActiveDeal, time.length]);
-
+  }, [isEnded, setIsActiveDeal]);
   return (
     <div
-      className={cn("absolute", time.length ? "block" : "hidden", className)}
+      className={cn(
+        "absolute",
+        isActiveDeal && !isEnded ? "block" : "hidden",
+        className
+      )}
     >
       <Badge
         variant="destructive"

@@ -58,14 +58,13 @@ const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
             </div>
             {/* cart detail */}
             <Card className="overflow-hidden">
-              {deal && (
-                <ProductDealTimer
-                  endTime={String(deal?.endTime || "")}
-                  className="relative"
-                  setIsActiveDeal={setIsActiveDeal}
-                  noRound
-                />
-              )}
+              <ProductDealTimer
+                isActiveDeal={deal && isActiveDeal}
+                endTime={String(deal?.endTime || "")}
+                className="relative"
+                setIsActiveDeal={setIsActiveDeal}
+                noRound
+              />
               <CardContent className="p-4 gap-3 ">
                 <div className="text-xl space-y-5 mb-5">
                   <p className="space-x-2">

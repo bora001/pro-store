@@ -9,12 +9,13 @@ import {
   getLatestProducts,
 } from "@/lib/actions/product.actions";
 import { PATH } from "@/lib/constants";
+import { initProductSearch } from "@/lib/typesense/initProductSearch";
 import Link from "next/link";
 const HomePage = async () => {
   const latestProduct = await getLatestProducts();
   const featureProduct = await getFeatureProduct();
   const { data: deal } = await getDeal({ isActive: true });
-
+  initProductSearch();
   return (
     <div className={"space-y-6 my-4"}>
       <ProductCarousel data={featureProduct} />

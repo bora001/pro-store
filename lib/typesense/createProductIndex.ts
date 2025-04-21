@@ -1,6 +1,20 @@
 import { CollectionCreateSchema } from "typesense/lib/Typesense/Collections";
 import client from "../typesense";
-
+import { ProductItemType } from "@/types";
+export interface ProductIndexType
+  extends Pick<
+    ProductItemType,
+    | "id"
+    | "name"
+    | "category"
+    | "description"
+    | "brand"
+    | "numReviews"
+    | "stock"
+  > {
+  createdAt: number;
+  rating: number;
+}
 const productSchema: CollectionCreateSchema = {
   name: "products",
   fields: [
@@ -8,7 +22,6 @@ const productSchema: CollectionCreateSchema = {
     { name: "name", type: "string", optional: false, facet: true },
     { name: "category", type: "string", optional: false },
     { name: "description", type: "string", optional: false },
-    { name: "price", type: "float", optional: false },
     { name: "brand", type: "string", optional: false },
     { name: "rating", type: "float", optional: false },
     { name: "numReviews", type: "int32", optional: false },

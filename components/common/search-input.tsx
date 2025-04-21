@@ -69,6 +69,12 @@ const SearchInput = ({ path }: { path?: string }) => {
     setSearchKeyword(e.target.value);
   };
 
+  const handleBlur = () => {
+    setTimeout(() => {
+      setRecommendations([]);
+    }, 1000);
+  };
+
   return (
     <div className="relative">
       <div className="flex gap-2 w-80">
@@ -78,6 +84,7 @@ const SearchInput = ({ path }: { path?: string }) => {
           placeholder="Search"
           onKeyDown={handleKeyDown}
           onChange={handleInput}
+          onBlur={handleBlur}
         />
 
         <Link

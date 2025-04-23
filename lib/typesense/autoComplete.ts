@@ -19,7 +19,6 @@ export async function autocomplete(queryText: string) {
     return searchResults.hits?.map((hit) => hit.document.name);
   } catch (error) {
     initProductSearch();
-    console.error("Error during autocomplete search:", error);
-    throw error;
+    return [];
   }
 }

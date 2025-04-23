@@ -21,6 +21,7 @@ import { sendPurchaseReceipt } from "@/email";
 import { PaymentFormType } from "@/components/payment/payment-form";
 import { hasIncludedDeal } from "./admin.actions";
 import { calculatePrice } from "@/utils/price/calculate-price";
+import { updateProductIndex } from "../typesense/updateProductIndex";
 
 // place-order
 export async function createOrder(payment: PaymentFormType["type"]) {
@@ -52,16 +53,34 @@ export async function createOrder(payment: PaymentFormType["type"]) {
           item.productId
         );
 
-        await tx.product.update({
-          where: { id: item.productId },
-          data: { stock: { decrement: item.qty } },
-        });
-
         if (!product || product.stock < item.qty || !item.qty) {
           throw new Error(
             "One or more items in your cart are no longer available"
           );
         }
+        const updatedProduct = await tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.qty } },
+          select: {
+            id: true,
+            name: true,
+            category: true,
+            stock: true,
+            price: true,
+            createdAt: true,
+            rating: true,
+            description: true,
+            brand: true,
+            numReviews: true,
+          },
+        });
+
+        // update typesense
+        updateProductIndex({
+          ...updatedProduct,
+          createdAt: product.createdAt.getTime(),
+          rating: parseFloat(product.rating.toString()),
+        });
       }
 
       const newOrder = await tx.order.create({

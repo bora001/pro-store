@@ -19,6 +19,9 @@ import {
 } from "../validator";
 import { z } from "zod";
 import { deleteImage } from "./image.actions";
+import { createOneProductIndex } from "../typesense/createOneProductIndex";
+import { updateProductIndex } from "../typesense/updateProductIndex";
+import { deleteItemIndex } from "../typesense/deleteOneItem";
 
 // order-summary
 export async function getOrderSummary() {
@@ -216,6 +219,7 @@ export async function deleteProduct(id: string) {
         id,
       },
     });
+    await deleteItemIndex({ model: "products", id });
     revalidatePath(PATH.PRODUCTS);
     return formatSuccess("Product deleted successfully");
   } catch (error) {
@@ -227,7 +231,13 @@ export async function deleteProduct(id: string) {
 export async function createProduct(data: z.infer<typeof insertProductSchema>) {
   try {
     const product = insertProductSchema.parse(data);
-    await prisma.product.create({ data: product });
+    const result = await prisma.product.create({ data: product });
+    await createOneProductIndex({
+      ...product,
+      id: result.id,
+      rating: 0,
+      createdAt: new Date().getTime(),
+    });
     revalidatePath(PATH.PRODUCTS);
     return formatSuccess("Product created successfully");
   } catch (error) {
@@ -246,6 +256,12 @@ export async function updateProduct(data: updateProductType) {
     await prisma.product.update({
       where: { id: data.id },
       data: product,
+    });
+    await updateProductIndex({
+      ...product,
+      id: data.id!,
+      createdAt: isProductExist.createdAt.getTime(),
+      rating: +isProductExist.rating,
     });
     revalidatePath(PATH.PRODUCTS);
     return formatSuccess("Product updated successfully");

@@ -46,3 +46,6 @@ next-env.d.ts
 
 # test
 /test-results
+
+#typesense
+/typesense-data

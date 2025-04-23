@@ -1,0 +1,5 @@
+FROM typesense/typesense:0.25.1
+RUN mkdir -p /data
+COPY typesense-server.ini /typesense-server.ini
+CMD ["/opt/typesense-server", "--config=/typesense-server.ini", "--listen-port=10000"]
+EXPOSE 10000

@@ -1,5 +1,13 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.1.0](https://github.com/bora001/pro-store/compare/v1.0.0...v1.1.0) (2025-04-23)
+This release includes several enhancements, such as new features.
+
+### 🚀 New Features
+* set up typesense and implement autocomplete feature ([802f1c4](https://github.com/bora001/pro-store/commit/802f1c4568a80467a8e42241c1cbd05a362cd8d2))
+
+* update Typesense product index after product update ([6e44eee](https://github.com/bora001/pro-store/commit/6e44eeea62af59fd2066fb6fda4e42a6af99a48e))
+
 ## Release Overview [1.0.0](https://github.com/bora001/pro-store/compare/...v1.0.0) (2025-04-23)
 This release includes several enhancements, such as new features, bug fixes, code refactoring.
 

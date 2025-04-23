@@ -1,4 +1,5 @@
 const base = process.env.PAYPAL_API_URL;
+
 export const paypal = {
   createOrder: async function createOrder(price: number) {
     const accessToken = await generateAccessToken();

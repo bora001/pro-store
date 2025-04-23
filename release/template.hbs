@@ -1,0 +1,15 @@
+{{#if commitGroups.length}}
+## Release Overview [{{@root.version}}](https://github.com/{{@root.owner}}/{{@root.repository}}/compare/{{@root.previousTag}}...{{@root.currentTag}}) ({{@root.date}})
+This release includes several enhancements, such as {{#each commitGroups}}{{lowerCase (removeEmoji this.title)}}{{#if @last}}.{{else}}, {{/if}}{{/each}}
+
+{{#each commitGroups}}
+### {{this.title}}
+{{#each this.commits}}
+{{> commit root=@root}} 
+{{log @root}}
+{{/each}}
+{{/each}}
+
+{{else}}
+{{version}} comes with no significant changes.
+{{/if}}

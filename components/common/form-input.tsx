@@ -16,7 +16,13 @@ type FormInputPropsType<T extends FieldValues> = {
   type?: FormInputType;
   disabled?: boolean;
 };
-type FormInputType = "text" | "textarea" | "number" | "date" | "datetime-local";
+type FormInputType =
+  | "text"
+  | "textarea"
+  | "number"
+  | "date"
+  | "datetime-local"
+  | "password";
 
 const FormInput = <T extends FieldValues>({
   name,
@@ -25,11 +31,9 @@ const FormInput = <T extends FieldValues>({
   disabled,
 }: FormInputPropsType<T>) => {
   const { control } = useFormContext();
-
   const isTextArea = type === "textarea";
   return (
     <FormField
-      disabled={disabled}
       control={control}
       name={name}
       render={({ field }) => {
@@ -38,8 +42,9 @@ const FormInput = <T extends FieldValues>({
             ? toDatetimeLocalValue(field.value)
             : field.value;
         const props = {
-          placeholder,
           ...field,
+          placeholder,
+          disabled,
           value: value ?? "",
         };
         return (

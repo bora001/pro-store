@@ -2,6 +2,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth, { NextAuthConfig } from "next-auth";
 import { prisma } from "./db/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
+import NodemailerProvider from "@auth/core/providers/nodemailer";
+
 import { compareSync } from "bcrypt-ts-edge";
 import { cookies } from "next/headers";
 import { CartItemType } from "./types";
@@ -17,6 +19,11 @@ export const config = {
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   adapter: PrismaAdapter(prisma),
   providers: [
+    NodemailerProvider({
+      server: process.env.EMAIL_SERVER,
+      from: process.env.EMAIL_FROM,
+    }),
+
     CredentialsProvider({
       credentials: { email: { type: "email" }, password: { type: "password" } },
       async authorize(credentials): Promise<User | null> {

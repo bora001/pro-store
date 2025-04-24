@@ -1,9 +1,14 @@
 "use server";
 
-import { shippingSchema, signInSchema, signUpSchema } from "../validator";
+import { shippingSchema, signInSchema } from "../validator";
 import { auth, signIn, signOut } from "@/auth";
 import { prisma } from "@/db/prisma";
-import { ShippingType, editUserType, userProfileType } from "@/types";
+import {
+  ShippingType,
+  editUserType,
+  signUpInfo,
+  userProfileType,
+} from "@/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { hashSync } from "bcrypt-ts-edge";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -12,6 +17,7 @@ import { ZodError } from "zod";
 import { formatError, formatSuccess } from "../utils";
 import { revalidatePath } from "next/cache";
 import { PATH } from "../constants";
+import { sendVerificationEmail } from "../verification/email-verification";
 
 // sign-in
 export async function signInUser(prevState: unknown, formData: FormData) {
@@ -40,15 +46,24 @@ export async function signOutUser() {
   return formatSuccess("Signed out successfully");
 }
 
+// check-duplicate-email
+export async function checkDuplicateEmail(email: string) {
+  const user = await prisma.user.findFirst({
+    where: { email },
+  });
+  if (user) {
+    return {
+      success: false,
+      message: "Email already exists",
+    };
+  } else {
+    return { success: true, message: "Email is valid" };
+  }
+}
+
 // sign-up
-export async function signUpUser(prevState: unknown, formData: FormData) {
+export async function signUpUser(user: signUpInfo) {
   try {
-    const user = signUpSchema.parse({
-      name: formData.get("name"),
-      email: formData.get("email"),
-      password: formData.get("password"),
-      confirmPassword: formData.get("confirmPassword"),
-    });
     await prisma.user.create({
       data: {
         name: user.name,
@@ -61,8 +76,8 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
   } catch (error: unknown) {
     if (isRedirectError(error)) throw error;
     const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
+      name: user.name,
+      email: user.email,
     };
     if (error instanceof ZodError && error?.name === "ZodError")
       return { success: false, message: error?.errors[0].message, data };
@@ -160,3 +175,23 @@ export async function deleteUser(id: string) {
     return formatError(error);
   }
 }
+
+// email-verification
+export const userVerificationEmail = async ({
+  email,
+  token,
+}: {
+  email: string;
+  token: string;
+}) => {
+  if (!email) {
+    return { success: false, message: "Please Enter your Email" };
+  }
+  try {
+    await sendVerificationEmail({ email, token });
+    return { success: true };
+  } catch (err) {
+    console.log(err, "err");
+    return { success: false, message: "Failed to send the email." };
+  }
+};

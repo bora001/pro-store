@@ -67,6 +67,7 @@ const AdminUserPage = async (props: {
                   id={id}
                   action={deleteUser}
                   buttonLabel="delete-user-button"
+                  returnPath={PATH.HOME}
                 />
               </TableCell>
             </TableRow>

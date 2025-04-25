@@ -30,7 +30,6 @@ jobs:
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           PAYPAL_API_URL: ${{ secrets.PAYPAL_API_URL }}
           PAYPAL_APP_SECRET: ${{ secrets.PAYPAL_APP_SECRET }}

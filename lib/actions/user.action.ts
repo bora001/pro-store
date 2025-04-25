@@ -15,9 +15,12 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 import { ZodError } from "zod";
 import { formatError, formatSuccess } from "../utils";
-import { revalidatePath } from "next/cache";
+import {
+  sendDeleteAccountConfirm,
+  sendWelcomeEmail,
+} from "../email/mail-handler";
 import { PATH } from "../constants";
-import { sendVerificationEmail } from "../verification/email-verification";
+import { revalidatePath } from "next/cache";
 
 // sign-in
 export async function signInUser(prevState: unknown, formData: FormData) {
@@ -71,6 +74,7 @@ export async function signUpUser(user: signUpInfo) {
         password: hashSync(user.password, 10),
       },
     });
+    await sendWelcomeEmail({ name: user.name, email: user.email });
     await signIn("credentials", { email: user.email, password: user.password });
     return formatSuccess("Signed up successfully");
   } catch (error: unknown) {
@@ -176,22 +180,16 @@ export async function deleteUser(id: string) {
   }
 }
 
-// email-verification
-export const userVerificationEmail = async ({
-  email,
-  token,
-}: {
-  email: string;
-  token: string;
-}) => {
-  if (!email) {
-    return { success: false, message: "Please Enter your Email" };
-  }
+// delete-user-account
+export async function deleteUserAccount(id: string) {
   try {
-    await sendVerificationEmail({ email, token });
-    return { success: true };
-  } catch (err) {
-    console.log(err, "err");
-    return { success: false, message: "Failed to send the email." };
+    const data = await prisma.user.delete({
+      where: { id },
+    });
+    await sendDeleteAccountConfirm({ email: data.email, name: data.name });
+    await signOut({ redirect: false });
+    return formatSuccess("User is deleted successfully");
+  } catch (error) {
+    return formatError(error);
   }
-};
+}

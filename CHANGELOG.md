@@ -1,5 +1,11 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.3.0](https://github.com/bora001/pro-store/compare/v1.2.1...v1.3.0) (2025-04-25)
+This release includes several enhancements, such as new features.
+
+### 🚀 New Features
+* (user): add userDelete function and implement email service ([5fdef98](https://github.com/bora001/pro-store/commit/5fdef983c81feb914fa99ae1c56767b748e7e636))
+
 ## Release Overview [1.2.1](https://github.com/bora001/pro-store/compare/v1.2.0...v1.2.1) (2025-04-25)
 This release includes several enhancements, such as bug fixes.
 

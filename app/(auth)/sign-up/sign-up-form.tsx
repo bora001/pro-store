@@ -94,7 +94,7 @@ const SignUpForm = () => {
             <FormInput
               placeholder="email@example.com"
               name="email"
-              disabled={codeVerified}
+              disabled={emailSent || codeVerified}
             />
             {!emailSent && (
               <Button

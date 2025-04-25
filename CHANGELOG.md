@@ -1,5 +1,16 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.2.0](https://github.com/bora001/pro-store/compare/v1.1.0...v1.2.0) (2025-04-25)
+This release includes several enhancements, such as new features, bug fixes.
+
+### 🚀 New Features
+* email verification step added to sign-up process ([2a29737](https://github.com/bora001/pro-store/commit/2a29737b0cbf04f3582ccb8e6ad8e9892b7d7dc0))
+
+* update responsive layout for mobile and tablet ([42317a3](https://github.com/bora001/pro-store/commit/42317a32f5d396eef8ab3a2b3ca754be0769a12c))
+
+### 🐛 Bug Fixes
+* add secret ([6a46f79](https://github.com/bora001/pro-store/commit/6a46f792fe6f4cb9a0cda316d18139bbc65a3265))
+
 ## Release Overview [1.1.0](https://github.com/bora001/pro-store/compare/v1.0.0...v1.1.0) (2025-04-23)
 This release includes several enhancements, such as new features.
 

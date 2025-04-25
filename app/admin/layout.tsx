@@ -2,15 +2,8 @@ import { auth } from "@/auth";
 import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
 import { CONSTANTS, PATH } from "@/lib/constants";
+import { ADMIN_NAV_LINK } from "@/lib/constants/nav-link";
 import { redirect } from "next/navigation";
-
-const NAV_LINK = [
-  { title: "Dashboard", href: PATH.DASHBOARD },
-  { title: "Products", href: PATH.PRODUCTS },
-  { title: "Orders", href: PATH.ORDERS },
-  { title: "Users", href: PATH.USERS },
-  { title: "Deals", href: PATH.DEALS },
-];
 
 export default async function AdminLayout({
   children,
@@ -22,7 +15,7 @@ export default async function AdminLayout({
 
   return (
     <div className="flex h-screen flex-col">
-      <Header navList={NAV_LINK} isAdmin={true} />
+      <Header navList={ADMIN_NAV_LINK} isAdmin={true} />
       <main
         className={`flex-1 wrapper`}
         style={{ marginTop: `${CONSTANTS.HEADER_HEIGHT}px` }}

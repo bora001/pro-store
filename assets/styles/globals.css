@@ -29,6 +29,9 @@
   .h3-bold {
     @apply font-bold text-xl lg:text-2xl;
   }
+  .table-fit {
+    min-width: 1200px;
+  }
 }
 
 @layer base {

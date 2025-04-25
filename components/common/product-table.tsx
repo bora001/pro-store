@@ -1,4 +1,5 @@
 "use client";
+
 import ItemQtyChanger from "../cart/item-qty-changer";
 import ItemRemoveButton from "../cart/item-remove-button";
 import {
@@ -36,8 +37,8 @@ const ProductTable = ({
       <TableHeader>
         <TableRow>
           <TableHead>Item</TableHead>
-          <TableHead className="text-center">Quantity</TableHead>
-          <TableHead className="text-center">Price</TableHead>
+          <TableHead className="text-center w-28">Quantity</TableHead>
+          <TableHead className="text-center min-w-24">Price</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -51,22 +52,22 @@ const ProductTable = ({
           const discount = isOrdered ? item.dealInfo?.discount : deal_discount;
           const noQty = item.qty === 0;
           return (
-            <TableRow key={slug} className={noQty ? "text-gray-400" : ""}>
+            <TableRow key={slug} className={`${noQty && "text-gray-400"}`}>
               {/* image, name */}
-              <TableCell>
+              <TableCell className="p-2">
                 <Link
                   href={`${PATH.PRODUCT}/${slug}`}
-                  className="flex items-center"
+                  className="flex items-center space-x-2"
                 >
                   <S3Image
                     folder="product"
                     fileName={image}
                     alt={name}
                     size={PRODUCT_TABLE_IMAGE_SIZE}
-                    className={noQty ? "grayscale" : ""}
+                    className={`hidden sm:block ${noQty && "grayscale"}`}
                   />
                   <div>
-                    <span className="px-2" data-testid="product-name">
+                    <span className="pr-2" data-testid="product-name">
                       {name}
                     </span>
                     {discountCondition && (
@@ -76,11 +77,11 @@ const ProductTable = ({
                 </Link>
               </TableCell>
               {/* quantity */}
-              <TableCell className={cn("h-auto text-center max-w-32")}>
+              <TableCell className={cn("h-auto text-center max-w-20")}>
                 {noQty ? (
                   <Badge className="bg-gray-400 break-keep">Sold out</Badge>
                 ) : (
-                  <ItemQtyChanger item={item} isView={isView} />
+                  <ItemQtyChanger item={item} isView={isView} size="sm" />
                 )}
               </TableCell>
               {/* price */}
@@ -88,7 +89,7 @@ const ProductTable = ({
                 $ {discountPrice(+price, discount, discountCondition)}
               </TableCell>
               {!isView && (
-                <TableCell>
+                <TableCell className="p-0">
                   <ItemRemoveButton item={item} />
                 </TableCell>
               )}

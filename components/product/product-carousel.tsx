@@ -31,7 +31,7 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
     })
   );
   return (
-    <div>
+    <div className="w-full">
       {!data.length ? (
         <div className="h-80 overflow-y-hidden">
           <Image
@@ -44,7 +44,7 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
         </div>
       ) : (
         <Carousel
-          className={cn("w-full mb-2", !data.length && "hidden")}
+          className={cn("mb-2", !data.length && "hidden")}
           opts={{ loop: true }}
           plugins={[plugin.current]}
           onMouseEnter={() => isAutoplayEnabled && plugin.current.stop()}
@@ -68,8 +68,8 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
           </CarouselContent>
           {isAutoplayEnabled && (
             <>
-              <CarouselPrevious />
-              <CarouselNext />
+              <CarouselPrevious className="sm:hidden md:flex md:-left-4 shadow-lg" />
+              <CarouselNext className="sm:hidden md:flex md:-right-4 shadow-lg" />
             </>
           )}
         </Carousel>

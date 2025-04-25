@@ -10,12 +10,12 @@ type CheckoutStepType = (typeof checkoutSteps)[number];
 
 const CheckoutStep = ({ step }: { step: CheckoutStepType }) => {
   return (
-    <div className="flex-between flex-col md:flex-row space-x-2 space-y-2 mb-10 max-w-max mx-auto">
+    <div className="flex-between flex-row space-x-2 space-y-2 mb-10 max-w-max mx-auto">
       {checkoutSteps.map((currentStep) => (
         <Fragment key={currentStep}>
           <div
             className={cn(
-              "p-2 w-56 rounded-full text-center text-sm border",
+              "p-2 w-24 sm:w-56 rounded-xl sm:rounded-full text-center text-sm border break-words ",
               currentStep === step && "bg-secondary"
             )}
           >

@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import { CardContent } from "../ui/card";
 import { PATH } from "@/lib/constants";
@@ -49,13 +50,18 @@ const DealCountdownContent = ({
         </CardContent>
       ) : (
         <CardContent className={cn("flex justify-center")}>
-          <div className="flex gap-8">
-            <div className={cn("rounded-lg overflow-hidden shadow-lg")}>
+          <div className="flex gap-8 flex-col lg:flex-row items-center">
+            <div
+              className={cn(
+                "rounded-lg overflow-hidden shadow-lg aspect-square relative size-56 lg:size-72"
+              )}
+            >
               <Image
                 src={`https://${CONFIG.IMAGE_URL}/product/${deal.product?.images[0]}`}
                 alt="Promo"
-                width={300}
-                height={300}
+                sizes="100%"
+                fill
+                priority
               />
             </div>
             <div className="flex flex-col items-center justify-center gap-4 px-4">

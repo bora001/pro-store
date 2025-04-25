@@ -1,7 +1,8 @@
 "use client";
+
 import { Minus, Plus } from "lucide-react";
 import Flex from "../common/flex";
-import { Button } from "../ui/button";
+import { Button, ButtonProps } from "../ui/button";
 import { CartItemType } from "@/types";
 import { useTransition } from "react";
 import {
@@ -9,14 +10,17 @@ import {
   removeItemToCart,
 } from "@/lib/actions/cart.actions";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const TYPE = ["minus", "qty", "plus"];
 const ItemQtyChanger = ({
   item,
   isView,
+  size = "default",
 }: {
   item: CartItemType;
   isView?: boolean;
+  size?: ButtonProps["size"];
 }) => {
   const [isPending, startTransition] = useTransition();
   const handleItemQty = (type: string) => {
@@ -32,12 +36,12 @@ const ItemQtyChanger = ({
     });
   };
   return (
-    <Flex className="justify-between">
+    <Flex className="justify-between gap-2">
       {TYPE.map((type) =>
         type === "qty" ? (
           <span
             key={type}
-            className="w-12 text-center"
+            className={cn("w-12 text-center")}
             data-testid="product-qty"
           >
             {item.qty}
@@ -45,7 +49,11 @@ const ItemQtyChanger = ({
         ) : (
           <Button
             key={type}
-            className={isView ? "hidden" : "block"}
+            className={cn(
+              isView ? "hidden" : "block",
+              size === "sm" && "p-3 w-0 h-0 flex items-center justify-center"
+            )}
+            size={size}
             variant="outline"
             onClick={() => handleItemQty(type)}
             disabled={isPending}

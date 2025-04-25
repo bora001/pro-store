@@ -48,8 +48,8 @@ const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
         linkText="Go to shopping"
       >
         {cart && (
-          <div className="grid md:grid-cols-4 md:gap-5">
-            <div className="overflow-x-auto md:col-span-3">
+          <div className="flex flex-col-reverse lg:flex-row w-full gap-5 items-center lg:items-start">
+            <div className="overflow-x-auto  flex-1 sm:basis-2/3  md:basis-5/7 lg:basis-3/4 w-full">
               <ProductTable
                 items={cart.items}
                 deal={deal}
@@ -57,7 +57,7 @@ const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
               />
             </div>
             {/* cart detail */}
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden flex-1 sm:basis-1/3 md:basis-2/7 lg:basis-1/4 sm:max-w-md max-w-full w-full">
               <ProductDealTimer
                 isActiveDeal={deal && isActiveDeal}
                 endTime={String(deal?.endTime || "")}

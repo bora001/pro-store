@@ -15,7 +15,7 @@ import {
 } from "../ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { ResponseType } from "@/types";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type DeleteButtonType = "button" | "badge" | "custom";
 
@@ -28,6 +28,7 @@ interface DeleteButtonPropsBase {
   children?: ReactNode;
   returnPath?: string;
   buttonLabel: string;
+  title?: string;
 }
 type DeleteButtonPropsType =
   | (DeleteButtonPropsBase & { type: "button" } & DeleteButtonButtonProps)
@@ -40,8 +41,10 @@ const DeleteButton = ({
   children,
   returnPath,
   buttonLabel,
+  title,
   ...props
 }: DeleteButtonPropsType) => {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const onDelete = () => {
@@ -50,15 +53,15 @@ const DeleteButton = ({
       if (success) {
         setOpen(false);
         toast({ description: message });
+        if (returnPath) router.push(returnPath);
       } else {
         toast({ variant: "destructive", description: message });
       }
     });
-    if (returnPath) redirect(returnPath);
   };
   const DELETE_TRIGGER = {
-    button: <Button {...props}>Delete</Button>,
-    badge: <Badge className="cursor-pointer">Delete</Badge>,
+    button: <Button {...props}>{title || "Delete"}</Button>,
+    badge: <Badge className="cursor-pointer">{title || "Delete"}</Badge>,
     custom: children,
   };
 

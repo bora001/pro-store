@@ -175,14 +175,16 @@ const OrderDetail = ({
             />
           )}
           {/* email-receipt */}
-          <IconButton
-            disabled={isPending}
-            onClick={sendEmail}
-            variant="default"
-            className="w-full"
-            text="Send Receipt"
-            icon={<Mail />}
-          />
+          {order.paidAt && (
+            <IconButton
+              disabled={isPending}
+              onClick={sendEmail}
+              variant="default"
+              className="w-full"
+              text="Send Receipt"
+              icon={<Mail />}
+            />
+          )}
 
           {/* admin : cash-on-delivery */}
           {isAdmin && (

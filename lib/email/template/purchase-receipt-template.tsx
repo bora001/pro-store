@@ -18,7 +18,11 @@ import {
   Text,
 } from "@react-email/components";
 
-const PurchaseReceipt = ({ order }: { order: Omit<OrderType, "payment"> }) => {
+const PurchaseReceiptTemplate = ({
+  order,
+}: {
+  order: Omit<OrderType, "payment">;
+}) => {
   const InfoColumn = ({
     title,
     value,
@@ -99,7 +103,7 @@ const PurchaseReceipt = ({ order }: { order: Omit<OrderType, "payment"> }) => {
     </Html>
   );
 };
-PurchaseReceipt.PreviewProps = {
+PurchaseReceiptTemplate.PreviewProps = {
   order: {
     id: crypto.randomUUID(),
     userId: "ID123",
@@ -142,4 +146,4 @@ PurchaseReceipt.PreviewProps = {
   },
 };
 
-export default PurchaseReceipt;
+export default PurchaseReceiptTemplate;

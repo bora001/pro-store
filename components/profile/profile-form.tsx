@@ -7,9 +7,14 @@ import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { updateUserProfile } from "@/lib/actions/user.action";
+import {
+  deleteUserAccount,
+  updateUserProfile,
+} from "@/lib/actions/user.action";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
+import DeleteButton from "../common/delete-button";
+import { PATH } from "@/lib/constants";
 const ProfileForm = () => {
   const router = useRouter();
   const { data, update } = useSession();
@@ -29,6 +34,8 @@ const ProfileForm = () => {
       form.setError("email", { message: response.message });
     }
   };
+  if (!data?.user.id) return notFound();
+
   return (
     <>
       <Form {...form}>
@@ -66,6 +73,15 @@ const ProfileForm = () => {
           >
             {form.formState.isSubmitting ? "Submitting..." : "Update Profile"}
           </Button>
+          <DeleteButton
+            variant="destructive"
+            type="button"
+            id={data.user.id}
+            returnPath={PATH.HOME}
+            action={deleteUserAccount}
+            buttonLabel="delete-user-button"
+            title="Delete Account"
+          />
         </form>
       </Form>
     </>

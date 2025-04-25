@@ -17,11 +17,11 @@ import {
   ShippingType,
 } from "@/types";
 import { revalidatePath } from "next/cache";
-import { sendPurchaseReceipt } from "@/email";
 import { PaymentFormType } from "@/components/payment/payment-form";
 import { hasIncludedDeal } from "./admin.actions";
 import { calculatePrice } from "@/utils/price/calculate-price";
 import { updateProductIndex } from "../typesense/updateProductIndex";
+import { sendPurchaseReceipt } from "../email/mail-handler";
 
 // place-order
 export async function createOrder(payment: PaymentFormType["type"]) {
@@ -263,6 +263,10 @@ export async function updateOrderToPaid({
 // email-receipt
 export async function sendEmailReceipt(orderId: string) {
   try {
+    const session = await auth();
+    if (!session) throw new Error("User not found");
+    if (!session.user.email) throw new Error("Email not found");
+
     const data = await prisma.order.findFirst({
       where: {
         id: orderId,
@@ -282,6 +286,7 @@ export async function sendEmailReceipt(orderId: string) {
         address: data.address as ShippingType,
         paymentResult: data.paymentResult as PaymentResultType,
       },
+      email: session.user.email,
     });
     return formatSuccess("Email sent successfully");
   } catch (error) {

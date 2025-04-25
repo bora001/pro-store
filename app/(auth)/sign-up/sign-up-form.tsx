@@ -10,13 +10,10 @@ import { z } from "zod";
 import { toast } from "@/hooks/use-toast";
 import { generateCode } from "@/utils/random-code";
 import { Form } from "@/components/ui/form";
-import {
-  checkDuplicateEmail,
-  signUpUser,
-  userVerificationEmail,
-} from "@/lib/actions/user.action";
+import { checkDuplicateEmail, signUpUser } from "@/lib/actions/user.action";
 import { cn } from "@/lib/utils";
 import FormSubmitButton from "@/components/custom/FormSubmitButton";
+import { sendEmailVerification } from "@/lib/email/mail-handler";
 
 const defaultValues = {
   name: "",
@@ -44,6 +41,8 @@ const SignUpForm = () => {
   };
 
   const handleSendEmail = async () => {
+    const isValid = await form.trigger("email");
+    if (!isValid) return;
     setEmailSent(true);
     const email = form.getValues("email");
     const validEmail = await isValidEmail(email);
@@ -52,7 +51,8 @@ const SignUpForm = () => {
     }
     const token = generateCode();
     setUserCode(token);
-    const { success, message } = await userVerificationEmail({
+
+    const { success, message } = await sendEmailVerification({
       email,
       token,
     });
@@ -90,7 +90,12 @@ const SignUpForm = () => {
       <form className="space-y-5" onSubmit={onSubmit}>
         <div className="space-y-3">
           <FormInput placeholder="Enter Name" name="name" />
-          <div className="flex relative items-end">
+          <div
+            className={cn(
+              "flex relative items-end",
+              form.formState.errors.email ? "items-center" : "items-end"
+            )}
+          >
             <FormInput
               placeholder="email@example.com"
               name="email"

@@ -1,5 +1,11 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.2.1](https://github.com/bora001/pro-store/compare/v1.2.0...v1.2.1) (2025-04-25)
+This release includes several enhancements, such as bug fixes.
+
+### 🐛 Bug Fixes
+* prevent email change before verification after verification email is sent ([00a2e92](https://github.com/bora001/pro-store/commit/00a2e920baef9781ae5c9b3547ac3d6ed7821cfa))
+
 ## Release Overview [1.2.0](https://github.com/bora001/pro-store/compare/v1.1.0...v1.2.0) (2025-04-25)
 This release includes several enhancements, such as new features, bug fixes.
 

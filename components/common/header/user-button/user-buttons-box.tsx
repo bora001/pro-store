@@ -1,10 +1,18 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
+import { Button, ButtonProps } from "@/components/ui/button";
 import { signOutUser } from "@/lib/actions/user.action";
 import { PATH } from "@/lib/constants";
 import { redirect } from "next/navigation";
+import { ReactNode } from "react";
 
-const UserButtonBox = ({ isAdmin }: { isAdmin: boolean }) => {
+const UserButtonBox = ({
+  isAdmin,
+  ...props
+}: {
+  isAdmin: boolean;
+  childList?: { title: string; content: ReactNode }[];
+} & ButtonProps) => {
   const ADMIN_BUTTON = isAdmin
     ? [{ action: () => redirect(PATH.DASHBOARD), title: "Admin" }]
     : [];
@@ -16,15 +24,18 @@ const UserButtonBox = ({ isAdmin }: { isAdmin: boolean }) => {
   ];
   return (
     <div className="space-y-1">
+      {/* <SheetClose>dlc</SheetClose> */}
       {USER_BUTTON.map(({ action, title }) => (
-        <Button
-          key={title}
-          className="flex gap-3 justify-start w-full border-none bg-gray-100"
-          onClick={action}
-          variant="outline"
-        >
-          {title}
-        </Button>
+        <div key={title}>
+          <Button
+            className="flex gap-3 justify-start w-full border-none"
+            onClick={action}
+            variant="secondary"
+            {...props}
+          >
+            {title}
+          </Button>
+        </div>
       ))}
     </div>
   );

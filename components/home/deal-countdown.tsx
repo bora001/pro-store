@@ -1,4 +1,5 @@
 "use client";
+
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlarmClock } from "lucide-react";
 import { addDealType } from "@/types";
@@ -25,7 +26,9 @@ const DealCountDown = ({ deal }: { deal?: addDealType }) => {
           <p>{deal.title}</p>
         </CardTitle>
       </CardHeader>
-      <DealCountdownContent deal={deal} soldOut={soldOut} isEnd={isEnd} />
+      <div className="my-3">
+        <DealCountdownContent deal={deal} soldOut={soldOut} isEnd={isEnd} />
+      </div>
     </Card>
   );
 };

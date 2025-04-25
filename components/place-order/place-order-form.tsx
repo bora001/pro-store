@@ -1,4 +1,5 @@
 "use client";
+
 import { CartType, PaymentType, ShippingType, addDealType } from "@/types";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
@@ -61,15 +62,15 @@ const PlacerOrderForm = ({
   }, [cart?.items, deal, isActiveDeal]);
 
   return (
-    <>
-      <div className="flex justify-between items-center">
+    <div className="space-y-3 sm:space-y-0">
+      <div className="flex justify-between items-center flex-col sm:flex-row">
         <h1 className="py-4 h2-bold">Place Order</h1>
-        <div className="flex gap-1 items-center text-gray-600 px-2">
-          <BadgeAlert className="mx-1" size="16" />
+        <div className="flex gap-1 items-center text-gray-600 px-1">
+          <BadgeAlert size="16" />
           <p>Just a demo site—no real transactions occur</p>
         </div>
       </div>
-      <div className="grid md:grid-cols-3 md:gap-5">
+      <div className="grid md:grid-cols-3 md:gap-5 space-y-4 md:space-y-0">
         <div className="md:col-span-2 overflow-x-auto space-y-4">
           {/* shipping */}
           <Card>
@@ -106,8 +107,10 @@ const PlacerOrderForm = ({
                 <TableHeader>
                   <TableRow>
                     <TableHead>Item</TableHead>
-                    <TableHead>Qty</TableHead>
-                    <TableHead className="text-right">Price</TableHead>
+                    <TableHead className="border min-w-16">Quantity</TableHead>
+                    <TableHead className="border text-right min-w-24">
+                      Price
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 {/* body : image + qty + price */}
@@ -124,17 +127,18 @@ const PlacerOrderForm = ({
                           <TableCell>
                             <Link
                               href={`${PATH.PRODUCT}/${slug}`}
-                              className="flex items-center"
+                              className="flex items-center gap-2"
                             >
                               <S3Image
                                 folder="product"
                                 fileName={image}
                                 alt={name}
                                 size={PLACE_ORDER_IMAGE_SIZE}
-                                className={noQty ? "grayscale" : ""}
+                                className={`${noQty && "grayscale"} hidden sm:block`}
                               />
                               <div>
-                                <span className="px-2">{name}</span>
+                                <span className="pr-2">{name}</span>
+
                                 {discountCondition && (
                                   <DiscountBadge discount={discount || 0} />
                                 )}
@@ -142,7 +146,7 @@ const PlacerOrderForm = ({
                             </Link>
                           </TableCell>
                           {/* qty */}
-                          <TableCell>{qty}</TableCell>
+                          <TableCell className="text-center">{qty}</TableCell>
                           {/* price */}
                           <TableCell className="text-right">
                             {`$ ${discountPrice(
@@ -185,7 +189,7 @@ const PlacerOrderForm = ({
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

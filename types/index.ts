@@ -12,6 +12,7 @@ import {
   editUserSchema,
   addReviewSchema,
   addDealSchema,
+  signUpSchema,
 } from "@/lib/validator";
 import { z } from "zod";
 
@@ -48,6 +49,7 @@ export type OrderItemType = z.infer<typeof orderItemSchema> & {
   dealInfo?: addDealType | null;
 };
 export type PaymentResultType = z.infer<typeof paymentResultSchema>;
+export type signUpInfo = z.infer<typeof signUpSchema>;
 export type userProfileType = z.infer<typeof userProfileSchema>;
 export type ResponseType = { success: boolean; message: string };
 export type PaymentType = (typeof PAYMENT_METHODS)[number];

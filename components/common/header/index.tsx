@@ -1,11 +1,11 @@
 import Link from "next/link";
 import LogoImage from "../logo";
-import Menu from "./menu";
+import Menu from "./menu/menu";
 import { CONFIG } from "@/lib/constants/config";
 import { CONSTANTS, PATH } from "@/lib/constants";
-import NavBar, { NavBarType } from "./nav-bar";
+import NavBar, { NavBarType } from "./menu/nav-bar";
 import SearchInput from "../search-input";
-import CategoryDrawer from "./category-drawer";
+import CategoryDrawer from "./menu/category-drawer";
 
 const Header = ({
   navList,
@@ -31,7 +31,7 @@ const Header = ({
               {CONFIG.APP_NAME}
             </span>
           </Link>
-          <div>{navList && <NavBar navList={navList} />}</div>
+          {navList && <NavBar navList={navList} />}
         </div>
         {!isAdmin && <SearchInput path={PATH.SEARCH} />}
         {/* right */}

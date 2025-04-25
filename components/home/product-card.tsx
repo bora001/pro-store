@@ -17,7 +17,7 @@ const ProductCard = ({
 }) => {
   const endTime = String(Deal?.[0]?.endTime || "");
   return (
-    <Card className="w-full max-w-sm ">
+    <Card className="w-full md:max-w-sm ">
       {/* header */}
       <div className="relative">
         <ProductDiscountBadge endTime={endTime} discount={Deal[0]?.discount} />

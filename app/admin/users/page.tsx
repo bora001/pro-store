@@ -35,7 +35,7 @@ const AdminUserPage = async (props: {
       query={query}
       emptyText="No users available"
     >
-      <Table>
+      <Table className="table-fit">
         <TableHeader>
           <TableRow>
             {ADMIN_USER.HEADER.map((head) => (

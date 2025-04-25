@@ -27,14 +27,13 @@ const MyOrderPage = async (props: {
 
   return (
     <Container title="My Order">
-      {/* space-y-2 flex flex-col flex-1 min-h-full */}
       <ListContainer
         title="No orders have been placed yet"
         listLength={order.data.length}
       >
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto h-full flex flex-col justify-between">
           {/* table */}
-          <Table>
+          <Table className="table-fit">
             {/* header */}
             <TableHeader>
               <TableRow>

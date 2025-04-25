@@ -62,7 +62,7 @@ const AdminDealsPage = async (props: {
         </Link>
       }
     >
-      <Table>
+      <Table className="table-fit">
         <TableHeader>
           <TableRow>
             {ADMIN_PRODUCT.HEADER.map((head) => (

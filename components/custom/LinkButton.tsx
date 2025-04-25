@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Button } from "../ui/button";
+import { Button, ButtonProps } from "../ui/button";
 import Link from "next/link";
 import { PATH } from "@/lib/constants";
 
@@ -12,7 +12,7 @@ const LinkButton = ({
   icon?: ReactNode;
   title: string;
   url: string;
-}) => {
+} & ButtonProps) => {
   return (
     <Link href={url} className="flex gap-4 items-center">
       <Button {...props}>

@@ -11,11 +11,13 @@ import {
 import { PATH } from "@/lib/constants";
 import { autocomplete } from "@/lib/typesense/autoComplete";
 import Link from "next/link";
+
 const HomePage = async () => {
   const latestProduct = await getLatestProducts();
   const featureProduct = await getFeatureProduct();
   const { data: deal } = await getDeal({ isActive: true });
   autocomplete("");
+
   return (
     <div className={"space-y-6 my-4"}>
       <ProductCarousel data={featureProduct} />

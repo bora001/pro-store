@@ -23,9 +23,9 @@ const ProductSection = ({ product }: { product: ProductItemType }) => {
   const endTime = String(Deal[0]?.endTime || "");
   return (
     <section>
-      <div className="grid grid-cols-1 md:grid-cols-5">
+      <div className="grid  md:grid-cols-8 lg:grid-cols-11">
         {/* image */}
-        <div className="col-span-2 relative">
+        <div className="relative  md:col-span-2 lg:col-span-4">
           <ProductDealTimer
             isActiveDeal={isDeal}
             endTime={endTime}
@@ -34,7 +34,7 @@ const ProductSection = ({ product }: { product: ProductItemType }) => {
           <ProductImages images={images} name={name} />
         </div>
         {/* detail : brand + category + name + rating + review + price + description */}
-        <div className="col-span-2 p-5 flex flex-col gap-6">
+        <div className="pr-10 py-4 flex flex-col gap-6  md:col-span-4 lg:col-span-5">
           {/*  brand + category + name */}
           <p>{`${brand} ${product.category}`}</p>
           <h1 className="h3-bold">{name}</h1>
@@ -59,8 +59,8 @@ const ProductSection = ({ product }: { product: ProductItemType }) => {
           <p>{product.description}</p>
         </div>
         {/* action to cart */}
-        <Card className="max-h-min">
-          <CardContent className="p-4 space-y-4">
+        <Card className="max-h-min md:col-span-2 lg:col-span-2 ">
+          <CardContent className="p-8 md:p-4 space-y-4">
             <div className="flex justify-between">
               <div>Price</div>
               <ProductPrice

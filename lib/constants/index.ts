@@ -11,6 +11,11 @@ export const CONSTANTS = {
   TAX_RATE: 0.15,
   HEADER_HEIGHT: 80,
 };
+export const SYSTEM_TYPE = {
+  SYSTEM: "system",
+  DARK: "dark",
+  LIGHT: "light",
+};
 
 export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;
 export const USER_ROLE = ["admin", "user"];

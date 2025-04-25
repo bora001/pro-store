@@ -35,7 +35,7 @@ const AdminOrdersPage = async (props: {
       query={query}
       emptyText="No orders have been placed yet"
     >
-      <Table>
+      <Table className="table-fit">
         <TableHeader>
           <TableRow>
             {ADMIN_ORDERS.HEADER.map((head) => (

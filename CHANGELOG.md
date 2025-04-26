@@ -1,5 +1,11 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.3.1](https://github.com/bora001/pro-store/compare/v1.3.0...v1.3.1) (2025-04-26)
+This release includes several enhancements, such as bug fixes.
+
+### 🐛 Bug Fixes
+* include productId when editing deal product ([b858f24](https://github.com/bora001/pro-store/commit/b858f247b41ce37b1a78a654ebbd9bc2a13eb3bb))
+
 ## Release Overview [1.3.0](https://github.com/bora001/pro-store/compare/v1.2.1...v1.3.0) (2025-04-25)
 This release includes several enhancements, such as new features.
 

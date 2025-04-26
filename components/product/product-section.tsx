@@ -23,7 +23,7 @@ const ProductSection = ({ product }: { product: ProductItemType }) => {
   const endTime = String(Deal[0]?.endTime || "");
   return (
     <section>
-      <div className="grid  md:grid-cols-8 lg:grid-cols-11">
+      <div className="grid md:grid-cols-8 lg:grid-cols-11 gap-5">
         {/* image */}
         <div className="relative  md:col-span-2 lg:col-span-4">
           <ProductDealTimer

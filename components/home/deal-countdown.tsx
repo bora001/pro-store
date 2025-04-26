@@ -14,7 +14,8 @@ const DealCountDown = ({ deal }: { deal?: addDealType }) => {
     <Card
       className={cn(
         "w-full mx-auto py-4 rounded-lg shadow-lg relative",
-        soldOut || isEnd ? " bg-yellow-300" : " bg-yellow-400"
+        soldOut || isEnd ? " bg-yellow-300" : " bg-yellow-400",
+        "dark:text-black"
       )}
     >
       <CardHeader>

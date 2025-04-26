@@ -440,7 +440,7 @@ export async function updateDeal(data: Partial<addDealType>) {
       where: { id: data.id },
     });
     if (!deals) throw new Error("Deal not found");
-    const { endTime, productId: _productId, product: _product, ...rest } = data;
+    const { endTime, product: _product, ...rest } = data;
     await prisma.deal.update({
       where: { id: data.id },
       data: {

@@ -98,7 +98,7 @@ const SearchInput = ({ path }: { path?: string }) => {
 
       <div
         className={cn(
-          "w-80 text-sm absolute bg-white px-4 py-3 mt-3 rounded-sm shadow-lg max-h-52 overflow-y-scroll",
+          "w-80 text-sm absolute bg-white px-4 py-3 mt-3 rounded-sm shadow-lg max-h-52 overflow-y-scroll dark:bg-black",
           hasRecommendations ? "block" : "hidden"
         )}
       >

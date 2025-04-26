@@ -65,7 +65,7 @@ const DealCountdownContent = ({
               />
             </div>
             <div className="flex flex-col items-center justify-center gap-4 px-4">
-              <p className="text-lg text-center text-primary">
+              <p className="text-lg text-center text-primary dark:text-black">
                 {deal.description}
               </p>
               <DealCountdownTimer

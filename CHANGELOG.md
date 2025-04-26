@@ -1,5 +1,11 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.4.0](https://github.com/bora001/pro-store/compare/v1.3.2...v1.4.0) (2025-04-26)
+This release includes several enhancements, such as new features.
+
+### 🚀 New Features
+* Add pnpm audit to pre-push hook for security checks ([3e05774](https://github.com/bora001/pro-store/commit/3e057743330a48718e12c977ba1797c9a01729d8))
+
 ## Release Overview [1.3.2](https://github.com/bora001/pro-store/compare/v1.3.1...v1.3.2) (2025-04-26)
 This release includes several enhancements, such as styles and formatting.
 

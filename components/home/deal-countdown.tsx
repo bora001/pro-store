@@ -2,11 +2,11 @@
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlarmClock } from "lucide-react";
-import { addDealType } from "@/types";
+import { getDealType } from "@/types";
 import { cn } from "@/lib/utils";
 import DealCountdownContent from "./deal-countdown-content";
 
-const DealCountDown = ({ deal }: { deal?: addDealType }) => {
+const DealCountDown = ({ deal }: { deal?: getDealType }) => {
   if (!deal) return <></>;
   const soldOut = deal.product?.stock === 0;
   const isEnd = deal.endTime ? new Date(deal.endTime) < new Date() : false;

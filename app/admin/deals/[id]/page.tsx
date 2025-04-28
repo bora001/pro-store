@@ -18,7 +18,6 @@ const EditDealPage = async (props: { params: Promise<{ id: string }> }) => {
   if (!deals) return notFound();
   const allProducts = await getAllProducts({});
   const products = JSON.parse(JSON.stringify(allProducts.product));
-
   return (
     <Container title="Edit Deals">
       <DealForm

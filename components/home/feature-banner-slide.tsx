@@ -12,19 +12,15 @@ import Image from "next/image";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import S3Image from "../common/S3Image";
-import { Product } from "@prisma/client";
+import { BannerType } from "@/types";
 
 const BANNER_SIZE = {
   width: 1920,
   height: 562,
 };
 
-const ProductCarousel = ({
-  data,
-}: {
-  data: Pick<Product, "id" | "slug" | "banner">[];
-}) => {
-  const isAutoplayEnabled = data.length > 1;
+const FeatureBannerSlide = ({ data }: { data: BannerType[] }) => {
+  const isAutoplayEnabled = data && data.length > 1;
   const plugin = useRef(
     Autoplay({
       active: isAutoplayEnabled,
@@ -82,4 +78,4 @@ const ProductCarousel = ({
   );
 };
 
-export default ProductCarousel;
+export default FeatureBannerSlide;

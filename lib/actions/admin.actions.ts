@@ -2,7 +2,7 @@
 
 import { prisma } from "@/db/prisma";
 import { Prisma } from "@prisma/client";
-import { CONSTANTS, PATH } from "../constants";
+import { CONSTANTS, PATH, REDIS_KEY } from "../constants";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { revalidatePath } from "next/cache";
 import { updateOrderToPaid } from "./order.actions";
@@ -22,6 +22,9 @@ import { deleteImage } from "./image.actions";
 import { createOneProductIndex } from "../typesense/createOneProductIndex";
 import { updateProductIndex } from "../typesense/updateProductIndex";
 import { deleteItemIndex } from "../typesense/deleteOneItem";
+import { redis } from "../redis";
+import { measurePerformance } from "@/utils/measure-performance";
+import { cacheData, getCachedData } from "../redis/redis-handler";
 
 // order-summary
 export async function getOrderSummary() {
@@ -203,7 +206,7 @@ export async function getAllProducts({
   };
 }
 
-// delete-products
+// delete-product
 export async function deleteProduct(id: string) {
   try {
     const isExist = await prisma.product.findFirst({
@@ -213,6 +216,9 @@ export async function deleteProduct(id: string) {
     await deleteImage(isExist.images, "product");
     if (isExist.banner) {
       await deleteImage([isExist.banner], "banner");
+    }
+    if (isExist.isFeatured) {
+      await redis.del(REDIS_KEY.BANNER);
     }
     await prisma.product.delete({
       where: {
@@ -232,6 +238,9 @@ export async function createProduct(data: z.infer<typeof insertProductSchema>) {
   try {
     const product = insertProductSchema.parse(data);
     const result = await prisma.product.create({ data: product });
+    if (data.isFeatured) {
+      await redis.del(REDIS_KEY.BANNER);
+    }
     await createOneProductIndex({
       ...product,
       id: result.id,
@@ -248,10 +257,16 @@ export async function createProduct(data: z.infer<typeof insertProductSchema>) {
 // update-product
 export async function updateProduct(data: updateProductType) {
   try {
-    const isProductExist = await prisma.product.findFirst({
+    const originalProductData = await prisma.product.findFirst({
       where: { id: data.id },
     });
-    if (!isProductExist) throw new Error("Product not found");
+    if (!originalProductData) throw new Error("Product not found");
+    if (
+      (originalProductData.isFeatured && !data.isFeatured) ||
+      (!originalProductData.isFeatured && data.isFeatured)
+    ) {
+      await redis.del(REDIS_KEY.BANNER);
+    }
     const product = updateProductSchema.parse(data);
     await prisma.product.update({
       where: { id: data.id },
@@ -260,8 +275,8 @@ export async function updateProduct(data: updateProductType) {
     await updateProductIndex({
       ...product,
       id: data.id!,
-      createdAt: isProductExist.createdAt.getTime(),
-      rating: +isProductExist.rating,
+      createdAt: originalProductData.createdAt.getTime(),
+      rating: +originalProductData.rating,
     });
     revalidatePath(PATH.PRODUCTS);
     return formatSuccess("Product updated successfully");
@@ -390,21 +405,66 @@ export async function getDeal({
 }) {
   try {
     const hasId = id ? { id } : {};
-    const hasActive = isActive ? { isActive } : {};
-    const deal = await prisma.deal.findFirst({
-      where: { ...hasId, ...hasActive },
+    const hasActive = isActive
+      ? {
+          product: {
+            Deal: {
+              some: {
+                isActive: true,
+              },
+            },
+          },
+        }
+      : {};
+
+    const cachedProduct: { hasDeal: boolean; data: addDealType } | null =
+      await getCachedData(REDIS_KEY.ACTIVE_DEAL);
+
+    if (cachedProduct !== null && !cachedProduct.hasDeal) {
+      return { success: true, data: undefined };
+    }
+
+    if (cachedProduct) {
+      return {
+        success: true,
+        data: cachedProduct.data,
+      };
+    }
+
+    const data = await prisma.deal.findFirst({
+      where: {
+        ...hasId,
+        ...hasActive,
+      },
       include: {
         product: {
-          include: {
-            Deal: true,
+          select: {
+            stock: true,
+            images: true,
+            price: true,
+            slug: true,
+            id: true,
+            name: true,
+            Deal: {
+              where: {
+                isActive: true,
+              },
+              select: {
+                title: true,
+              },
+            },
           },
         },
       },
     });
-    if (!deal) throw new Error("Deal not found");
+
+    await cacheData(REDIS_KEY.ACTIVE_DEAL, { hasDeal: !!data, data: data }, 0);
+
+    if (!data) throw new Error("Deal not found");
+
     return {
       success: true,
-      data: prismaToJs(deal),
+      data: prismaToJs(data),
     };
   } catch (error) {
     return formatError(error);
@@ -440,6 +500,9 @@ export async function updateDeal(data: Partial<addDealType>) {
       where: { id: data.id },
     });
     if (!deals) throw new Error("Deal not found");
+    if (data.isActive || (deals.isActive && !data.isActive)) {
+      await redis.del(REDIS_KEY.ACTIVE_DEAL);
+    }
     const { endTime, product: _product, ...rest } = data;
     await prisma.deal.update({
       where: { id: data.id },

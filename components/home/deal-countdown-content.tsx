@@ -7,7 +7,7 @@ import { CONFIG } from "@/lib/constants/config";
 import { cn } from "@/lib/utils";
 import AddToCart from "../product/add-to-cart";
 import DealCountdownTimer from "./deal-countdown-timer";
-import { addDealType } from "@/types";
+import { getDealType } from "@/types";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -19,7 +19,7 @@ const DealCountdownContent = ({
   soldOut,
   isEnd,
 }: {
-  deal: addDealType;
+  deal: getDealType;
   soldOut: boolean;
   isEnd: boolean;
 }) => {

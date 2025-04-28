@@ -1,5 +1,11 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.4.1](https://github.com/bora001/pro-store/compare/v1.4.0...v1.4.1) (2025-04-28)
+This release includes several enhancements, such as performance improvements.
+
+### ⚡ Performance Improvements
+* Optimize Prisma query by selecting only required fields in ProductCarousel ([8f08043](https://github.com/bora001/pro-store/commit/8f080439dcbb0f7d4d5cf3c47a6ef8442986968f))
+
 ## Release Overview [1.4.0](https://github.com/bora001/pro-store/compare/v1.3.2...v1.4.0) (2025-04-26)
 This release includes several enhancements, such as new features.
 

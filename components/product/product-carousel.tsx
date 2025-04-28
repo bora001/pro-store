@@ -1,5 +1,4 @@
 "use client";
-import { ProductItemType } from "@/types";
 import {
   Carousel,
   CarouselContent,
@@ -13,13 +12,18 @@ import Image from "next/image";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import S3Image from "../common/S3Image";
+import { Product } from "@prisma/client";
 
 const BANNER_SIZE = {
   width: 1920,
   height: 562,
 };
 
-const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
+const ProductCarousel = ({
+  data,
+}: {
+  data: Pick<Product, "id" | "slug" | "banner">[];
+}) => {
   const isAutoplayEnabled = data.length > 1;
   const plugin = useRef(
     Autoplay({
@@ -51,7 +55,7 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
           onMouseLeave={() => isAutoplayEnabled && plugin.current.play()}
         >
           <CarouselContent>
-            {data.map(({ id, slug, banner, name }) => (
+            {data.map(({ id, slug, banner }) => (
               <CarouselItem key={id}>
                 <Link href={`/product/${slug}`}>
                   <S3Image
@@ -59,7 +63,7 @@ const ProductCarousel = ({ data }: { data: ProductItemType[] }) => {
                     fileName={banner!}
                     width={BANNER_SIZE.width}
                     height={BANNER_SIZE.height}
-                    alt={`${name} banner`}
+                    alt={`${slug} banner`}
                     priority
                   />
                 </Link>

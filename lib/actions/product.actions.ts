@@ -63,7 +63,12 @@ export const getFeatureProduct = async () => {
     orderBy: {
       createdAt: "desc",
     },
-    include: { Deal: true },
+    select: {
+      id: true,
+      slug: true,
+      banner: true,
+      name: true,
+    },
     take: 4,
   });
   return prismaToJs(data);

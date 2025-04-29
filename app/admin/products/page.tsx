@@ -10,7 +10,7 @@ import {
 import { idSlicer } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { deleteProduct, getAllProducts } from "@/lib/actions/admin.actions";
+import { deleteProduct, getAllAdminProduct } from "@/lib/actions/admin.actions";
 import { PATH } from "@/lib/constants";
 import DeleteButton from "@/components/common/delete-button";
 import SearchContainer from "@/components/admin/search-container";
@@ -26,7 +26,7 @@ const AdminProductPage = async (props: {
   searchParams: Promise<{ page: string; query: string; category: string }>;
 }) => {
   const { page, query, category } = await props.searchParams;
-  const data = await getAllProducts({ page: +page || 1, query, category });
+  const data = await getAllAdminProduct({ page: +page || 1, query, category });
   return (
     <SearchContainer
       title="Products"

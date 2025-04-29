@@ -13,7 +13,7 @@ export const cacheData = async <T>(
   data: T,
   ttl: number = 3600 // default - 1 hour, 0 - infinity cache
 ): Promise<void> => {
-  console.log(ttl, "SET REDIS");
+  console.log("📝", ttl, "SET REDIS", key);
   // If TTL is 0, cache indefinitely; otherwise, set with TTL.
   if (ttl === 0) {
     await redis.set(key, JSON.stringify(data));

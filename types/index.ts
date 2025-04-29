@@ -90,3 +90,25 @@ export type getDealType = z.infer<typeof addDealSchema> & {
     Deal?: { title: string }[];
   };
 };
+
+// pages
+type pageInformation = {
+  count: number;
+  totalPages: number;
+};
+
+// result
+export type AdminDealType = z.infer<typeof addDealSchema> & {
+  id: string;
+  product: Pick<ProductItemType, "name">;
+};
+
+export interface AdminProductResult extends pageInformation {
+  product: Pick<
+    ProductItemType,
+    "id" | "name" | "price" | "category" | "stock" | "rating"
+  >[];
+}
+export interface AdminDealResult extends pageInformation {
+  deal: AdminDealType[];
+}

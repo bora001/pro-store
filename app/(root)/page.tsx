@@ -1,4 +1,4 @@
-import DealCountDown from "@/components/home/deal-countdown";
+import DealCountDown from "@/components/home/deal-countdown/deal-countdown";
 import FeatureBannerSlide from "@/components/home/feature-banner-slide";
 import ProductList from "@/components/home/product-list";
 import ShoppingBenefits from "@/components/home/shopping-benefits";

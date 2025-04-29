@@ -1,32 +1,30 @@
 "use client";
 
 import Image from "next/image";
-import { CardContent } from "../ui/card";
+import { CardContent } from "../../ui/card";
 import { PATH } from "@/lib/constants";
 import { CONFIG } from "@/lib/constants/config";
 import { cn } from "@/lib/utils";
-import AddToCart from "../product/add-to-cart";
+import AddToCart from "../../product/add-to-cart";
 import DealCountdownTimer from "./deal-countdown-timer";
 import { getDealType } from "@/types";
 import { useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import Link from "next/link";
-import DiscountBadge from "../product/discount-badge";
+import DiscountBadge from "../../product/discount-badge";
 import { discountPrice } from "@/utils/price/discountPrice";
 
 const DealCountdownContent = ({
   deal,
   soldOut,
-  isEnd,
 }: {
   deal: getDealType;
   soldOut: boolean;
-  isEnd: boolean;
 }) => {
   const [isActiveDeal, setIsActiveDeal] = useState(true);
   return (
     <>
-      {soldOut || isEnd || !isActiveDeal ? (
+      {soldOut || !isActiveDeal ? (
         <CardContent className="flex flex-col items-center gap-4">
           <div
             className="text-7xl absolute top-1/2 left-1/2 z-10 px-8 py-4 bg-white/60 text-red-700 font-extrabold border-2 border-red-700 shadow-md tracking-wide whitespace-nowrap"
@@ -34,7 +32,7 @@ const DealCountdownContent = ({
               transform: "translate(-50%, -50%) rotate(-12deg)",
             }}
           >
-            {isEnd ? "FINISH" : "SOLD OUT"} 🎉
+            {!isActiveDeal ? "FINISH" : "SOLD OUT"} 🎉
           </div>
           <Image
             className="brightness-50"

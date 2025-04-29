@@ -8,13 +8,10 @@ import DealCountdownContent from "./deal-countdown-content";
 
 const DealCountDown = ({ deal }: { deal?: getDealType }) => {
   if (!deal) return <></>;
-  const soldOut = deal.product?.stock === 0;
-  const isEnd = deal.endTime ? new Date(deal.endTime) < new Date() : false;
   return (
     <Card
       className={cn(
-        "w-full mx-auto py-4 rounded-lg shadow-lg relative",
-        soldOut || isEnd ? " bg-yellow-300" : " bg-yellow-400",
+        "w-full mx-auto py-4 rounded-lg shadow-lg relative bg-yellow-400",
         "dark:text-black"
       )}
     >
@@ -28,7 +25,7 @@ const DealCountDown = ({ deal }: { deal?: getDealType }) => {
         </CardTitle>
       </CardHeader>
       <div className="my-3">
-        <DealCountdownContent deal={deal} soldOut={soldOut} isEnd={isEnd} />
+        <DealCountdownContent deal={deal} soldOut={deal.product?.stock === 0} />
       </div>
     </Card>
   );

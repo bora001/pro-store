@@ -25,9 +25,11 @@ import { createOneProductIndex } from "../typesense/createOneProductIndex";
 import { updateProductIndex } from "../typesense/updateProductIndex";
 import { deleteItemIndex } from "../typesense/deleteOneItem";
 import { redis } from "../redis";
-import { measurePerformance } from "@/utils/measure-performance";
-import { cacheData, getCachedData } from "../redis/redis-handler";
-import { Redis } from "ioredis";
+import {
+  cacheData,
+  deleteAllRedisKey,
+  getCachedData,
+} from "../redis/redis-handler";
 
 // order-summary
 export async function getOrderSummary() {
@@ -212,39 +214,18 @@ export async function getAllProducts({
 // get-all-product-admin
 export async function getAllAdminProduct({
   page = 1,
-  limit,
-  query,
-  category,
+  limit = CONSTANTS.PAGE_LIMIT,
 }: {
   page?: number;
   limit?: number;
-  query?: string;
-  category?: string;
 }): Promise<AdminProductResult> {
-  if (query || category || page) {
-    await redis.del(REDIS_KEY.ADMIN_PRODUCT_LIST);
-  }
-  const cachedList = await getCachedData<AdminProductResult>(
-    REDIS_KEY.ADMIN_PRODUCT_LIST
-  );
+  const cacheKey = `${REDIS_KEY.ADMIN_PRODUCT_LIST}_${page}`;
+  const cachedList = await getCachedData<AdminProductResult>(cacheKey);
   if (cachedList) {
     return { ...cachedList };
   }
-  const queryFilter: Prisma.ProductWhereInput = {
-    name: {
-      contains: query,
-      mode: "insensitive",
-    } as Prisma.StringFilter,
-  };
-  const categoryFilter =
-    category && category !== CONSTANTS.ALL ? { category } : {};
-
   const pagination = limit ? { skip: (page - 1) * limit } : {};
   const product = await prisma.product.findMany({
-    where: {
-      ...queryFilter,
-      ...categoryFilter,
-    },
     select: {
       id: true,
       name: true,
@@ -265,8 +246,7 @@ export async function getAllAdminProduct({
     count,
     totalPages: limit ? Math.ceil(count / limit) : 0,
   };
-  await cacheData(REDIS_KEY.ADMIN_PRODUCT_LIST, result, 0);
-
+  await cacheData(cacheKey, result, 0);
   return result;
 }
 
@@ -290,7 +270,7 @@ export async function deleteProduct(id: string) {
       },
     });
     await deleteItemIndex({ model: "products", id });
-    await redis.del(REDIS_KEY.ADMIN_PRODUCT_LIST);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
 
     return formatSuccess("Product deleted successfully");
   } catch (error) {
@@ -312,7 +292,7 @@ export async function createProduct(data: z.infer<typeof insertProductSchema>) {
       rating: 0,
       createdAt: new Date().getTime(),
     });
-    await redis.del(REDIS_KEY.ADMIN_PRODUCT_LIST);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
     return formatSuccess("Product created successfully");
   } catch (error) {
     return formatError(error);
@@ -343,7 +323,7 @@ export async function updateProduct(data: updateProductType) {
       createdAt: originalProductData.createdAt.getTime(),
       rating: +originalProductData.rating,
     });
-    await redis.del(REDIS_KEY.ADMIN_PRODUCT_LIST);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
     return formatSuccess("Product updated successfully");
   } catch (error) {
     return formatError(error);
@@ -404,8 +384,8 @@ export async function getAllUsers({
   };
 }
 
-// get-all-deals
-export async function getAllDeals({
+// get-all-deals-by-query
+export async function getAllDealsByQuery({
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
   query,
@@ -414,15 +394,6 @@ export async function getAllDeals({
   limit?: number;
   query: string;
 }): Promise<AdminDealResult> {
-  if (query || page) {
-    await redis.del(REDIS_KEY.ADMIN_DEAL_LIST);
-  }
-  const cachedList = await getCachedData<AdminDealResult>(
-    REDIS_KEY.ADMIN_DEAL_LIST
-  );
-  if (cachedList) {
-    return { ...cachedList };
-  }
   const queryFilter: Prisma.DealWhereInput = query
     ? {
         OR: [
@@ -458,9 +429,43 @@ export async function getAllDeals({
         },
       },
     },
-
     where: {
       ...queryFilter,
+    },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+  if (!deal) throw new Error("Deal not found");
+  const count = await prisma.deal.count();
+  return {
+    deal: prismaToJs(deal),
+    count,
+    totalPages: limit ? Math.ceil(count / limit) : 0,
+  };
+}
+
+// get-all-deals-admin
+export async function getAllDeals({
+  page = 1,
+  limit = CONSTANTS.PAGE_LIMIT,
+}: {
+  page: number;
+  limit?: number;
+}): Promise<AdminDealResult> {
+  const cacheKey = `${REDIS_KEY.ADMIN_DEAL_LIST}_${page}`;
+
+  const cachedList = await getCachedData<AdminDealResult>(cacheKey);
+  if (cachedList) {
+    return { ...cachedList };
+  }
+  const deal = await prisma.deal.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      product: {
+        select: {
+          name: true,
+        },
+      },
     },
     take: limit,
     skip: (page - 1) * limit,
@@ -472,7 +477,7 @@ export async function getAllDeals({
     count,
     totalPages: limit ? Math.ceil(count / limit) : 0,
   };
-  await cacheData(REDIS_KEY.ADMIN_DEAL_LIST, result, 0);
+  await cacheData(cacheKey, result, 0);
   return result;
 }
 
@@ -620,7 +625,7 @@ export async function createDeal(values: z.infer<typeof addDealSchema>) {
     await prisma.deal.create({
       data: { ...data, endTime: data.endTime },
     });
-    await redis.del(REDIS_KEY.ADMIN_DEAL_LIST);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
     return formatSuccess("Deal created successfully");
   } catch (error) {
     return formatError(error);
@@ -642,7 +647,7 @@ export async function updateDeal(data: Partial<addDealType>) {
     if (!deals) throw new Error("Deal not found");
     if (data.isActive || (deals.isActive && !data.isActive)) {
       await redis.del(REDIS_KEY.ACTIVE_DEAL);
-      await redis.del(REDIS_KEY.ADMIN_DEAL_LIST);
+      await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
     }
     const { endTime, product: _product, ...rest } = data;
     await prisma.deal.update({
@@ -652,7 +657,7 @@ export async function updateDeal(data: Partial<addDealType>) {
         ...(endTime && { endTime }),
       },
     });
-    await redis.del(REDIS_KEY.ADMIN_DEAL_LIST);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
     return formatSuccess("Deal updated successfully");
   } catch (error) {
     return formatError(error);
@@ -671,7 +676,7 @@ export async function deleteDeal(id: string) {
         id,
       },
     });
-    await redis.del(REDIS_KEY.ADMIN_DEAL_LIST);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
     return formatSuccess("Deal deleted successfully");
   } catch (error) {
     return formatError(error);

@@ -15,7 +15,11 @@ import {
 } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { deleteDeal, getAllDeals } from "@/lib/actions/admin.actions";
+import {
+  deleteDeal,
+  getAllDeals,
+  getAllDealsByQuery,
+} from "@/lib/actions/admin.actions";
 import { PATH } from "@/lib/constants";
 import DeleteButton from "@/components/common/delete-button";
 import SearchContainer from "@/components/admin/search-container";
@@ -42,7 +46,9 @@ const AdminDealsPage = async (props: {
 }) => {
   const currentDate = new Date();
   const { page, query } = await props.searchParams;
-  const deals = await getAllDeals({ page: +page || 1, query });
+  const deals = query
+    ? await getAllDealsByQuery({ page: +page || 1, query })
+    : await getAllDeals({ page: +page || 1 });
   return (
     <SearchContainer
       title="Deals"

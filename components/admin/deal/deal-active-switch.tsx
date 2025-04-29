@@ -2,7 +2,7 @@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { updateDeal } from "@/lib/actions/admin.actions";
-import { addDealType } from "@/types";
+import { AdminDealType } from "@/types";
 import { useState, useTransition } from "react";
 
 const DealActiveSwitch = ({
@@ -10,7 +10,7 @@ const DealActiveSwitch = ({
   activeStatus,
   isValidDate,
 }: {
-  deal: addDealType;
+  deal: AdminDealType;
   activeStatus: boolean;
   isValidDate: boolean;
 }) => {

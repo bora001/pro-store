@@ -18,7 +18,7 @@ import Link from "next/link";
 import {
   deleteDeal,
   getAllDeals,
-  getAllProducts,
+  getAllDealsByQuery,
 } from "@/lib/actions/admin.actions";
 import { PATH } from "@/lib/constants";
 import DeleteButton from "@/components/common/delete-button";
@@ -45,14 +45,14 @@ const AdminDealsPage = async (props: {
   searchParams: Promise<{ page: string; query: string; category: string }>;
 }) => {
   const currentDate = new Date();
-  const { page, query, category } = await props.searchParams;
-  const data = await getAllProducts({ page: +page || 1, query, category });
-  const deals = await getAllDeals({ page: +page || 1, query });
-
+  const { page, query } = await props.searchParams;
+  const deals = query
+    ? await getAllDealsByQuery({ page: +page || 1, query })
+    : await getAllDeals({ page: +page || 1 });
   return (
     <SearchContainer
       title="Deals"
-      hasList={deals.length === 0}
+      hasList={deals.deal.length === 0}
       resetPath={PATH.DEALS}
       query={query}
       emptyText="No deals available"
@@ -71,8 +71,10 @@ const AdminDealsPage = async (props: {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {deals.map((deal) => {
-            const isValidDate = deal.endTime > currentDate;
+          {deals.deal.map((deal) => {
+            const isValidDate = deal.endTime
+              ? new Date(deal.endTime) > currentDate
+              : false;
             return (
               <TableRow key={deal.id}>
                 <TableCell>#{idSlicer(deal.id)}</TableCell>
@@ -115,11 +117,11 @@ const AdminDealsPage = async (props: {
         </TableBody>
       </Table>
       <div className="flex justify-center">
-        {data.totalPages > 1 && (
+        {deals.totalPages > 1 && (
           <Pagination
             page={page || 1}
             urlParams="page"
-            totalPages={data.totalPages}
+            totalPages={deals.totalPages}
           />
         )}
       </div>

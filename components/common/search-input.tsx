@@ -9,7 +9,13 @@ import { URLChanger, cn } from "@/lib/utils";
 import { autocomplete } from "@/lib/typesense/autoComplete";
 import { debounce } from "lodash";
 
-const SearchInput = ({ path }: { path?: string }) => {
+const SearchInput = ({
+  path,
+  autoComplete,
+}: {
+  path?: string;
+  autoComplete?: boolean;
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
@@ -54,10 +60,10 @@ const SearchInput = ({ path }: { path?: string }) => {
   }, [setRecommendations]);
 
   useEffect(() => {
-    if (searchKeyword) {
+    if (searchKeyword && autoComplete) {
       debouncedAutocomplete(searchKeyword);
     }
-  }, [debouncedAutocomplete, searchKeyword]);
+  }, [autoComplete, debouncedAutocomplete, searchKeyword]);
 
   const getRecommendation = (value: string) => {
     router.replace(generateURL(value));

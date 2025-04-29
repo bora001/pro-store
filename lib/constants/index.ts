@@ -19,6 +19,14 @@ export const SYSTEM_TYPE = {
 
 export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;
 export const USER_ROLE = ["admin", "user"];
+
+export const REDIS_KEY = {
+  BANNER: "banner-cache",
+  ACTIVE_DEAL: "active-deal-cache",
+  ADMIN_PRODUCT_LIST: "admin-product-list-cache",
+  ADMIN_DEAL_LIST: "admin-deal-list-cache",
+};
+
 export const PATH = {
   HOME: "/",
   SIGN_UP: "/sign-up",

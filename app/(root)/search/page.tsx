@@ -83,10 +83,10 @@ const SearchPage = async (props: {
                   title="No product found"
                   href={PATH.HOME}
                   linkText="Back to home"
-                  listLength={product.product.length}
+                  listLength={product.product?.length || 0}
                 >
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 ">
-                    {product.product.map((product) => (
+                    {product.product?.map((product) => (
                       <ProductCard key={product.id} product={product} />
                     ))}
                   </div>

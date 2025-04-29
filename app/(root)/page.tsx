@@ -1,26 +1,23 @@
-import DealCountDown from "@/components/home/deal-countdown";
+import DealCountDown from "@/components/home/deal-countdown/deal-countdown";
+import FeatureBannerSlide from "@/components/home/feature-banner-slide";
 import ProductList from "@/components/home/product-list";
 import ShoppingBenefits from "@/components/home/shopping-benefits";
-import ProductCarousel from "@/components/product/product-carousel";
 import { Button } from "@/components/ui/button";
-import { getDeal } from "@/lib/actions/admin.actions";
-import {
-  getFeatureProduct,
-  getLatestProducts,
-} from "@/lib/actions/product.actions";
+import { getActiveDeal } from "@/lib/actions/admin.actions";
+import { getBanner, getLatestProducts } from "@/lib/actions/product.actions";
 import { PATH } from "@/lib/constants";
 import { autocomplete } from "@/lib/typesense/autoComplete";
 import Link from "next/link";
 
 const HomePage = async () => {
   const latestProduct = await getLatestProducts();
-  const featureProduct = await getFeatureProduct();
-  const { data: deal } = await getDeal({ isActive: true });
+  const bannerData = await getBanner();
+  const { data: deal } = await getActiveDeal({ isActive: true });
   autocomplete("");
 
   return (
     <div className={"space-y-6 my-4"}>
-      <ProductCarousel data={featureProduct} />
+      <FeatureBannerSlide data={bannerData} />
       <ShoppingBenefits />
       <DealCountDown deal={deal} />
       <ProductList

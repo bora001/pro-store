@@ -1,6 +1,5 @@
 import { prisma } from "@/db/prisma";
 import client from "../typesense";
-import { ImportError } from "typesense/lib/Typesense/Errors";
 
 export async function importProductsToTypesense() {
   try {
@@ -21,7 +20,7 @@ export async function importProductsToTypesense() {
       action: "create",
     });
     console.log("products imported successfully");
-  } catch (error: ImportError | unknown) {
+  } catch (error: unknown) {
     console.error("Error importing products:", error);
     if (error && typeof error === "object" && "importResults" in error) {
       console.error("Failed import results:", error.importResults);

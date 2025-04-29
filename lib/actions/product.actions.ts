@@ -1,8 +1,10 @@
 "use server";
 
 import { prismaToJs } from "../utils";
-import { CONSTANTS } from "../constants";
+import { CONSTANTS, REDIS_KEY } from "../constants";
 import { prisma } from "@/db/prisma";
+import { cacheData, getCachedData } from "../redis/redis-handler";
+import { BannerType } from "@/types";
 
 // latest products
 export async function getLatestProducts() {
@@ -56,8 +58,12 @@ export const getAllCategory = async () => {
   }));
 };
 
-// get-feature-product
-export const getFeatureProduct = async () => {
+// get-banner
+export const getBanner = async () => {
+  const cachedProduct = await getCachedData(REDIS_KEY.BANNER);
+  if (cachedProduct) {
+    return cachedProduct as BannerType[];
+  }
   const data = await prisma.product.findMany({
     where: { isFeatured: true },
     orderBy: {
@@ -71,5 +77,6 @@ export const getFeatureProduct = async () => {
     },
     take: 4,
   });
+  await cacheData(REDIS_KEY.BANNER, data, 0);
   return prismaToJs(data);
 };

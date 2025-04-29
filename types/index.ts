@@ -14,7 +14,10 @@ import {
   addDealSchema,
   signUpSchema,
 } from "@/lib/validator";
+import { Product } from "@prisma/client";
 import { z } from "zod";
+
+export type BannerType = Pick<Product, "id" | "slug" | "banner">;
 
 export type ProductItemType = z.infer<typeof insertProductSchema> & {
   id: string;
@@ -66,7 +69,46 @@ export type reviewType = z.infer<typeof addReviewSchema> & {
     name: string;
   };
 };
+
 export type addDealType = z.infer<typeof addDealSchema> & {
   id: string;
   product?: ProductItemType;
 };
+export type getDealType = z.infer<typeof addDealSchema> & {
+  product?: Omit<
+    ProductItemType,
+    | "category"
+    | "brand"
+    | "description"
+    | "isFeatured"
+    | "banner"
+    | "numReviews"
+    | "rating"
+    | "createdAt"
+    | "Deal"
+  > & {
+    Deal?: { title: string }[];
+  };
+};
+
+// pages
+type pageInformation = {
+  count: number;
+  totalPages: number;
+};
+
+// result
+export type AdminDealType = z.infer<typeof addDealSchema> & {
+  id: string;
+  product: Pick<ProductItemType, "name">;
+};
+
+export interface AdminProductResult extends pageInformation {
+  product: Pick<
+    ProductItemType,
+    "id" | "name" | "price" | "category" | "stock" | "rating"
+  >[];
+}
+export interface AdminDealResult extends pageInformation {
+  deal: AdminDealType[];
+}

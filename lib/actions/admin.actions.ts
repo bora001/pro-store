@@ -2,11 +2,13 @@
 
 import { prisma } from "@/db/prisma";
 import { Prisma } from "@prisma/client";
-import { CONSTANTS, PATH } from "../constants";
+import { CONSTANTS, PATH, REDIS_KEY } from "../constants";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { revalidatePath } from "next/cache";
 import { updateOrderToPaid } from "./order.actions";
 import {
+  AdminDealResult,
+  AdminProductResult,
   CartItemType,
   PaymentResultType,
   addDealType,
@@ -22,6 +24,12 @@ import { deleteImage } from "./image.actions";
 import { createOneProductIndex } from "../typesense/createOneProductIndex";
 import { updateProductIndex } from "../typesense/updateProductIndex";
 import { deleteItemIndex } from "../typesense/deleteOneItem";
+import { redis } from "../redis";
+import {
+  cacheData,
+  deleteAllRedisKey,
+  getCachedData,
+} from "../redis/redis-handler";
 
 // order-summary
 export async function getOrderSummary() {
@@ -134,7 +142,7 @@ export async function updateOrderToDelivered(orderId: string) {
   }
 }
 
-// all-products
+// get-all-products
 export async function getAllProducts({
   query = "",
   category,
@@ -195,15 +203,54 @@ export async function getAllProducts({
     take: limit,
     ...pagination,
   });
-  const productCount = await prisma.product.count();
+  const count = await prisma.product.count();
   return {
     product: prismaToJs(product),
-    productCount,
-    totalPages: limit ? Math.ceil(productCount / limit) : 0,
+    count,
+    totalPages: limit ? Math.ceil(count / limit) : 0,
   };
 }
 
-// delete-products
+// get-all-product-admin
+export async function getAllAdminProduct({
+  page = 1,
+  limit = CONSTANTS.PAGE_LIMIT,
+}: {
+  page?: number;
+  limit?: number;
+}): Promise<AdminProductResult> {
+  const cacheKey = `${REDIS_KEY.ADMIN_PRODUCT_LIST}_${page}`;
+  const cachedList = await getCachedData<AdminProductResult>(cacheKey);
+  if (cachedList) {
+    return { ...cachedList };
+  }
+  const pagination = limit ? { skip: (page - 1) * limit } : {};
+  const product = await prisma.product.findMany({
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      category: true,
+      stock: true,
+      rating: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: limit,
+    ...pagination,
+  });
+  const count = await prisma.product.count();
+  const result = {
+    product: prismaToJs(product),
+    count,
+    totalPages: limit ? Math.ceil(count / limit) : 0,
+  };
+  await cacheData(cacheKey, result, 0);
+  return result;
+}
+
+// delete-product
 export async function deleteProduct(id: string) {
   try {
     const isExist = await prisma.product.findFirst({
@@ -214,13 +261,17 @@ export async function deleteProduct(id: string) {
     if (isExist.banner) {
       await deleteImage([isExist.banner], "banner");
     }
+    if (isExist.isFeatured) {
+      await redis.del(REDIS_KEY.BANNER);
+    }
     await prisma.product.delete({
       where: {
         id,
       },
     });
     await deleteItemIndex({ model: "products", id });
-    revalidatePath(PATH.PRODUCTS);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
+
     return formatSuccess("Product deleted successfully");
   } catch (error) {
     return formatError(error);
@@ -232,13 +283,16 @@ export async function createProduct(data: z.infer<typeof insertProductSchema>) {
   try {
     const product = insertProductSchema.parse(data);
     const result = await prisma.product.create({ data: product });
+    if (data.isFeatured) {
+      await redis.del(REDIS_KEY.BANNER);
+    }
     await createOneProductIndex({
       ...product,
       id: result.id,
       rating: 0,
       createdAt: new Date().getTime(),
     });
-    revalidatePath(PATH.PRODUCTS);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
     return formatSuccess("Product created successfully");
   } catch (error) {
     return formatError(error);
@@ -248,10 +302,16 @@ export async function createProduct(data: z.infer<typeof insertProductSchema>) {
 // update-product
 export async function updateProduct(data: updateProductType) {
   try {
-    const isProductExist = await prisma.product.findFirst({
+    const originalProductData = await prisma.product.findFirst({
       where: { id: data.id },
     });
-    if (!isProductExist) throw new Error("Product not found");
+    if (!originalProductData) throw new Error("Product not found");
+    if (
+      (originalProductData.isFeatured && !data.isFeatured) ||
+      (!originalProductData.isFeatured && data.isFeatured)
+    ) {
+      await redis.del(REDIS_KEY.BANNER);
+    }
     const product = updateProductSchema.parse(data);
     await prisma.product.update({
       where: { id: data.id },
@@ -260,10 +320,10 @@ export async function updateProduct(data: updateProductType) {
     await updateProductIndex({
       ...product,
       id: data.id!,
-      createdAt: isProductExist.createdAt.getTime(),
-      rating: +isProductExist.rating,
+      createdAt: originalProductData.createdAt.getTime(),
+      rating: +originalProductData.rating,
     });
-    revalidatePath(PATH.PRODUCTS);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
     return formatSuccess("Product updated successfully");
   } catch (error) {
     return formatError(error);
@@ -324,8 +384,8 @@ export async function getAllUsers({
   };
 }
 
-// get-all-deals
-export async function getAllDeals({
+// get-all-deals-by-query
+export async function getAllDealsByQuery({
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
   query,
@@ -333,7 +393,7 @@ export async function getAllDeals({
   page: number;
   limit?: number;
   query: string;
-}) {
+}): Promise<AdminDealResult> {
   const queryFilter: Prisma.DealWhereInput = query
     ? {
         OR: [
@@ -364,8 +424,8 @@ export async function getAllDeals({
     orderBy: { createdAt: "desc" },
     include: {
       product: {
-        include: {
-          Deal: true,
+        select: {
+          name: true,
         },
       },
     },
@@ -376,10 +436,126 @@ export async function getAllDeals({
     skip: (page - 1) * limit,
   });
   if (!deal) throw new Error("Deal not found");
-
-  return deal;
+  const count = await prisma.deal.count();
+  return {
+    deal: prismaToJs(deal),
+    count,
+    totalPages: limit ? Math.ceil(count / limit) : 0,
+  };
 }
 
+// get-all-deals-admin
+export async function getAllDeals({
+  page = 1,
+  limit = CONSTANTS.PAGE_LIMIT,
+}: {
+  page: number;
+  limit?: number;
+}): Promise<AdminDealResult> {
+  const cacheKey = `${REDIS_KEY.ADMIN_DEAL_LIST}_${page}`;
+
+  const cachedList = await getCachedData<AdminDealResult>(cacheKey);
+  if (cachedList) {
+    return { ...cachedList };
+  }
+  const deal = await prisma.deal.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      product: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+  if (!deal) throw new Error("Deal not found");
+  const count = await prisma.deal.count();
+  const result = {
+    deal: prismaToJs(deal),
+    count,
+    totalPages: limit ? Math.ceil(count / limit) : 0,
+  };
+  await cacheData(cacheKey, result, 0);
+  return result;
+}
+
+// get-active-deal
+export async function getActiveDeal({
+  id,
+  isActive,
+}: {
+  id?: string;
+  isActive?: boolean;
+}) {
+  try {
+    const hasId = id ? { id } : {};
+    const hasActive = isActive
+      ? {
+          product: {
+            Deal: {
+              some: {
+                isActive: true,
+              },
+            },
+          },
+        }
+      : {};
+
+    const cachedDeal: { hasDeal: boolean; data: addDealType } | null =
+      await getCachedData(REDIS_KEY.ACTIVE_DEAL);
+
+    if (cachedDeal !== null && !cachedDeal.hasDeal) {
+      return { success: true, data: undefined };
+    }
+
+    if (cachedDeal) {
+      return {
+        success: true,
+        data: cachedDeal.data,
+      };
+    }
+
+    const data = await prisma.deal.findFirst({
+      where: {
+        ...hasId,
+        ...hasActive,
+      },
+      include: {
+        product: {
+          select: {
+            stock: true,
+            images: true,
+            price: true,
+            slug: true,
+            id: true,
+            name: true,
+            Deal: {
+              where: {
+                isActive: true,
+              },
+              select: {
+                title: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    await cacheData(REDIS_KEY.ACTIVE_DEAL, { hasDeal: !!data, data: data }, 0);
+
+    if (!data) throw new Error("Deal not found");
+
+    return {
+      success: true,
+      data: prismaToJs(data),
+    };
+  } catch (error) {
+    return formatError(error);
+  }
+}
 // get-deal
 export async function getDeal({
   id,
@@ -390,21 +566,50 @@ export async function getDeal({
 }) {
   try {
     const hasId = id ? { id } : {};
-    const hasActive = isActive ? { isActive } : {};
-    const deal = await prisma.deal.findFirst({
-      where: { ...hasId, ...hasActive },
+    const hasActive = isActive
+      ? {
+          product: {
+            Deal: {
+              some: {
+                isActive: true,
+              },
+            },
+          },
+        }
+      : {};
+
+    const data = await prisma.deal.findFirst({
+      where: {
+        ...hasId,
+        ...hasActive,
+      },
       include: {
         product: {
-          include: {
-            Deal: true,
+          select: {
+            stock: true,
+            images: true,
+            price: true,
+            slug: true,
+            id: true,
+            name: true,
+            Deal: {
+              where: {
+                isActive: true,
+              },
+              select: {
+                title: true,
+              },
+            },
           },
         },
       },
     });
-    if (!deal) throw new Error("Deal not found");
+
+    if (!data) throw new Error("Deal not found");
+
     return {
       success: true,
-      data: prismaToJs(deal),
+      data: prismaToJs(data),
     };
   } catch (error) {
     return formatError(error);
@@ -420,7 +625,7 @@ export async function createDeal(values: z.infer<typeof addDealSchema>) {
     await prisma.deal.create({
       data: { ...data, endTime: data.endTime },
     });
-    revalidatePath(PATH.DEALS);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
     return formatSuccess("Deal created successfully");
   } catch (error) {
     return formatError(error);
@@ -440,6 +645,10 @@ export async function updateDeal(data: Partial<addDealType>) {
       where: { id: data.id },
     });
     if (!deals) throw new Error("Deal not found");
+    if (data.isActive || (deals.isActive && !data.isActive)) {
+      await redis.del(REDIS_KEY.ACTIVE_DEAL);
+      await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
+    }
     const { endTime, product: _product, ...rest } = data;
     await prisma.deal.update({
       where: { id: data.id },
@@ -448,7 +657,7 @@ export async function updateDeal(data: Partial<addDealType>) {
         ...(endTime && { endTime }),
       },
     });
-    revalidatePath(PATH.DEALS);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
     return formatSuccess("Deal updated successfully");
   } catch (error) {
     return formatError(error);
@@ -467,7 +676,7 @@ export async function deleteDeal(id: string) {
         id,
       },
     });
-    revalidatePath(PATH.DEALS);
+    await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
     return formatSuccess("Deal deleted successfully");
   } catch (error) {
     return formatError(error);

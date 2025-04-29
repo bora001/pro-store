@@ -26,7 +26,7 @@ const Menu = () => {
       <nav className="hidden md:flex w-full max-w-xs gap-1">{MenuContent}</nav>
       <nav className="md:hidden">
         <Sheet>
-          <SheetDescription className="text-[0px]">
+          <SheetDescription className="sr-only">
             Open the menu to change the browser theme, access the cart page, or
             navigate to the profile page, admin page, order page, or sign
             in/sign out

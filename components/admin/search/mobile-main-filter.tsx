@@ -26,7 +26,7 @@ const MobileMainFilter = ({ category }: { category: CategoryType[] }) => {
       </DrawerTrigger>
       <DrawerContent className="h-[480px]">
         <DrawerHeader>
-          <DrawerDescription className="text-[0px]">
+          <DrawerDescription className="sr-only">
             Open filters to refine search results
           </DrawerDescription>
           <DrawerTitle className="mb-4" />

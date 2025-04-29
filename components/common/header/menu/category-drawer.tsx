@@ -3,6 +3,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -18,6 +19,9 @@ const CategoryDrawer = async () => {
     <>
       {category.length > 0 && (
         <Drawer direction="left">
+          <DrawerDescription className="sr-only">
+            Open filters to refine your search by category
+          </DrawerDescription>
           <DrawerTrigger asChild>
             <Button
               variant="outline"

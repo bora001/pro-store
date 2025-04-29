@@ -1,5 +1,19 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.4.2](https://github.com/bora001/pro-store/compare/v1.4.1...v1.4.2) (2025-04-29)
+This release includes several enhancements, such as bug fixes, performance improvements, code refactoring.
+
+### 🐛 Bug Fixes
+* prevent input scrolling, edit search input autocomplete ([7d5938f](https://github.com/bora001/pro-store/commit/7d5938f444f6520ffba92b815bfc16d6aaf82972))
+
+### ⚡ Performance Improvements
+* (admin): add Redis caching (products, deals) ([4307526](https://github.com/bora001/pro-store/commit/43075260f4fcfee34a315cebdc7056afbab9cf17))
+
+* (home): add Redis caching (Banner, Dealcount) ([753f2eb](https://github.com/bora001/pro-store/commit/753f2eb1b59ad00541649812c3f0df1120e1016e))
+
+### 🔧 Code Refactoring
+* - dealCountDown ([2dabe9d](https://github.com/bora001/pro-store/commit/2dabe9d161fa6cfa99f48d8a6bbe1858cfa33193))
+
 ## Release Overview [1.4.1](https://github.com/bora001/pro-store/compare/v1.4.0...v1.4.1) (2025-04-28)
 This release includes several enhancements, such as performance improvements.
 

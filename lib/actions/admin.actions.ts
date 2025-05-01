@@ -709,3 +709,84 @@ export async function hasIncludedDeal({
     return formatError(error);
   }
 }
+
+//get-setting
+export async function getSetting() {
+  try {
+    const data = await prisma.setting.findFirst({
+      where: { id: 1 },
+      include: { tags: true },
+    });
+    return {
+      success: true,
+      data: prismaToJs(data),
+    };
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+//update-setting
+export async function updateSetting({
+  prompt,
+  manual,
+}: {
+  prompt?: string;
+  manual?: string;
+}) {
+  const data: Partial<{ prompt: string; manual: string }> = {};
+  if (prompt !== undefined) data.prompt = prompt;
+  if (manual !== undefined) data.manual = manual;
+  console.log(data, "DD");
+  try {
+    await prisma.setting.upsert({
+      where: { id: 1 },
+      create: {
+        id: 1,
+        prompt: data.prompt ?? "",
+        manual: data.manual ?? "",
+      },
+      update: data,
+    });
+    revalidatePath(PATH.SETTING);
+    return formatSuccess("Setting updated or created successfully.");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+// add-tag
+export async function addTag(name: string) {
+  try {
+    await prisma.setting.update({
+      where: { id: 1 },
+      data: {
+        tags: {
+          create: { name: name.toLowerCase() },
+        },
+      },
+    });
+    revalidatePath(PATH.SETTING);
+    return formatSuccess("Tags updated successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+// delete-tag
+export async function removeTagById(id: string) {
+  try {
+    await prisma.setting.update({
+      where: { id: 1 },
+      data: {
+        tags: {
+          delete: {
+            id,
+          },
+        },
+      },
+    });
+    revalidatePath(PATH.SETTING);
+    return formatSuccess("Tags deleted successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}

@@ -25,6 +25,7 @@ export const REDIS_KEY = {
   ACTIVE_DEAL: "active-deal-cache",
   ADMIN_PRODUCT_LIST: "admin-product-list-cache",
   ADMIN_DEAL_LIST: "admin-deal-list-cache",
+  SETTING: "setting-cache",
 };
 
 export const PATH = {
@@ -48,6 +49,7 @@ export const PATH = {
   USERS: "/admin/users",
   ORDERS: "/admin/orders",
   DEALS: "/admin/deals",
+  SETTING: "/admin/setting",
 
   API_GET_PRESIGNED_URL: "/api/get-presigned-url",
   API_UPLOAD_IMAGE: "/api/image/upload",

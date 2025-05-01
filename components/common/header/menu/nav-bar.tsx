@@ -23,7 +23,7 @@ const NavBar = ({ navList }: { navList: NavBarType }) => {
 
   return (
     <div>
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         {navList.map(({ title, href }) => (
           <Link key={title} href={href}>
             <Button
@@ -39,7 +39,7 @@ const NavBar = ({ navList }: { navList: NavBarType }) => {
           </Link>
         ))}
       </div>
-      <div className="block md:hidden">
+      <div className="block lg:hidden">
         <Select onValueChange={moveLink} defaultValue={pathname}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select a category" />

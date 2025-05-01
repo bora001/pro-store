@@ -6,4 +6,5 @@ export const ADMIN_NAV_LINK = [
   { title: "Orders", href: PATH.ORDERS },
   { title: "Users", href: PATH.USERS },
   { title: "Deals", href: PATH.DEALS },
+  { title: "Setting", href: PATH.SETTING },
 ];

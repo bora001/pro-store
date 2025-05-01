@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+import { ClassValue } from "clsx";
 import { ReactNode } from "react";
 
 const Container = ({
@@ -5,11 +7,13 @@ const Container = ({
   extra,
   button,
   children,
+  className,
 }: {
   title: string;
   extra?: string | ReactNode;
   button?: ReactNode;
   children: ReactNode;
+  className?: ClassValue;
 }) => {
   return (
     <div className="h-full flex flex-col">
@@ -20,7 +24,7 @@ const Container = ({
         </div>
         {button}
       </div>
-      <div className="h-full">{children}</div>
+      <div className={cn("h-full", className)}>{children}</div>
     </div>
   );
 };

@@ -112,3 +112,8 @@ export interface AdminProductResult extends pageInformation {
 export interface AdminDealResult extends pageInformation {
   deal: AdminDealType[];
 }
+
+export type TagType = {
+  id: string;
+  name: string;
+};

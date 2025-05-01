@@ -4,17 +4,18 @@ import { produce } from "immer";
 import ChatbotIcon from "@/assets/chat-bot-icon";
 import {
   Popover,
+  PopoverClose,
   PopoverContent,
   PopoverTrigger,
 } from "@radix-ui/react-popover";
-import { Button } from "../ui/button";
 import IconButton from "../custom/IconButton";
-import { Textarea } from "../ui/textarea";
-import { CircleHelp, SendHorizonal } from "lucide-react";
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useState, useTransition } from "react";
+import { askAI } from "@/lib/actions/chat.actions";
+import ChatScreen from "./chat-screen";
+import ChatInput from "./chat-input";
+import { Bot, X } from "lucide-react";
 
-type Role = "user" | "assistant" | "default"; // (또는 system 도 있을 수 있어)
-const MANUAL_QUESTIONS = {
+export const MANUAL_QUESTIONS = {
   delivery: {
     question: "🕰️ Delivery time",
     answer:
@@ -34,7 +35,7 @@ const MANUAL_QUESTIONS = {
     answer: "We offer free shipping for orders over $100.",
   },
 } as const;
-type DefaultQuestionKeyType = keyof typeof MANUAL_QUESTIONS;
+export type DefaultQuestionKeyType = keyof typeof MANUAL_QUESTIONS;
 
 type DefaultQuestionType = {
   [key in DefaultQuestionKeyType]: {
@@ -42,7 +43,7 @@ type DefaultQuestionType = {
     answer: string;
   };
 };
-type Message =
+export type Message =
   | ({
       role: "user" | "assistant";
       content: string;
@@ -53,8 +54,7 @@ type Message =
     } & { content?: never });
 
 const ChatFloatingButton = () => {
-  const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
-
+  const [isPending, startTransition] = useTransition();
   const [messageList, setMessageList] = useState<Message[]>([
     { role: "assistant", content: "Hello! How can I help you today?" },
     { role: "default", entry: MANUAL_QUESTIONS },
@@ -63,32 +63,26 @@ const ChatFloatingButton = () => {
   const showManualQuestion = () => {
     setMessageList((prev) =>
       produce(prev, (draft) => {
-        draft.push({ role: "default", entry: MANUAL_QUESTIONS }); // 그냥 수정만 하면 됨
+        draft.push({ role: "default", entry: MANUAL_QUESTIONS });
       })
     );
   };
 
-  useEffect(() => {
-    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messageList]);
-
-  const [userMessage, setUserMessage] = useState("");
-  const sendUserMessage = () => {
+  const sendUserMessage = async (message: string) => {
+    if (!message.trim().length) return;
     setMessageList((prev) =>
       produce(prev, (draft) => {
-        draft.push({ role: "user", content: userMessage });
+        draft.push({ role: "user", content: message });
       })
     );
-    setUserMessage("");
-  };
-  const enterChat = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    const target = e.target as HTMLTextAreaElement;
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendUserMessage();
-    } else {
-      setUserMessage(target.value);
-    }
+    startTransition(async () => {
+      const answer = await askAI(message);
+      setMessageList((prev) =>
+        produce(prev, (draft) => {
+          draft.push({ role: "assistant", content: answer });
+        })
+      );
+    });
   };
 
   const getManualAnswer = (type: DefaultQuestionKeyType) => {
@@ -107,75 +101,39 @@ const ChatFloatingButton = () => {
     );
   };
   return (
-    <div className="fixed z-10 bottom-10 right-10 ">
-      <Popover>
+    <div className="fixed z-10 bottom-10 right-10">
+      <Popover modal={true}>
         <PopoverTrigger asChild>
           <IconButton
             className="p-0 hover:bg-transparent"
             icon={<ChatbotIcon />}
           />
         </PopoverTrigger>
-        <PopoverContent className="w-80 max-h-[540px] border bg-gray-50 mb-5 mr-10 shadow-lg rounded-2xl flex flex-col p-4 text-sm ">
-          {/* chat-history */}
-          <div className="flex flex-col flex-1 gap-3 overflow-y-scroll">
-            {messageList.map((message, index) => (
-              <div
-                key={index}
-                className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
-              >
-                {message.role === "default" ? (
-                  <div className="flex gap-1 flex-wrap ">
-                    {Object.entries(message.entry).map(([key, value]) => (
-                      <Button
-                        className="self-start flex-1 bg-violet-500"
-                        key={key}
-                        onClick={() =>
-                          getManualAnswer(key as keyof typeof MANUAL_QUESTIONS)
-                        }
-                      >
-                        {value.question}
-                      </Button>
-                    ))}
-                  </div>
-                ) : (
-                  <div
-                    className={`p-3 rounded-lg max-w-xs ${
-                      message.role === "assistant"
-                        ? "border bg-white text-black"
-                        : "bg-violet-500 text-white"
-                    }`}
-                  >
-                    {message.content}
-                  </div>
-                )}
-              </div>
-            ))}
-            <div ref={endOfMessagesRef} />
-          </div>
-          {/* input */}
-          <div className="m-2 flex flex-col border justify-end items-end rounded-md bg-white">
-            <Textarea
-              value={userMessage}
-              onChange={(e) => setUserMessage(e.target.value)}
-              className="resize-none border-none outline-none ring-0 focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              onKeyDown={(e) => enterChat(e)}
-            />
 
-            <div className="flex justify-between w-full">
-              <div
-                className="p-2  cursor-pointer "
-                onClick={() => showManualQuestion()}
-              >
-                <CircleHelp />
-              </div>
-              <div
-                className="p-2 bg-violet-600 cursor-pointer text-white"
-                onClick={() => sendUserMessage()}
-              >
-                <SendHorizonal />
-              </div>
+        <PopoverContent className="w-80 h-[480px] border bg-gray-50 mb-5 mr-10 shadow-lg rounded-2xl flex flex-col p-4 text-sm">
+          <div className="flex justify-between pb-3 font-semibold items-center">
+            <div className="flex items-center gap-2">
+              <Bot className="mb-1" />
+              Chat with AI
             </div>
+            <PopoverClose className="text-xs">
+              <X />
+              {/* Close */}
+            </PopoverClose>
           </div>
+
+          {/* chat-history */}
+          <ChatScreen
+            messageList={messageList}
+            getManualAnswer={getManualAnswer}
+            isPending={isPending}
+          />
+          {/* input */}
+          <ChatInput
+            isPending={isPending}
+            showManualQuestion={showManualQuestion}
+            sendUserMessage={sendUserMessage}
+          />
         </PopoverContent>
       </Popover>
     </div>

@@ -25,6 +25,8 @@ import slugify from "slugify";
 import { z } from "zod";
 import ProductFormImageInput from "./product-form-image-input";
 import { v4 as uuidv4 } from "uuid";
+import ProductTags from "./form-items/product-tags";
+import { TagType } from "@/types";
 
 type ProductFormType = "create" | "edit";
 
@@ -41,6 +43,7 @@ const defaultValue = {
   numReviews: 0,
   isFeatured: false,
   banner: null,
+  tags: [],
 };
 
 const ProductForm = ({
@@ -48,11 +51,13 @@ const ProductForm = ({
   product,
   productId,
   deleteButton,
+  allTags,
 }: {
   type: ProductFormType;
   product?: z.infer<typeof insertProductSchema>;
   productId?: string;
   deleteButton?: ReactNode;
+  allTags: TagType[];
 }) => {
   const [files, setFiles] = useState<File[]>([]);
   const [banners, setBanners] = useState<File[]>([]);
@@ -284,6 +289,8 @@ const ProductForm = ({
           placeholder="Enter Product Description"
           name="description"
         />
+        {/* tags */}
+        <ProductTags allTags={allTags} />
         {/* buttons */}
         <div className="flex gap-2">
           {/* submit */}

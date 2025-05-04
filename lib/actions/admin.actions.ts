@@ -21,8 +21,8 @@ import {
 } from "../validator";
 import { z } from "zod";
 import { deleteImage } from "./image.actions";
-import { createOneProductIndex } from "../typesense/createOneProductIndex";
-import { updateProductIndex } from "../typesense/updateProductIndex";
+import { createOneProductIndex } from "../typesense/product/createOneProductIndex";
+import { updateProductIndex } from "../typesense/product/updateProductIndex";
 import { deleteItemIndex } from "../typesense/deleteOneItem";
 import { redis } from "../redis";
 import {
@@ -282,7 +282,14 @@ export async function deleteProduct(id: string) {
 export async function createProduct(data: z.infer<typeof insertProductSchema>) {
   try {
     const product = insertProductSchema.parse(data);
-    const result = await prisma.product.create({ data: product });
+    const result = await prisma.product.create({
+      data: {
+        ...product,
+        tags: {
+          connect: product.tags?.map((tag) => ({ id: tag.id })),
+        },
+      },
+    });
     if (data.isFeatured) {
       await redis.del(REDIS_KEY.BANNER);
     }
@@ -315,7 +322,12 @@ export async function updateProduct(data: updateProductType) {
     const product = updateProductSchema.parse(data);
     await prisma.product.update({
       where: { id: data.id },
-      data: product,
+      data: {
+        ...product,
+        tags: {
+          set: product.tags?.map((tag) => ({ id: tag.id })),
+        },
+      },
     });
     await updateProductIndex({
       ...product,
@@ -331,9 +343,13 @@ export async function updateProduct(data: updateProductType) {
 }
 
 // get-product
-export async function getProduct(id: string) {
+export async function getProduct(
+  id: string,
+  props?: Prisma.ProductFindFirstArgs
+) {
   const product = await prisma.product.findFirst({
     where: { id },
+    ...props,
   });
   if (!product) throw new Error("Product not found");
   return prismaToJs(product);
@@ -754,6 +770,24 @@ export async function updateSetting({
     return formatError(error);
   }
 }
+
+// get-tags
+export async function getTags() {
+  try {
+    const tags = await prisma.setting.findMany({
+      where: { id: 1 },
+      select: { tags: true },
+    });
+    return {
+      success: true,
+      message: "Successfully retrieved tags",
+      data: tags,
+    };
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
 // add-tag
 export async function addTag(name: string) {
   try {

@@ -20,7 +20,7 @@ import { revalidatePath } from "next/cache";
 import { PaymentFormType } from "@/components/payment/payment-form";
 import { hasIncludedDeal } from "./admin.actions";
 import { calculatePrice } from "@/utils/price/calculate-price";
-import { updateProductIndex } from "../typesense/updateProductIndex";
+import { updateProductIndex } from "../typesense/product/updateProductIndex";
 import { sendPurchaseReceipt } from "../email/mail-handler";
 
 // place-order

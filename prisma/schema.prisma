@@ -171,5 +171,5 @@ model Tag {
   name      String    @unique
   settingId Int
   setting   Setting   @relation(fields: [settingId], references: [id])
-  products  Product[] @relation("ProductTags") // 다대다 관계
+  products  Product[] @relation("ProductTags")
 }

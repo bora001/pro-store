@@ -1,5 +1,24 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.5.0](https://github.com/bora001/pro-store/compare/v1.4.2...v1.5.0) (2025-05-05)
+This release includes several enhancements, such as new features, code refactoring.
+
+### 🚀 New Features
+* (chat): recommend items based on prompt and tags ([319878a](https://github.com/bora001/pro-store/commit/319878a7750f30bf71546e44745038f6ec04ed27))
+
+* add OpenAI API integration and admin setting for chat ([422afe3](https://github.com/bora001/pro-store/commit/422afe3e3a3d45a3323b4cb5ee03d2ac9c7e78a1))
+
+* add tag list field to product schema and form ([53b7872](https://github.com/bora001/pro-store/commit/53b787244f5ed46e596bb54230154ecbb705eb88))
+
+* chat-ui ([64fcfab](https://github.com/bora001/pro-store/commit/64fcfabca7e252c5148902d91b61f5b8bfd3a5d0))
+
+### 🔧 Code Refactoring
+* (header) : edit drawer, nav-bar ([2748875](https://github.com/bora001/pro-store/commit/27488759d60a21bc97884e19d3c7517efcdd8ff9))
+
+* (typesense): clean up and unify setup logic ([e79027b](https://github.com/bora001/pro-store/commit/e79027b961294c030eec2ef7064ca660b4986c82))
+
+* taglist ([31f61ed](https://github.com/bora001/pro-store/commit/31f61ed2d5ba718db33e81f13feea2278e21c50b))
+
 ## Release Overview [1.4.2](https://github.com/bora001/pro-store/compare/v1.4.1...v1.4.2) (2025-04-29)
 This release includes several enhancements, such as bug fixes, performance improvements, code refactoring.
 

@@ -1,4 +1,3 @@
-import Script from "next/script";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../assets/styles/globals.css";
@@ -25,10 +24,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Script
-        src="https://cdn.jsdelivr.net/npm/typesense@0.21.0/dist/typesense.min.js"
-        strategy="afterInteractive"
-      />
       <body className={`${inter.className}  antialiased`}>
         <ThemeProvider
           attribute="class"

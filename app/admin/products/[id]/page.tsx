@@ -1,7 +1,11 @@
 import ProductFormType from "@/components/admin/product/product-form";
 import Container from "@/components/common/container";
 import DeleteButton from "@/components/common/delete-button";
-import { deleteProduct, getProduct } from "@/lib/actions/admin.actions";
+import {
+  deleteProduct,
+  getProduct,
+  getTags,
+} from "@/lib/actions/admin.actions";
 import { PATH } from "@/lib/constants";
 import { notFound } from "next/navigation";
 
@@ -10,7 +14,12 @@ export const metadata = {
 };
 const EditProductPage = async (props: { params: Promise<{ id: string }> }) => {
   const { id } = await props.params;
-  const product = await getProduct(id);
+  const product = await getProduct(id, {
+    include: {
+      tags: true,
+    },
+  });
+  const { data } = await getTags();
   if (!product) return notFound();
 
   return (
@@ -19,6 +28,7 @@ const EditProductPage = async (props: { params: Promise<{ id: string }> }) => {
         type="edit"
         product={product}
         productId={product.id}
+        allTags={data?.[0].tags || []}
         deleteButton={
           <DeleteButton
             variant="destructive"

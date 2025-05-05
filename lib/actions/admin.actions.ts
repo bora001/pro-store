@@ -2,7 +2,7 @@
 
 import { prisma } from "@/db/prisma";
 import { Prisma } from "@prisma/client";
-import { CONSTANTS, PATH, REDIS_KEY } from "../constants";
+import { CONSTANTS, PATH, REDIS_KEY, TYPESENSE_KEY } from "../constants";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { revalidatePath } from "next/cache";
 import { updateOrderToPaid } from "./order.actions";
@@ -11,6 +11,7 @@ import {
   AdminProductResult,
   CartItemType,
   PaymentResultType,
+  TagType,
   addDealType,
   updateProductType,
 } from "@/types";
@@ -21,15 +22,19 @@ import {
 } from "../validator";
 import { z } from "zod";
 import { deleteImage } from "./image.actions";
-import { createOneProductIndex } from "../typesense/createOneProductIndex";
-import { updateProductIndex } from "../typesense/updateProductIndex";
-import { deleteItemIndex } from "../typesense/deleteOneItem";
+import { deleteOneItemIndex } from "../typesense/delete-one-item-index";
 import { redis } from "../redis";
 import {
   cacheData,
   deleteAllRedisKey,
   getCachedData,
 } from "../redis/redis-handler";
+import { updateIndex } from "../typesense/update-index";
+import { createOneIndex } from "../typesense/create-one-Index";
+import {
+  ProductByTagSchemaIndexConvertor,
+  ProductSchemaIndexConvertor,
+} from "../typesense/model/index-schema-convertor";
 
 // order-summary
 export async function getOrderSummary() {
@@ -269,9 +274,10 @@ export async function deleteProduct(id: string) {
         id,
       },
     });
-    await deleteItemIndex({ model: "products", id });
+    await deleteOneItemIndex({ model: TYPESENSE_KEY.PRODUCT, id });
+    await deleteOneItemIndex({ model: TYPESENSE_KEY.PRODUCT_BY_TAG, id });
     await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
-
+    revalidatePath(PATH.PRODUCTS);
     return formatSuccess("Product deleted successfully");
   } catch (error) {
     return formatError(error);
@@ -282,16 +288,30 @@ export async function deleteProduct(id: string) {
 export async function createProduct(data: z.infer<typeof insertProductSchema>) {
   try {
     const product = insertProductSchema.parse(data);
-    const result = await prisma.product.create({ data: product });
+    const result = await prisma.product.create({
+      data: {
+        ...product,
+        tags: {
+          connect: product.tags?.map((tag: TagType) => ({ id: tag.id })),
+        },
+      },
+    });
     if (data.isFeatured) {
       await redis.del(REDIS_KEY.BANNER);
     }
-    await createOneProductIndex({
+    // update-typesense
+    const updateData = {
       ...product,
       id: result.id,
-      rating: 0,
-      createdAt: new Date().getTime(),
-    });
+    };
+    await createOneIndex(
+      TYPESENSE_KEY.PRODUCT,
+      ProductSchemaIndexConvertor([updateData])
+    );
+    await createOneIndex(
+      TYPESENSE_KEY.PRODUCT_BY_TAG,
+      ProductByTagSchemaIndexConvertor([updateData])
+    );
     await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
     return formatSuccess("Product created successfully");
   } catch (error) {
@@ -315,14 +335,25 @@ export async function updateProduct(data: updateProductType) {
     const product = updateProductSchema.parse(data);
     await prisma.product.update({
       where: { id: data.id },
-      data: product,
+      data: {
+        ...product,
+        tags: {
+          set: product.tags?.map((tag) => ({ id: tag.id })),
+        },
+      },
     });
-    await updateProductIndex({
-      ...product,
-      id: data.id!,
-      createdAt: originalProductData.createdAt.getTime(),
-      rating: +originalProductData.rating,
-    });
+
+    // redis + typesense
+    await updateIndex(
+      TYPESENSE_KEY.PRODUCT_BY_TAG,
+      ProductByTagSchemaIndexConvertor([product])[0],
+      data.id!
+    );
+    await updateIndex(
+      TYPESENSE_KEY.PRODUCT,
+      ProductSchemaIndexConvertor([product])[0],
+      data.id!
+    );
     await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
     return formatSuccess("Product updated successfully");
   } catch (error) {
@@ -331,9 +362,13 @@ export async function updateProduct(data: updateProductType) {
 }
 
 // get-product
-export async function getProduct(id: string) {
+export async function getProduct(
+  id: string,
+  props?: Prisma.ProductFindFirstArgs
+) {
   const product = await prisma.product.findFirst({
     where: { id },
+    ...props,
   });
   if (!product) throw new Error("Product not found");
   return prismaToJs(product);
@@ -705,6 +740,100 @@ export async function hasIncludedDeal({
       success: true,
       data: prismaToJs(deal[0]),
     };
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+//get-setting
+export async function getSetting() {
+  try {
+    const data = await prisma.setting.findFirst({
+      where: { id: 1 },
+      include: { tags: true },
+    });
+    return {
+      success: true,
+      data: prismaToJs(data),
+    };
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+//update-setting
+export async function updateSetting(
+  updates: Partial<{ [key: string]: string }>
+) {
+  try {
+    const data: Partial<{
+      [key: string]: string;
+    }> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) {
+        data[key] = value;
+      }
+    }
+    await prisma.setting.update({
+      where: { id: 1 },
+      data,
+    });
+    revalidatePath(PATH.SETTING);
+    return formatSuccess("Setting updated or created successfully.");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// get-tags
+export async function getTags() {
+  try {
+    const tags = await prisma.setting.findMany({
+      where: { id: 1 },
+      select: { tags: true },
+    });
+    return {
+      success: true,
+      message: "Successfully retrieved tags",
+      data: tags,
+    };
+  } catch (error) {
+    return formatError(error);
+  }
+}
+
+// add-tag
+export async function addTag(name: string) {
+  try {
+    await prisma.setting.update({
+      where: { id: 1 },
+      data: {
+        tags: {
+          create: { name: name.toLowerCase() },
+        },
+      },
+    });
+    revalidatePath(PATH.SETTING);
+    return formatSuccess("Tags updated successfully");
+  } catch (error) {
+    return formatError(error);
+  }
+}
+// delete-tag
+export async function removeTagById(id: string) {
+  try {
+    await prisma.setting.update({
+      where: { id: 1 },
+      data: {
+        tags: {
+          delete: {
+            id,
+          },
+        },
+      },
+    });
+    revalidatePath(PATH.SETTING);
+    return formatSuccess("Tags deleted successfully");
   } catch (error) {
     return formatError(error);
   }

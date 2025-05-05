@@ -1,13 +1,16 @@
 import client from "../typesense";
-import { ProductIndexType } from "./createProductIndex";
 
-export async function updateProductIndex(product: ProductIndexType) {
+export async function updateIndex<T extends object>(
+  model: string,
+  data: T,
+  id: string
+) {
   try {
     const updated = await client
-      .collections("products")
-      .documents(product.id)
+      .collections(model)
+      .documents(id)
       .update({
-        ...product,
+        ...data,
       });
     console.log("Typesense updated:", updated);
   } catch (error) {

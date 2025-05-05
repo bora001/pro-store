@@ -9,6 +9,12 @@ const currency = z
     "Price must have exactly two decimal places"
   );
 
+// tag
+export const tagSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  settingId: z.number(),
+});
 // product
 export const insertProductSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
@@ -22,6 +28,7 @@ export const insertProductSchema = z.object({
   banner: z.string().nullable(),
   price: currency,
   numReviews: z.number().nonnegative().default(0),
+  tags: z.array(tagSchema).optional(),
 });
 
 // update-product

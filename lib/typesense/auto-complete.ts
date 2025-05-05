@@ -2,10 +2,11 @@
 import { ProductItemType } from "@/types";
 import client from "../typesense";
 import { SearchResponse } from "typesense/lib/Typesense/Documents";
-import { initProductSearch } from "./initProductSearch";
+import { initProductSearch } from "./product/init-product-search";
 
-export async function autocomplete(queryText: string) {
+export async function autoComplete(queryText: string) {
   try {
+    await initProductSearch();
     const searchResults = (await client
       .collections("products")
       .documents()
@@ -18,7 +19,6 @@ export async function autocomplete(queryText: string) {
 
     return searchResults.hits?.map((hit) => hit.document.name);
   } catch (error) {
-    initProductSearch();
     return [];
   }
 }

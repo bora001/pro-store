@@ -6,15 +6,15 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { URLChanger, cn } from "@/lib/utils";
-import { autocomplete } from "@/lib/typesense/autoComplete";
+import { autoComplete } from "@/lib/typesense/auto-complete";
 import { debounce } from "lodash";
 
 const SearchInput = ({
   path,
-  autoComplete,
+  autoCompleteRequired,
 }: {
   path?: string;
-  autoComplete?: boolean;
+  autoCompleteRequired?: boolean;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -51,7 +51,7 @@ const SearchInput = ({
   };
   const debouncedAutocomplete = useMemo(() => {
     return debounce((value: string) => {
-      autocomplete(value)
+      autoComplete(value)
         .then((results) => {
           setRecommendations(results as string[]);
         })
@@ -60,10 +60,10 @@ const SearchInput = ({
   }, [setRecommendations]);
 
   useEffect(() => {
-    if (searchKeyword && autoComplete) {
+    if (searchKeyword && autoCompleteRequired) {
       debouncedAutocomplete(searchKeyword);
     }
-  }, [autoComplete, debouncedAutocomplete, searchKeyword]);
+  }, [autoCompleteRequired, debouncedAutocomplete, searchKeyword]);
 
   const getRecommendation = (value: string) => {
     router.replace(generateURL(value));

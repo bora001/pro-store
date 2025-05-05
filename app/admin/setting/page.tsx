@@ -25,6 +25,12 @@ const AdminUserPage = async () => {
           type="manual"
         />
       </div>
+      <TextAreaBox
+        data={data?.recommendation || ""}
+        title="Recommendation Prompt"
+        placeholder="Enter your recommendation prompt"
+        type="recommendation"
+      />
       <TagBox data={data?.tags || []} />
     </Container>
   );

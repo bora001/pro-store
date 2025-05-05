@@ -2,7 +2,7 @@
 
 import { prisma } from "@/db/prisma";
 import { Prisma } from "@prisma/client";
-import { CONSTANTS, PATH, REDIS_KEY } from "../constants";
+import { CONSTANTS, PATH, REDIS_KEY, TYPESENSE_KEY } from "../constants";
 import { formatError, formatSuccess, prismaToJs } from "../utils";
 import { revalidatePath } from "next/cache";
 import { updateOrderToPaid } from "./order.actions";
@@ -11,6 +11,7 @@ import {
   AdminProductResult,
   CartItemType,
   PaymentResultType,
+  TagType,
   addDealType,
   updateProductType,
 } from "@/types";
@@ -21,15 +22,19 @@ import {
 } from "../validator";
 import { z } from "zod";
 import { deleteImage } from "./image.actions";
-import { createOneProductIndex } from "../typesense/product/createOneProductIndex";
-import { updateProductIndex } from "../typesense/product/updateProductIndex";
-import { deleteItemIndex } from "../typesense/deleteOneItem";
+import { deleteOneItemIndex } from "../typesense/deleteOneItemIndex";
 import { redis } from "../redis";
 import {
   cacheData,
   deleteAllRedisKey,
   getCachedData,
 } from "../redis/redis-handler";
+import { updateIndex } from "../typesense/updateIndex";
+import { createOneIndex } from "../typesense/createOneIndex";
+import {
+  ProductByTagSchemaIndexConvertor,
+  ProductSchemaIndexConvertor,
+} from "../typesense/model/index-schema-convertor";
 
 // order-summary
 export async function getOrderSummary() {
@@ -269,9 +274,10 @@ export async function deleteProduct(id: string) {
         id,
       },
     });
-    await deleteItemIndex({ model: "products", id });
+    await deleteOneItemIndex({ model: TYPESENSE_KEY.PRODUCT, id });
+    await deleteOneItemIndex({ model: TYPESENSE_KEY.PRODUCT_BY_TAG, id });
     await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
-
+    revalidatePath(PATH.PRODUCTS);
     return formatSuccess("Product deleted successfully");
   } catch (error) {
     return formatError(error);
@@ -286,19 +292,26 @@ export async function createProduct(data: z.infer<typeof insertProductSchema>) {
       data: {
         ...product,
         tags: {
-          connect: product.tags?.map((tag) => ({ id: tag.id })),
+          connect: product.tags?.map((tag: TagType) => ({ id: tag.id })),
         },
       },
     });
     if (data.isFeatured) {
       await redis.del(REDIS_KEY.BANNER);
     }
-    await createOneProductIndex({
+    // update-typesense
+    const updateData = {
       ...product,
       id: result.id,
-      rating: 0,
-      createdAt: new Date().getTime(),
-    });
+    };
+    await createOneIndex(
+      TYPESENSE_KEY.PRODUCT,
+      ProductSchemaIndexConvertor([updateData])
+    );
+    await createOneIndex(
+      TYPESENSE_KEY.PRODUCT_BY_TAG,
+      ProductByTagSchemaIndexConvertor([updateData])
+    );
     await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
     return formatSuccess("Product created successfully");
   } catch (error) {
@@ -329,12 +342,18 @@ export async function updateProduct(data: updateProductType) {
         },
       },
     });
-    await updateProductIndex({
-      ...product,
-      id: data.id!,
-      createdAt: originalProductData.createdAt.getTime(),
-      rating: +originalProductData.rating,
-    });
+
+    // redis + typesense
+    await updateIndex(
+      TYPESENSE_KEY.PRODUCT_BY_TAG,
+      ProductByTagSchemaIndexConvertor([product])[0],
+      data.id!
+    );
+    await updateIndex(
+      TYPESENSE_KEY.PRODUCT,
+      ProductSchemaIndexConvertor([product])[0],
+      data.id!
+    );
     await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
     return formatSuccess("Product updated successfully");
   } catch (error) {
@@ -743,26 +762,21 @@ export async function getSetting() {
 }
 
 //update-setting
-export async function updateSetting({
-  prompt,
-  manual,
-}: {
-  prompt?: string;
-  manual?: string;
-}) {
-  const data: Partial<{ prompt: string; manual: string }> = {};
-  if (prompt !== undefined) data.prompt = prompt;
-  if (manual !== undefined) data.manual = manual;
-  console.log(data, "DD");
+export async function updateSetting(
+  updates: Partial<{ [key: string]: string }>
+) {
   try {
-    await prisma.setting.upsert({
+    const data: Partial<{
+      [key: string]: string;
+    }> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) {
+        data[key] = value;
+      }
+    }
+    await prisma.setting.update({
       where: { id: 1 },
-      create: {
-        id: 1,
-        prompt: data.prompt ?? "",
-        manual: data.manual ?? "",
-      },
-      update: data,
+      data,
     });
     revalidatePath(PATH.SETTING);
     return formatSuccess("Setting updated or created successfully.");

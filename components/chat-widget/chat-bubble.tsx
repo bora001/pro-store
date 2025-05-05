@@ -1,16 +1,17 @@
+import { CHAT_ROLE } from "@/lib/constants";
+import { ChatRoleType } from "@/types";
 import { ReactNode } from "react";
-export type RoleType = "assistant" | "user";
 const ChatBubble = ({
-  role = "assistant",
+  role = CHAT_ROLE.ASSISTANT,
   children,
 }: {
-  role?: RoleType;
+  role?: ChatRoleType;
   children: ReactNode;
 }) => {
   return (
     <div
       className={`p-3 rounded-lg max-w-xs ${
-        role === "assistant"
+        role === CHAT_ROLE.ASSISTANT
           ? "border bg-white text-black"
           : "bg-violet-500 text-white"
       }`}

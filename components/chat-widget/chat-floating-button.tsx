@@ -14,56 +14,20 @@ import { askAI } from "@/lib/actions/chat.actions";
 import ChatScreen from "./chat-screen";
 import ChatInput from "./chat-input";
 import { Bot, X } from "lucide-react";
-
-export const MANUAL_QUESTIONS = {
-  delivery: {
-    question: "🕰️ Delivery time",
-    answer:
-      "Generally, shipping will be completed within 14 days after placing an order. However, delivery times may vary depending on the region and logistics situation.",
-  },
-  payment: {
-    question: "💰 Payment methods",
-    answer: "We offer PayPal and Stripe as payment methods.",
-  },
-  issue: {
-    question: "⚠️ Product issue",
-    answer:
-      "If there is a defect in the product, you can request an exchange or refund within 7 days of receiving the item. Please contact our customer service for detailed guidance.",
-  },
-  shipping: {
-    question: "📦 Shipping fee",
-    answer: "We offer free shipping for orders over $100.",
-  },
-} as const;
-export type DefaultQuestionKeyType = keyof typeof MANUAL_QUESTIONS;
-
-type DefaultQuestionType = {
-  [key in DefaultQuestionKeyType]: {
-    question: string;
-    answer: string;
-  };
-};
-export type Message =
-  | ({
-      role: "user" | "assistant";
-      content: string;
-    } & { entry?: never })
-  | ({
-      role: "default";
-      entry: DefaultQuestionType;
-    } & { content?: never });
+import { CHAT_ROLE, MANUAL_QUESTIONS } from "@/lib/constants";
+import { DefaultQuestionKeyType, Message } from "@/types";
 
 const ChatFloatingButton = () => {
   const [isPending, startTransition] = useTransition();
   const [messageList, setMessageList] = useState<Message[]>([
-    { role: "assistant", content: "Hello! How can I help you today?" },
-    { role: "default", entry: MANUAL_QUESTIONS },
+    { role: CHAT_ROLE.ASSISTANT, content: "Hello! How can I help you today?" },
+    { role: CHAT_ROLE.DEFAULT, entry: MANUAL_QUESTIONS },
   ]);
 
   const showManualQuestion = () => {
     setMessageList((prev) =>
       produce(prev, (draft) => {
-        draft.push({ role: "default", entry: MANUAL_QUESTIONS });
+        draft.push({ role: CHAT_ROLE.DEFAULT, entry: MANUAL_QUESTIONS });
       })
     );
   };
@@ -72,14 +36,17 @@ const ChatFloatingButton = () => {
     if (!message.trim().length) return;
     setMessageList((prev) =>
       produce(prev, (draft) => {
-        draft.push({ role: "user", content: message });
+        draft.push({ role: CHAT_ROLE.USER, content: message });
       })
     );
     startTransition(async () => {
-      const answer = await askAI(message);
+      const { role, content, data } = await askAI(message);
       setMessageList((prev) =>
         produce(prev, (draft) => {
-          draft.push({ role: "assistant", content: answer });
+          draft.push({ role: CHAT_ROLE.ASSISTANT, content });
+          if (role === CHAT_ROLE.RECOMMENDATIONS) {
+            draft.push({ role, data });
+          }
         })
       );
     });
@@ -90,11 +57,11 @@ const ChatFloatingButton = () => {
       produce(prev, (draft) => {
         draft.pop();
         draft.push({
-          role: "user",
+          role: CHAT_ROLE.USER,
           content: MANUAL_QUESTIONS[type].question,
         });
         draft.push({
-          role: "assistant",
+          role: CHAT_ROLE.ASSISTANT,
           content: MANUAL_QUESTIONS[type].answer,
         });
       })

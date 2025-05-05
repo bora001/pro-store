@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 import { getActiveDeal } from "@/lib/actions/admin.actions";
 import { getBanner, getLatestProducts } from "@/lib/actions/product.actions";
 import { PATH } from "@/lib/constants";
-import { autocomplete } from "@/lib/typesense/autoComplete";
+import { restartTypeSense } from "@/lib/typesense/restart-typesense";
 import Link from "next/link";
 
 const HomePage = async () => {
   const latestProduct = await getLatestProducts();
   const bannerData = await getBanner();
   const { data: deal } = await getActiveDeal({ isActive: true });
-  autocomplete("");
+  restartTypeSense();
 
   return (
     <div className={"space-y-6 my-4"}>

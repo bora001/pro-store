@@ -1,12 +1,10 @@
 import { useEffect, useRef } from "react";
 import { Button } from "../ui/button";
-import {
-  DefaultQuestionKeyType,
-  MANUAL_QUESTIONS,
-  Message,
-} from "./chat-floating-button";
 import ThinkingDot from "../common/thinking-dot";
 import ChatBubble from "./chat-bubble";
+import ChatRecommendations from "./chat-recommendations";
+import { CHAT_ROLE, MANUAL_QUESTIONS } from "@/lib/constants";
+import { DefaultQuestionKeyType, Message } from "@/types";
 
 const ChatScreen = ({
   isPending,
@@ -21,14 +19,15 @@ const ChatScreen = ({
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageList, isPending]);
+
   return (
     <div className="flex flex-col flex-1 gap-3 overflow-y-scroll">
       {messageList.map((message, index) => (
         <div
           key={index}
-          className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"} `}
+          className={`flex ${message.role === CHAT_ROLE.ASSISTANT ? "justify-start" : "justify-end"} `}
         >
-          {message.role === "default" ? (
+          {message.role === CHAT_ROLE.DEFAULT && (
             <div className="flex gap-1 flex-wrap ">
               {Object.entries(message.entry).map(([key, value]) => (
                 <Button
@@ -42,8 +41,13 @@ const ChatScreen = ({
                 </Button>
               ))}
             </div>
-          ) : (
+          )}
+          {(message.role === CHAT_ROLE.ASSISTANT ||
+            message.role === CHAT_ROLE.USER) && (
             <ChatBubble role={message.role}>{message.content}</ChatBubble>
+          )}
+          {message.role === CHAT_ROLE.RECOMMENDATIONS && (
+            <ChatRecommendations data={message.data} />
           )}
         </div>
       ))}

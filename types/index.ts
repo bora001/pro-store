@@ -1,4 +1,5 @@
-import { PAYMENT_METHODS } from "@/lib/constants";
+import { CHAT_ROLE, MANUAL_QUESTIONS, PAYMENT_METHODS } from "@/lib/constants";
+import { TypesenseProductByTag } from "@/lib/typesense/product-by-tag/search-product-by-tag";
 import {
   insertProductSchema,
   insertCartSchema,
@@ -117,3 +118,30 @@ export type TagType = {
   id: string;
   name: string;
 };
+
+// chat
+export type ChatRoleType = (typeof CHAT_ROLE)[keyof typeof CHAT_ROLE];
+export type DefaultQuestionKeyType = keyof typeof MANUAL_QUESTIONS;
+
+type DefaultQuestionType = {
+  [key in DefaultQuestionKeyType]: {
+    question: string;
+    answer: string;
+  };
+};
+
+export type Message =
+  | ({
+      role: Extract<ChatRoleType, "user" | "assistant">;
+      content: string;
+    } & { entry?: never; data?: never })
+  | ({
+      role: Extract<ChatRoleType, "default">;
+      entry: DefaultQuestionType;
+    } & { content?: never; data?: never })
+  | ({
+      role: Extract<ChatRoleType, "recommendations">;
+      data: TypesenseProductByTag[];
+    } & { content?: never; entry?: never });
+
+export type SettingKeyType = "manual" | "prompt" | "recommendation";

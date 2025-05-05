@@ -7,6 +7,7 @@ import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { updateSetting } from "@/lib/actions/admin.actions";
 import useCustomToast from "@/hooks/use-custom-toast";
+import { SettingKeyType } from "@/types";
 
 const TextAreaBox = ({
   type,
@@ -14,7 +15,7 @@ const TextAreaBox = ({
   placeholder,
   data,
 }: {
-  type: "manual" | "prompt";
+  type: SettingKeyType;
   data: string;
   title: string;
   placeholder: string;

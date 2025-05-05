@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { KeyboardEvent, useEffect, useState, useTransition } from "react";
 import SubContainer from "./sub-container";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,12 @@ const TagBox = ({ data }: { data: TagType[] }) => {
     });
   };
 
+  const onEnter = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.code === "Enter") {
+      addTagHandler();
+    }
+  };
+
   return (
     <SubContainer title="Add Tag">
       <TagList
@@ -47,6 +53,7 @@ const TagBox = ({ data }: { data: TagType[] }) => {
           className="w-[200px]"
           placeholder="Enter tag name"
           onChange={(e) => setCurrentTag(e.target.value)}
+          onKeyDown={(e) => onEnter(e)}
         />
         <Button disabled={isPending} onClick={() => addTagHandler()}>
           Add Tag

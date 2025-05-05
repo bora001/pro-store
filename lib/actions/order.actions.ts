@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
-import { CONSTANTS, PATH } from "../constants";
+import { CONSTANTS, PATH, TYPESENSE_KEY } from "../constants";
 import { getMyCart } from "./cart.actions";
 import { getUserById } from "./user.action";
 import { orderSchema } from "../validator";
@@ -20,8 +20,8 @@ import { revalidatePath } from "next/cache";
 import { PaymentFormType } from "@/components/payment/payment-form";
 import { hasIncludedDeal } from "./admin.actions";
 import { calculatePrice } from "@/utils/price/calculate-price";
-import { updateProductIndex } from "../typesense/product/updateProductIndex";
 import { sendPurchaseReceipt } from "../email/mail-handler";
+import { updateIndex } from "../typesense/updateIndex";
 
 // place-order
 export async function createOrder(payment: PaymentFormType["type"]) {
@@ -76,11 +76,7 @@ export async function createOrder(payment: PaymentFormType["type"]) {
         });
 
         // update typesense
-        updateProductIndex({
-          ...updatedProduct,
-          createdAt: product.createdAt.getTime(),
-          rating: parseFloat(product.rating.toString()),
-        });
+        updateIndex(TYPESENSE_KEY.PRODUCT, updatedProduct, updatedProduct.id);
       }
 
       const newOrder = await tx.order.create({

@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -8,13 +9,18 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { getAllCategory } from "@/lib/actions/product.actions";
 import { PATH } from "@/lib/constants";
 import { MenuIcon } from "lucide-react";
 import Link from "next/link";
 
-const CategoryDrawer = async () => {
-  const category = await getAllCategory();
+const CategoryDrawer = ({
+  category,
+}: {
+  category: {
+    category: string;
+    count: number;
+  }[];
+}) => {
   return (
     <>
       {category.length > 0 && (
@@ -24,6 +30,9 @@ const CategoryDrawer = async () => {
           </DrawerDescription>
           <DrawerTrigger asChild>
             <Button
+              onClick={(e) => {
+                e.currentTarget.blur();
+              }}
               variant="outline"
               className="px-3"
               aria-label="category-drawer"

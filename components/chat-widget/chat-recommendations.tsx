@@ -20,7 +20,6 @@ const ChatRecommendations = ({ data }: { data: TypesenseProductByTag[] }) => {
           align: "start",
         }}
         className={cn(
-          "mb-2",
           !data.length && "hidden",
           "flex items-center justify-center"
         )}

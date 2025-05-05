@@ -22,15 +22,15 @@ import {
 } from "../validator";
 import { z } from "zod";
 import { deleteImage } from "./image.actions";
-import { deleteOneItemIndex } from "../typesense/deleteOneItemIndex";
+import { deleteOneItemIndex } from "../typesense/delete-one-item-index";
 import { redis } from "../redis";
 import {
   cacheData,
   deleteAllRedisKey,
   getCachedData,
 } from "../redis/redis-handler";
-import { updateIndex } from "../typesense/updateIndex";
-import { createOneIndex } from "../typesense/createOneIndex";
+import { updateIndex } from "../typesense/update-index";
+import { createOneIndex } from "../typesense/create-one-Index";
 import {
   ProductByTagSchemaIndexConvertor,
   ProductSchemaIndexConvertor,

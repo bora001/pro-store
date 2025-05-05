@@ -21,7 +21,7 @@ import { PaymentFormType } from "@/components/payment/payment-form";
 import { hasIncludedDeal } from "./admin.actions";
 import { calculatePrice } from "@/utils/price/calculate-price";
 import { sendPurchaseReceipt } from "../email/mail-handler";
-import { updateIndex } from "../typesense/updateIndex";
+import { updateIndex } from "../typesense/update-index";
 
 // place-order
 export async function createOrder(payment: PaymentFormType["type"]) {

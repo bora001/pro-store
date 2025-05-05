@@ -160,10 +160,11 @@ model Deal {
 }
 
 model Setting {
-  id     Int    @id @default(1)
-  prompt String
-  manual String
-  tags   Tag[]
+  id             Int    @id @default(1)
+  prompt         String @default("")
+  manual         String @default("")
+  recommendation String @default("")
+  tags           Tag[]
 }
 
 model Tag {

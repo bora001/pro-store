@@ -33,7 +33,7 @@ const Header = ({
           </Link>
           {navList && <NavBar navList={navList} />}
         </div>
-        {!isAdmin && <SearchInput path={PATH.SEARCH} autoComplete />}
+        {!isAdmin && <SearchInput path={PATH.SEARCH} autoCompleteRequired />}
         {/* right */}
         <Menu />
       </div>

@@ -19,11 +19,9 @@ export type HandleCartQueries = {
 export const handleAddItemToCart = async ({ data, qty }: HandleCartQueries) => {
   const sessionCartId = (await cookies()).get("sessionCartId")?.value;
   if (!sessionCartId) throw new Error("Session cart not found");
-
   const session = await auth();
   const userId = session?.user?.id || undefined;
   const cart = await getMyCart();
-
   const cartItem = cartItemSchema.parse(data);
   const product = await prisma.product.findFirst({
     where: { id: cartItem.productId },
@@ -90,7 +88,6 @@ export const handleGetMyCart = async () => {
           sessionCartId,
         },
   });
-
   if (!cart) return { data: undefined };
   const cartItem = cartItemSchema.array().parse(cart.items);
   const items = await Promise.all(
@@ -122,34 +119,28 @@ export const handleModifyItemQtyToCart = async ({
   const sessionCartId = (await cookies()).get("sessionCartId")?.value;
   if (!sessionCartId) throw new Error("Session cart not found");
   const cart = await getMyCart();
-  const cartItem = cartItemSchema.parse(data);
   const product = await prisma.product.findFirst({
-    where: { id: cartItem.productId },
+    where: { id: data.productId },
   });
   if (!product) throw new Error("Product not found");
   const existItem = cart?.data?.items.find(
-    (prev: CartItemType) => prev.productId === cartItem.productId
+    (prev: CartItemType) => prev.productId === data.productId
   );
-  if (existItem) {
-    if (product.stock < existItem.qty + qty) {
-      return { message: "Can't add more of this item" };
-    }
-    existItem.qty = qty;
-    await prisma.cart.update({
-      where: { id: cart?.data?.id },
-      data: {
-        items: cart?.data?.items,
-        itemsCount:
-          cart?.data?.items.reduce((acc, item) => acc + item.qty, 0) || 0,
-      },
-    });
-    revalidatePath(`${PATH.PRODUCT}/${product.slug}`);
-    return {
-      message: `${data.name} ${existItem ? `updated` : `added`} to cart`,
-    };
-  } else {
-    throw new Error("Item is not in cart");
-  }
+  if (!existItem) throw new Error("Item is not in cart");
+  if (product.stock < qty) return { message: "Can't add more of this item" };
+  existItem.qty = qty;
+  await prisma.cart.update({
+    where: { id: cart?.data?.id },
+    data: {
+      items: cart?.data?.items,
+      itemsCount:
+        cart?.data?.items.reduce((acc, item) => acc + item.qty, 0) || 0,
+    },
+  });
+  revalidatePath(`${PATH.PRODUCT}/${product.slug}`);
+  return {
+    message: `${data.name} ${existItem ? `updated` : `added`} to cart`,
+  };
 };
 // remove-item-from-cart
 export const handleRemoveItemToCart = async (data: CartItemType) => {

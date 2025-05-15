@@ -19,7 +19,7 @@ import {
   deleteDeal,
   getAllDeals,
   getAllDealsByQuery,
-} from "@/lib/actions/admin.actions";
+} from "@/lib/actions/admin/admin.deal.actions";
 import { PATH } from "@/lib/constants";
 import DeleteButton from "@/components/common/delete-button";
 import SearchContainer from "@/components/admin/search-container";

@@ -1,6 +1,6 @@
 import ProductForm from "@/components/admin/product/product-form";
 import Container from "@/components/common/container";
-import { getTags } from "@/lib/actions/admin.actions";
+import { getTags } from "@/lib/actions/admin/admin.setting.actions";
 
 export const metadata = {
   title: "Create Product",

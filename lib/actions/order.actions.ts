@@ -18,7 +18,7 @@ import {
 } from "@/types";
 import { revalidatePath } from "next/cache";
 import { PaymentFormType } from "@/components/payment/payment-form";
-import { hasIncludedDeal } from "./admin.actions";
+import { hasIncludedDeal } from "./admin/admin.deal.actions";
 import { calculatePrice } from "@/utils/price/calculate-price";
 import { sendPurchaseReceipt } from "../email/mail-handler";
 import { updateIndex } from "../typesense/update-index";
@@ -312,17 +312,4 @@ export async function getUserOrder({
     where: { userId: session.user?.id },
   });
   return { data, totalPages: Math.ceil(dataCount / limit) };
-}
-
-// delete-order
-export async function deleteOrder(id: string) {
-  try {
-    await prisma.order.delete({
-      where: { id },
-    });
-    revalidatePath(PATH.ORDERS);
-    return formatSuccess("Order is deleted successfully");
-  } catch (error) {
-    return formatError(error);
-  }
 }

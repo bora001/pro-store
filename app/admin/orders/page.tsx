@@ -10,8 +10,8 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
-import { getAllOrders } from "@/lib/actions/admin.actions";
-import { deleteOrder } from "@/lib/actions/order.actions";
+import { getAllOrders } from "@/lib/actions/admin/admin.order.actions";
+import { deleteOrder } from "@/lib/actions/admin/admin.order.actions";
 import { PATH } from "@/lib/constants";
 import { dateTimeConverter, idSlicer } from "@/lib/utils";
 import Link from "next/link";

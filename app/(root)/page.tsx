@@ -3,7 +3,7 @@ import FeatureBannerSlide from "@/components/home/feature-banner-slide";
 import ProductList from "@/components/home/product-list";
 import ShoppingBenefits from "@/components/home/shopping-benefits";
 import { Button } from "@/components/ui/button";
-import { getActiveDeal } from "@/lib/actions/admin.actions";
+import { getActiveDeal } from "@/lib/actions/admin/admin.deal.actions";
 import { getBanner, getLatestProducts } from "@/lib/actions/product.actions";
 import { PATH } from "@/lib/constants";
 import { restartTypeSense } from "@/lib/typesense/restart-typesense";

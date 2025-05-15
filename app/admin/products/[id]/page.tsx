@@ -4,8 +4,8 @@ import DeleteButton from "@/components/common/delete-button";
 import {
   deleteProduct,
   getProduct,
-  getTags,
-} from "@/lib/actions/admin.actions";
+} from "@/lib/actions/admin/admin.product.actions";
+import { getTags } from "@/lib/actions/admin/admin.setting.actions";
 import { PATH } from "@/lib/constants";
 import { notFound } from "next/navigation";
 

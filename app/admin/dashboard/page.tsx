@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getOrderSummary } from "@/lib/actions/admin.actions";
+import { getOrderSummary } from "@/lib/actions/admin/admin.order.actions";
 import { PATH } from "@/lib/constants";
 import { dateTimeConverter } from "@/lib/utils";
 import {

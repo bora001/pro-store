@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import CheckoutStep from "@/components/cart/checkout-step";
 import PlacerOrderForm from "@/components/place-order/place-order-form";
-import { hasIncludedDeal } from "@/lib/actions/admin.actions";
+import { hasIncludedDeal } from "@/lib/actions/admin/admin.deal.actions";
 import { getMyCart } from "@/lib/actions/cart.actions";
 import { getUserById } from "@/lib/actions/user.action";
 import { PATH } from "@/lib/constants";

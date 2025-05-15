@@ -14,7 +14,7 @@ import {
   deleteProduct,
   getAllAdminProduct,
   getAllProducts,
-} from "@/lib/actions/admin.actions";
+} from "@/lib/actions/admin/admin.product.actions";
 import { PATH } from "@/lib/constants";
 import DeleteButton from "@/components/common/delete-button";
 import SearchContainer from "@/components/admin/search-container";

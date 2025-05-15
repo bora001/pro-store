@@ -2,7 +2,7 @@
 
 import { OpenAI } from "openai";
 import { ChatCompletionMessageParam } from "openai/resources.mjs";
-import { getSetting, getTags } from "./admin.actions";
+import { getSetting, getTags } from "./admin/admin.setting.actions";
 import { searchProductByTag } from "../typesense/product-by-tag/search-product-by-tag";
 import { CHAT_ROLE, TYPESENSE_KEY } from "../constants";
 import { checkSetupTypesense } from "../typesense/check-setup";

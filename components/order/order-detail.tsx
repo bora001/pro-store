@@ -21,7 +21,7 @@ import { AdminControlButton } from "./admin-control";
 import {
   updateOrderToDelivered,
   updateOrderToPaidByAdmin,
-} from "@/lib/actions/admin.actions";
+} from "@/lib/actions/admin/admin.order.actions";
 import StripePayment from "./stripe-payment";
 import { Mail, Wrench } from "lucide-react";
 import IconButton from "../custom/IconButton";

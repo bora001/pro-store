@@ -1,5 +1,5 @@
 import CartTable from "@/components/cart/cart-table";
-import { hasIncludedDeal } from "@/lib/actions/admin.actions";
+import { hasIncludedDeal } from "@/lib/actions/admin/admin.deal.actions";
 import { getMyCart } from "@/lib/actions/cart.actions";
 
 export const metadata = {

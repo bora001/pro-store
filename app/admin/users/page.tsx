@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllUsers } from "@/lib/actions/admin.actions";
+import { getAllUsers } from "@/lib/actions/admin/admin.user.actions";
 import { deleteUser } from "@/lib/actions/user.action";
 import { CONSTANTS, PATH } from "@/lib/constants";
 import { idSlicer } from "@/lib/utils";

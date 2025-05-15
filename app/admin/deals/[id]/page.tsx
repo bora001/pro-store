@@ -1,11 +1,8 @@
 import DealForm from "@/components/admin/deal/deal-form";
 import Container from "@/components/common/container";
 import DeleteButton from "@/components/common/delete-button";
-import {
-  deleteDeal,
-  getAllProducts,
-  getDeal,
-} from "@/lib/actions/admin.actions";
+import { deleteDeal, getDeal } from "@/lib/actions/admin/admin.deal.actions";
+import { getAllProducts } from "@/lib/actions/admin/admin.product.actions";
 import { PATH } from "@/lib/constants";
 import { notFound } from "next/navigation";
 

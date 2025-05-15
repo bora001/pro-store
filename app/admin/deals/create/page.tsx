@@ -1,6 +1,6 @@
 import DealForm from "@/components/admin/deal/deal-form";
 import Container from "@/components/common/container";
-import { getAllProducts } from "@/lib/actions/admin.actions";
+import { getAllProducts } from "@/lib/actions/admin/admin.product.actions";
 
 export const metadata = {
   title: "Create Deal",

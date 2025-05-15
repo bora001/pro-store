@@ -13,7 +13,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { createProduct, updateProduct } from "@/lib/actions/admin.actions";
+import {
+  createProduct,
+  updateProduct,
+} from "@/lib/actions/admin/admin.product.actions";
 import { CONSTANTS, PATH } from "@/lib/constants";
 import { capitalize } from "@/lib/utils";
 import { insertProductSchema, updateProductSchema } from "@/lib/validator";

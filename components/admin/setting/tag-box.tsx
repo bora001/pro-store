@@ -4,7 +4,10 @@ import { KeyboardEvent, useEffect, useState, useTransition } from "react";
 import SubContainer from "./sub-container";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { addTag, removeTagById } from "@/lib/actions/admin.actions";
+import {
+  addTag,
+  removeTagById,
+} from "@/lib/actions/admin/admin.setting.actions";
 import { TagType } from "@/types";
 import useCustomToast from "@/hooks/use-custom-toast";
 import TagList from "./tag-list";

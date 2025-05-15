@@ -14,22 +14,23 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
-import { ResponseType } from "@/types";
 import { useRouter } from "next/navigation";
+import { ResponseType } from "../../types";
 
 type DeleteButtonType = "button" | "badge" | "custom";
 
 type DeleteButtonButtonProps = Omit<ButtonProps, "type">;
 
-interface DeleteButtonPropsBase {
+interface DeleteButtonPropsBase<T = unknown> {
   id: string;
   type: DeleteButtonType;
-  action: (id: string) => Promise<ResponseType>;
+  action: (id: string) => Promise<ResponseType<T>>;
   children?: ReactNode;
   returnPath?: string;
   buttonLabel: string;
   title?: string;
 }
+
 type DeleteButtonPropsType =
   | (DeleteButtonPropsBase & { type: "button" } & DeleteButtonButtonProps)
   | DeleteButtonPropsBase;

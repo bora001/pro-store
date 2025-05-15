@@ -14,7 +14,7 @@ import RatingStar from "../common/rating-star";
 import IconButton from "../custom/IconButton";
 import ReviewForm from "./review-form";
 import DeleteButton from "../common/delete-button";
-import { deleteReview } from "@/lib/actions/review.actions";
+import { deleteReview } from "@/lib/actions/handler/review.actions";
 import ListContainer from "../common/list-container";
 
 const ReviewList = ({

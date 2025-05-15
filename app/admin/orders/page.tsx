@@ -10,8 +10,8 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
-import { getAllOrders } from "@/lib/actions/admin/admin.order.actions";
-import { deleteOrder } from "@/lib/actions/admin/admin.order.actions";
+import { getAllOrders } from "@/lib/actions/handler/admin/admin.order.actions";
+import { deleteOrder } from "@/lib/actions/handler/admin/admin.order.actions";
 import { PATH } from "@/lib/constants";
 import { dateTimeConverter, idSlicer } from "@/lib/utils";
 import Link from "next/link";
@@ -26,11 +26,11 @@ const AdminOrdersPage = async (props: {
   searchParams: Promise<{ page: string; query: string }>;
 }) => {
   const { page, query } = await props.searchParams;
-  const data = await getAllOrders({ page: +page || 1, query });
+  const { data } = await getAllOrders({ page: +page || 1, query });
   return (
     <SearchContainer
       title="Orders"
-      hasList={data.order.length === 0}
+      hasList={data?.order.length === 0}
       resetPath={PATH.ORDERS}
       query={query}
       emptyText="No orders have been placed yet"
@@ -44,7 +44,7 @@ const AdminOrdersPage = async (props: {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.order.map((order) => (
+          {data?.order.map((order) => (
             <TableRow key={order.id}>
               <TableCell>#{idSlicer(order.id)}</TableCell>
               <TableCell>{order.user.name}</TableCell>
@@ -72,7 +72,7 @@ const AdminOrdersPage = async (props: {
       </Table>
 
       <div className="flex justify-center">
-        {data.totalPages > 1 && (
+        {data && data.totalPages > 1 && (
           <Pagination
             page={page || 1}
             urlParams="page"

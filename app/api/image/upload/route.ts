@@ -1,4 +1,4 @@
-import { uploadImage } from "@/lib/actions/image.actions";
+import { uploadImage } from "@/lib/actions/utils/images.utils";
 
 export async function POST(req: Request) {
   try {

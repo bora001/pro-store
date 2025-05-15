@@ -1,13 +1,14 @@
 "use server";
 
-import { formatError, prismaToJs } from "../utils";
-import { CONSTANTS } from "../constants";
 import { prisma } from "@/db/prisma";
+import { CONSTANTS } from "@/lib/constants";
+import { validProduct } from "../constants";
+import { prismaToJs } from "@/lib/utils";
+import { GetAlProductsQuery } from "../handler/product.actions";
 import { Prisma } from "@prisma/client";
-import { validProduct } from "./_helper/constant";
 
 // latest products
-export async function getLatestProducts() {
+export const handleLatestProducts = async () => {
   const data = await prisma.product.findMany({
     take: CONSTANTS.LATEST_PRODUCT_LIMIT,
     orderBy: {
@@ -25,40 +26,36 @@ export async function getLatestProducts() {
       },
     },
   });
-  return prismaToJs(data);
-}
+  return { data: prismaToJs(data) };
+};
 
 // single products by slug
-export const getProductBySlug = async (slug: string) => {
-  try {
-    const data = await prisma.product.findUnique({
-      where: {
-        slug,
-        ...validProduct,
-      },
-      include: {
-        Deal: {
-          where: {
-            product: {
-              slug,
-            },
-            isActive: true,
-            endTime: { gte: new Date() },
+export const handleProductBySlug = async (slug: string) => {
+  const data = await prisma.product.findUnique({
+    where: {
+      slug,
+      ...validProduct,
+    },
+    include: {
+      Deal: {
+        where: {
+          product: {
+            slug,
           },
+          isActive: true,
+          endTime: { gte: new Date() },
         },
       },
-    });
-    if (!data) {
-      return formatError("Product not found");
-    }
-    return { success: true, data: prismaToJs(data) };
-  } catch (err) {
-    return formatError(err);
+    },
+  });
+  if (!data) {
+    throw new Error("Product not found");
   }
+  return { data: prismaToJs(data) };
 };
 
 // get-all-products
-export async function getAllProducts({
+export const handleAllProducts = async ({
   query = "",
   category,
   page = 1,
@@ -66,15 +63,7 @@ export async function getAllProducts({
   rating,
   sort,
   limit,
-}: {
-  page?: number;
-  limit?: number;
-  query?: string;
-  category?: string;
-  rating?: string;
-  sort?: string;
-  price?: string;
-}) {
+}: GetAlProductsQuery) => {
   const queryFilter: Prisma.ProductWhereInput = {
     name: {
       contains: query,
@@ -121,8 +110,10 @@ export async function getAllProducts({
   });
   const count = await prisma.product.count();
   return {
-    product: prismaToJs(product),
-    count,
-    totalPages: limit ? Math.ceil(count / limit) : 0,
+    data: {
+      product: prismaToJs(product),
+      count,
+      totalPages: limit ? Math.ceil(count / limit) : 0,
+    },
   };
-}
+};

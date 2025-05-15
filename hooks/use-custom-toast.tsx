@@ -3,14 +3,14 @@ import { toast } from "./use-toast";
 const useCustomToast = () => {
   const openToast = ({
     success = true,
-    message: description,
+    message = "",
   }: {
     success?: boolean;
-    message: string;
+    message?: string;
   }) =>
     toast({
       variant: success ? "default" : "destructive",
-      description,
+      description: message,
     });
   return { openToast };
 };

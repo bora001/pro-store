@@ -4,7 +4,6 @@ import {
   DeleteObjectCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
-import { ResponseType } from "@/types";
 
 const s3 = new S3Client({
   region: process.env.AWS_S3_REGION,
@@ -14,10 +13,15 @@ const s3 = new S3Client({
   },
 });
 
+export type DeleteImageResponseType<T = unknown> = {
+  success: boolean;
+  message: string;
+  data?: T;
+};
 export const deleteImage = async (
   keys: string[],
   folder: string
-): Promise<ResponseType[]> => {
+): Promise<DeleteImageResponseType[]> => {
   if (!keys.length || !folder) {
     throw new Error("Missing required fields: keys or folder");
   }

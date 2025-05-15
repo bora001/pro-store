@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getOrderSummary } from "@/lib/actions/admin/admin.order.actions";
+import { getOrderSummary } from "@/lib/actions/handler/admin/admin.order.actions";
 import { PATH } from "@/lib/constants";
 import { dateTimeConverter } from "@/lib/utils";
 import {
@@ -29,30 +29,30 @@ const RECENT_SALES = {
   HEADER: ["BUYER", "DATE", "TOTAL", "DETAIL"],
 };
 const DashboardPage = async () => {
-  const summary = await getOrderSummary();
+  const { data: summary } = await getOrderSummary();
   const summaryList = [
     {
       title: "Total Revenue",
       icon: <BadgeDollarSign />,
-      text: `$ ${summary.totalSales._sum.totalPrice || 0}`,
+      text: `$ ${summary?.totalSales._sum.totalPrice || 0}`,
       link: PATH.DASHBOARD,
     },
     {
       title: "Sales",
       icon: <CreditCard />,
-      text: `${summary.orderCount}`,
+      text: `${summary?.orderCount}`,
       link: PATH.ORDERS,
     },
     {
       title: "Customers",
       icon: <User />,
-      text: `${summary.userCount}`,
+      text: `${summary?.userCount}`,
       link: PATH.USERS,
     },
     {
       title: "Product",
       icon: <Barcode />,
-      text: `${summary.productCount}`,
+      text: `${summary?.productCount}`,
       link: PATH.PRODUCTS,
     },
   ];
@@ -83,10 +83,10 @@ const DashboardPage = async () => {
             </CardHeader>
             <CardContent>
               <ListContainer
-                listLength={summary.salesData.length}
+                listLength={summary?.salesData.length || 0}
                 title="No Sales Data"
               >
-                <OverviewChart data={summary.salesData} />
+                <OverviewChart data={summary?.salesData || []} />
               </ListContainer>
             </CardContent>
           </Card>
@@ -106,7 +106,7 @@ const DashboardPage = async () => {
             </CardHeader>
             <CardContent>
               <ListContainer
-                listLength={summary.latestSales.length}
+                listLength={summary?.latestSales.length || 0}
                 title="No Sales Data"
               >
                 <Table>
@@ -118,7 +118,7 @@ const DashboardPage = async () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {summary.latestSales.map((order) => (
+                    {summary?.latestSales.map((order) => (
                       <TableRow key={order.id}>
                         <TableCell>{order.user.name}</TableCell>
                         <TableCell>

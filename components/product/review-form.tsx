@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Star } from "lucide-react";
-import { addOrEditReview } from "@/lib/actions/review.actions";
+import { addOrEditReview } from "@/lib/actions/handler/review.actions";
 import { toast } from "@/hooks/use-toast";
 import { CONSTANTS } from "@/lib/constants";
 type ReviewFormType = "create" | "edit";

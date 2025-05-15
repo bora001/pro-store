@@ -1,7 +1,7 @@
 import { Trash2 } from "lucide-react";
 import IconButton from "../custom/IconButton";
 import { useTransition } from "react";
-import { removeItemToCart } from "@/lib/actions/cart.actions";
+import { removeItemToCart } from "@/lib/actions/handler/cart.actions";
 import { CartItemType } from "@/types";
 import { toast } from "@/hooks/use-toast";
 

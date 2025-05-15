@@ -1,7 +1,7 @@
 "use client";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
-import { updateDeal } from "@/lib/actions/admin/admin.deal.actions";
+import { updateDeal } from "@/lib/actions/handler/admin/admin.deal.actions";
 import { AdminDealType } from "@/types";
 import { useState, useTransition } from "react";
 

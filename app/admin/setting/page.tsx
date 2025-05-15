@@ -1,7 +1,7 @@
 import TagBox from "@/components/admin/setting/tag-box";
 import TextAreaBox from "@/components/admin/setting/textarea-box";
 import Container from "@/components/common/container";
-import { getSetting } from "@/lib/actions/admin/admin.setting.actions";
+import { getSetting } from "@/lib/actions/handler/admin/admin.setting.actions";
 
 export const metadata = {
   title: "Setting",

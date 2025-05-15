@@ -5,17 +5,16 @@ import { CONSTANTS } from "@/lib/constants";
 import { Prisma } from "@prisma/client";
 
 // get-users
-export async function getAllUsers({
-  query,
-  // category,
-  page = 1,
-  limit = CONSTANTS.PAGE_LIMIT,
-}: {
+export type HandleGetAllUsersType = {
   page: number;
   limit?: number;
   query: string;
-  category?: string;
-}) {
+};
+export const handleGetAllUsers = async ({
+  query,
+  page = 1,
+  limit = CONSTANTS.PAGE_LIMIT,
+}: HandleGetAllUsersType) => {
   const queryFilter: Prisma.UserWhereInput = query
     ? {
         OR: [
@@ -43,8 +42,10 @@ export async function getAllUsers({
   });
   const userCount = await prisma.user.count();
   return {
-    user,
-    userCount,
-    totalPages: Math.ceil(userCount / limit),
+    data: {
+      user,
+      userCount,
+      totalPages: Math.ceil(userCount / limit),
+    },
   };
-}
+};

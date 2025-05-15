@@ -10,7 +10,7 @@ import { Button } from "../ui/button";
 import {
   deleteUserAccount,
   updateUserProfile,
-} from "@/lib/actions/user.action";
+} from "@/lib/actions/handler/user.action";
 import { useSession } from "next-auth/react";
 import { notFound, useRouter } from "next/navigation";
 import DeleteButton from "../common/delete-button";

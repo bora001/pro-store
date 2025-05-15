@@ -2,7 +2,7 @@
 
 import FormSubmitButton from "@/components/custom/FormSubmitButton";
 import { Input } from "@/components/ui/input";
-import { signInUser } from "@/lib/actions/user.action";
+import { signInUser } from "@/lib/actions/handler/user.action";
 import { PATH } from "@/lib/constants";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";

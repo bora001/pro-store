@@ -71,10 +71,17 @@ export function formatError(error: any) {
 }
 
 // handle success-response
-export function formatSuccess(message: string) {
+export function formatSuccess<T>({
+  message,
+  data,
+}: {
+  message?: string;
+  data?: T;
+}) {
   return {
     success: true,
     message,
+    data,
   };
 }
 

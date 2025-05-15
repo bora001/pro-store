@@ -1,12 +1,13 @@
-import { BannerType } from "@/types";
-import { REDIS_KEY } from "../constants";
-import { cacheData, getCachedData } from "../redis/redis-handler";
-import { prisma } from "@/db/prisma";
-import { prismaToJs } from "../utils";
-import { validProduct } from "./_helper/constant";
+"use server";
 
-// get-all-category
-export const getAllCategory = async () => {
+import { prisma } from "@/db/prisma";
+import { validProduct } from "../constants";
+import { cacheData, getCachedData } from "@/lib/redis/redis-handler";
+import { REDIS_KEY } from "@/lib/constants";
+import { BannerType } from "@/types";
+import { prismaToJs } from "@/lib/utils";
+
+export const handleAllCategory = async () => {
   const data = await prisma.product.groupBy({
     by: ["category"],
     _count: true,
@@ -14,17 +15,18 @@ export const getAllCategory = async () => {
       ...validProduct,
     },
   });
-  return data.map(({ category, _count }) => ({
-    category,
-    count: _count,
-  }));
+  return {
+    data: data.map(({ category, _count }) => ({
+      category,
+      count: _count,
+    })),
+  };
 };
 
-// get-banner
-export const getBanner = async () => {
+export const handleBanner = async () => {
   const cachedProduct = await getCachedData(REDIS_KEY.BANNER);
   if (cachedProduct) {
-    return cachedProduct as BannerType[];
+    return { data: cachedProduct as BannerType[] };
   }
   const data = await prisma.product.findMany({
     where: { isFeatured: true },
@@ -40,5 +42,5 @@ export const getBanner = async () => {
     take: 4,
   });
   await cacheData(REDIS_KEY.BANNER, data, 0);
-  return prismaToJs(data);
+  return { data: prismaToJs(data) };
 };

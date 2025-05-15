@@ -3,7 +3,7 @@
 import { CartItemType } from "@/types";
 import { Button } from "../ui/button";
 import { ToastAction } from "../ui/toast";
-import { addItemToCart } from "@/lib/actions/cart.actions";
+import { addItemToCart } from "@/lib/actions/handler/cart.actions";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Minus, Plus } from "lucide-react";
@@ -27,7 +27,7 @@ const AddToCart = ({
   const [isPending, startTransition] = useTransition();
   const handleAddCart = () => {
     startTransition(async () => {
-      const { success, message } = await addItemToCart(item, qty);
+      const { success, message } = await addItemToCart({ data: item, qty });
       if (!success) {
         toast({ variant: "destructive", description: message });
       } else {

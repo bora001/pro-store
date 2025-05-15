@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
 import CheckoutStep from "@/components/cart/checkout-step";
 import ShippingForm from "@/components/shipping/shipping-form";
-import { getMyCart } from "@/lib/actions/cart.actions";
-import { getUserById } from "@/lib/actions/user.action";
+import { getMyCart } from "@/lib/actions/handler/cart.actions";
+import { getUserById } from "@/lib/actions/handler/user.action";
 import { PATH } from "@/lib/constants";
 import { ShippingType } from "@/types";
 import { redirect } from "next/navigation";
@@ -16,11 +16,11 @@ const ShippingAddressPage = async () => {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) throw new Error("no userId");
-  const user = await getUserById(userId);
+  const { data: user } = await getUserById(userId);
   return (
     <>
       <CheckoutStep step="Shipping Address" />
-      <ShippingForm address={user.address as ShippingType} />
+      <ShippingForm address={user?.address as ShippingType} />
     </>
   );
 };

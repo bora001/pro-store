@@ -9,7 +9,7 @@ import { Form } from "../ui/form";
 import ShippingField from "./shipping-form-field";
 import ButtonWithTransition from "../custom/ButtonWithTransition";
 import { useTransition } from "react";
-import { updateUserAddress } from "@/lib/actions/user.action";
+import { updateUserAddress } from "@/lib/actions/handler/user.action";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { PATH } from "@/lib/constants";

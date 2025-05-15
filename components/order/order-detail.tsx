@@ -14,14 +14,14 @@ import {
   approvalPaypalOrder,
   createPaypalOrder,
   sendEmailReceipt,
-} from "@/lib/actions/order.actions";
+} from "@/lib/actions/handler/order.actions";
 import { toast } from "@/hooks/use-toast";
 import { dateTimeConverter, idSlicer } from "@/lib/utils";
 import { AdminControlButton } from "./admin-control";
 import {
   updateOrderToDelivered,
   updateOrderToPaidByAdmin,
-} from "@/lib/actions/admin/admin.order.actions";
+} from "@/lib/actions/handler/admin/admin.order.actions";
 import StripePayment from "./stripe-payment";
 import { Mail, Wrench } from "lucide-react";
 import IconButton from "../custom/IconButton";
@@ -70,7 +70,7 @@ const OrderDetail = ({
     return response.data;
   };
   const handleApprovePaypalOrder = async (data: { orderID: string }) => {
-    const response = await approvalPaypalOrder(order.id, data);
+    const response = await approvalPaypalOrder({ orderId: order.id, data });
     toast({
       variant: response.success ? "default" : "destructive",
       description: String(response.message),
@@ -199,7 +199,12 @@ const OrderDetail = ({
                 <AdminControlButton
                   disabled={isPaid}
                   title={["Mark as Paid", "Paid"]}
-                  action={() => updateOrderToPaidByAdmin(id, paymentMethod)}
+                  action={() =>
+                    updateOrderToPaidByAdmin({
+                      orderId: id,
+                      paymentResult: paymentMethod,
+                    })
+                  }
                 />
                 <AdminControlButton
                   disabled={isDelivered}

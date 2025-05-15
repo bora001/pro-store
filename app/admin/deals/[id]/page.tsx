@@ -1,8 +1,11 @@
 import DealForm from "@/components/admin/deal/deal-form";
 import Container from "@/components/common/container";
 import DeleteButton from "@/components/common/delete-button";
-import { deleteDeal, getDeal } from "@/lib/actions/admin/admin.deal.actions";
-import { getAllProducts } from "@/lib/actions/product.actions";
+import {
+  deleteDeal,
+  getDeal,
+} from "@/lib/actions/handler/admin/admin.deal.actions";
+import { getAllProducts } from "@/lib/actions/handler/product.actions";
 import { PATH } from "@/lib/constants";
 import { notFound } from "next/navigation";
 
@@ -13,8 +16,8 @@ const EditDealPage = async (props: { params: Promise<{ id: string }> }) => {
   const { id } = await props.params;
   const { data: deals } = await getDeal({ id });
   if (!deals) return notFound();
-  const allProducts = await getAllProducts({});
-  const products = JSON.parse(JSON.stringify(allProducts.product));
+  const { data: allProducts } = await getAllProducts({});
+  const products = JSON.parse(JSON.stringify(allProducts?.product));
   return (
     <Container title="Edit Deals">
       <DealForm

@@ -8,7 +8,7 @@ import { useTransition } from "react";
 import {
   modifyItemQtyToCart,
   removeItemToCart,
-} from "@/lib/actions/cart.actions";
+} from "@/lib/actions/handler/cart.actions";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +27,7 @@ const ItemQtyChanger = ({
     const qty = type === "plus" ? item.qty + 1 : item.qty - 1;
     startTransition(async () => {
       const { success, message } = qty
-        ? await modifyItemQtyToCart(item, qty)
+        ? await modifyItemQtyToCart({ data: item, qty })
         : await removeItemToCart(item);
       toast({
         variant: success ? "default" : "destructive",

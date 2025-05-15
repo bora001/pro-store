@@ -7,7 +7,7 @@ import {
   getAllReviews,
   hasPurchaseHistory,
   hasUserReviewByProduct,
-} from "@/lib/actions/review.actions";
+} from "@/lib/actions/handler/review.actions";
 import { auth } from "@/auth";
 import IconButton from "../custom/IconButton";
 
@@ -18,7 +18,7 @@ const ReviewSection = async ({
   productId: string;
   slug: string;
 }) => {
-  const reviews = await getAllReviews(productId);
+  const { data: reviews } = await getAllReviews(productId);
   const wroteReview = await hasUserReviewByProduct(productId);
   const session = await auth();
   const userId = session?.user.id;
@@ -61,7 +61,7 @@ const ReviewSection = async ({
       </div>
       <ReviewList
         productId={productId}
-        reviewList={reviews.data}
+        reviewList={reviews || []}
         currentUser={userId}
       />
     </section>

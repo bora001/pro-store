@@ -16,7 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   createProduct,
   updateProduct,
-} from "@/lib/actions/admin/admin.product.actions";
+} from "@/lib/actions/handler/admin/admin.product.actions";
 import { CONSTANTS, PATH } from "@/lib/constants";
 import { capitalize } from "@/lib/utils";
 import { insertProductSchema, updateProductSchema } from "@/lib/validator";

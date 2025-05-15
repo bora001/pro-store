@@ -55,7 +55,11 @@ export type OrderItemType = z.infer<typeof orderItemSchema> & {
 export type PaymentResultType = z.infer<typeof paymentResultSchema>;
 export type signUpInfo = z.infer<typeof signUpSchema>;
 export type userProfileType = z.infer<typeof userProfileSchema>;
-export type ResponseType = { success: boolean; message: string };
+export type ResponseType<T = unknown> = {
+  success: boolean;
+  message?: string;
+  data: T;
+};
 export type PaymentType = (typeof PAYMENT_METHODS)[number];
 export type updateProductType = z.infer<typeof updateProductSchema>;
 export type editUserType = z.infer<typeof editUserSchema>;
@@ -142,6 +146,7 @@ export type Message =
   | ({
       role: Extract<ChatRoleType, "recommendations">;
       data: TypesenseProductByTag[];
-    } & { content?: never; entry?: never });
+      content: string;
+    } & { entry?: never });
 
 export type SettingKeyType = "manual" | "prompt" | "recommendation";

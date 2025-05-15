@@ -1,5 +1,5 @@
 import OrderDetail from "@/components/order/order-detail";
-import { getOrderInfo } from "@/lib/actions/order.actions";
+import { getOrderInfo } from "@/lib/actions/handler/order.actions";
 import { OrderItemType, ShippingType } from "@/types";
 import { notFound } from "next/navigation";
 import { PaymentFormType } from "@/components/payment/payment-form";

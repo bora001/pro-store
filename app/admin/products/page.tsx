@@ -13,8 +13,8 @@ import Link from "next/link";
 import {
   deleteProduct,
   getAllAdminProduct,
-} from "@/lib/actions/admin/admin.product.actions";
-import { getAllProducts } from "@/lib/actions/product.actions";
+} from "@/lib/actions/handler/admin/admin.product.actions";
+import { getAllProducts } from "@/lib/actions/handler/product.actions";
 
 import { PATH } from "@/lib/constants";
 import DeleteButton from "@/components/common/delete-button";
@@ -31,14 +31,14 @@ const AdminProductPage = async (props: {
   searchParams: Promise<{ page: string; query: string; category: string }>;
 }) => {
   const { page, query, category } = await props.searchParams;
-  const data =
+  const { data } =
     query || category
       ? await getAllProducts({ page: +page || 1, query, category })
       : await getAllAdminProduct({ page: +page || 1 });
   return (
     <SearchContainer
       title="Products"
-      hasList={data.product.length === 0}
+      hasList={data?.product.length === 0}
       resetPath={PATH.PRODUCTS}
       query={query}
       emptyText="No products available"
@@ -57,7 +57,7 @@ const AdminProductPage = async (props: {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.product.map((product) => (
+          {data?.product.map((product) => (
             <TableRow key={product.id}>
               <TableCell>#{idSlicer(product.id)}</TableCell>
               <TableCell>{product.name}</TableCell>
@@ -83,7 +83,7 @@ const AdminProductPage = async (props: {
         </TableBody>
       </Table>
       <div className="flex justify-center">
-        {data.totalPages > 1 && (
+        {data && data.totalPages > 1 && (
           <Pagination
             page={page || 1}
             urlParams="page"

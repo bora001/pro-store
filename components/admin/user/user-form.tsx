@@ -23,7 +23,7 @@ import {
 import { PATH, USER_ROLE } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
-import { editUserProfile } from "@/lib/actions/user.action";
+import { editUserProfile } from "@/lib/actions/handler/user.action";
 import { editUserType } from "@/types";
 import { capitalize } from "@/lib/utils";
 

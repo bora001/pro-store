@@ -17,7 +17,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { createDeal, updateDeal } from "@/lib/actions/admin/admin.deal.actions";
+import {
+  createDeal,
+  updateDeal,
+} from "@/lib/actions/handler/admin/admin.deal.actions";
 import { PATH } from "@/lib/constants";
 import { CONFIG } from "@/lib/constants/config";
 import { capitalize } from "@/lib/utils";

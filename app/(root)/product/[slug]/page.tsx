@@ -1,6 +1,6 @@
 import ProductSection from "@/components/product/product-section";
 import ReviewSection from "@/components/product/review-section";
-import { getProductBySlug } from "@/lib/actions/product.actions";
+import { getProductBySlug } from "@/lib/actions/handler/product.actions";
 
 import { notFound } from "next/navigation";
 export const metadata = {

@@ -10,7 +10,7 @@ import {
 } from "@radix-ui/react-popover";
 import IconButton from "../custom/IconButton";
 import { useState, useTransition } from "react";
-import { askAI } from "@/lib/actions/chat.actions";
+import { askAI } from "@/lib/actions/handler/chat.actions";
 import ChatScreen from "./chat-screen";
 import ChatInput from "./chat-input";
 import { Bot, X } from "lucide-react";
@@ -40,12 +40,31 @@ const ChatFloatingButton = () => {
       })
     );
     startTransition(async () => {
-      const { role, content, data } = await askAI(message);
+      const { success, data } = await askAI(message);
+      if (!success) {
+        setMessageList((prev) =>
+          produce(prev, (draft) => {
+            draft.push({
+              role: CHAT_ROLE.ASSISTANT,
+              content:
+                'content: "Something went wrong. Please try again later"',
+            });
+          })
+        );
+        return;
+      }
       setMessageList((prev) =>
         produce(prev, (draft) => {
-          draft.push({ role: CHAT_ROLE.ASSISTANT, content });
-          if (role === CHAT_ROLE.RECOMMENDATIONS) {
-            draft.push({ role, data });
+          draft.push({
+            role: CHAT_ROLE.ASSISTANT,
+            content: data?.content || "",
+          });
+          if (data?.role === CHAT_ROLE.RECOMMENDATIONS && "data" in data) {
+            draft.push({
+              role: data.role,
+              content: data.content,
+              data: data.data || [],
+            });
           }
         })
       );
@@ -70,13 +89,14 @@ const ChatFloatingButton = () => {
   return (
     <div className="fixed z-10 bottom-10 right-10">
       <Popover modal={true}>
+        {/* popup-button */}
         <PopoverTrigger asChild>
           <IconButton
             className="p-0 hover:bg-transparent"
             icon={<ChatbotIcon />}
           />
         </PopoverTrigger>
-
+        {/* content */}
         <PopoverContent className="w-80 h-[480px] border bg-gray-50 mb-5 mr-10 shadow-lg rounded-2xl flex flex-col p-4 text-sm">
           <div className="flex justify-between pb-3 font-semibold items-center">
             <div className="flex items-center gap-2">
@@ -88,7 +108,6 @@ const ChatFloatingButton = () => {
               {/* Close */}
             </PopoverClose>
           </div>
-
           {/* chat-history */}
           <ChatScreen
             messageList={messageList}

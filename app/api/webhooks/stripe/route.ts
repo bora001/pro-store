@@ -1,4 +1,4 @@
-import { updateOrderToPaid } from "@/lib/actions/order.actions";
+import { updateOrderToPaid } from "@/lib/actions/handler/order.actions";
 import { CONSTANTS } from "@/lib/constants";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";

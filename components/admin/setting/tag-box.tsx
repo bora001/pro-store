@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   addTag,
   removeTagById,
-} from "@/lib/actions/admin/admin.setting.actions";
+} from "@/lib/actions/handler/admin/admin.setting.actions";
 import { TagType } from "@/types";
 import useCustomToast from "@/hooks/use-custom-toast";
 import TagList from "./tag-list";
@@ -24,16 +24,16 @@ const TagBox = ({ data }: { data: TagType[] }) => {
 
   const addTagHandler = () => {
     startTransition(async () => {
-      const response = await addTag(currentTag);
-      openToast(response);
+      const data = await addTag(currentTag);
+      openToast(data);
       setCurrentTag("");
     });
   };
 
   const deleteTagHandler = (currentTag: string) => {
     startTransition(async () => {
-      const response = await removeTagById(currentTag);
-      openToast(response);
+      const data = await removeTagById(currentTag);
+      openToast(data);
     });
   };
 

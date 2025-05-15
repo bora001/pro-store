@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "../ui/table";
 import { useEffect, useState, useTransition } from "react";
-import { createOrder } from "@/lib/actions/order.actions";
+import { createOrder } from "@/lib/actions/handler/order.actions";
 import { BadgeAlert } from "lucide-react";
 import S3Image from "../common/S3Image";
 import { cn } from "@/lib/utils";

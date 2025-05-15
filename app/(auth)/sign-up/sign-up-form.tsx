@@ -10,10 +10,13 @@ import { z } from "zod";
 import { toast } from "@/hooks/use-toast";
 import { generateCode } from "@/utils/random-code";
 import { Form } from "@/components/ui/form";
-import { checkDuplicateEmail, signUpUser } from "@/lib/actions/user.action";
 import { cn } from "@/lib/utils";
 import FormSubmitButton from "@/components/custom/FormSubmitButton";
 import { sendEmailVerification } from "@/lib/email/mail-handler";
+import {
+  checkDuplicateEmail,
+  signUpUser,
+} from "@/lib/actions/handler/user.action";
 
 const defaultValues = {
   name: "",
@@ -33,25 +36,21 @@ const SignUpForm = () => {
   });
 
   const isValidEmail = async (email: string) => {
+    const isValid = await form.trigger("email");
+    if (!isValid) return false;
     const { success, message } = await checkDuplicateEmail(email);
-    if (!success) {
-      toast({ variant: "destructive", description: message });
-    }
+    if (!success) toast({ variant: "destructive", description: message });
     return success;
   };
 
   const handleSendEmail = async () => {
-    const isValid = await form.trigger("email");
-    if (!isValid) return;
-    setEmailSent(true);
     const email = form.getValues("email");
     const validEmail = await isValidEmail(email);
-    if (!validEmail) {
-      return;
-    }
+    setEmailSent(validEmail);
+    if (!validEmail) return;
+
     const token = generateCode();
     setUserCode(token);
-
     const { success, message } = await sendEmailVerification({
       email,
       token,

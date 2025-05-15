@@ -1,4 +1,4 @@
-import { deleteImage } from "@/lib/actions/image.actions";
+import { deleteImage } from "@/lib/actions/utils/images.utils";
 
 export async function POST(req: Request) {
   try {

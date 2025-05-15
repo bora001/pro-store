@@ -6,7 +6,7 @@ import { CONSTANTS, PATH } from "@/lib/constants";
 import NavBar, { NavBarType } from "./menu/nav-bar";
 import SearchInput from "../search-input";
 import CategoryDrawer from "./menu/category-drawer";
-import { getAllCategory } from "@/lib/actions/home.actions";
+import { getAllCategory } from "@/lib/actions/handler/home.actions";
 
 const Header = async ({
   navList,
@@ -15,7 +15,7 @@ const Header = async ({
   navList?: NavBarType;
   isAdmin?: boolean;
 }) => {
-  const category = await getAllCategory();
+  const { data: category } = await getAllCategory();
   return (
     <header
       style={{
@@ -26,7 +26,7 @@ const Header = async ({
       <div className="wrapper flex-between">
         {/* left */}
         <div className="flex-start gap-3">
-          <CategoryDrawer category={category} />
+          <CategoryDrawer category={category || []} />
           <Link href={PATH.HOME} className="flex-start">
             <LogoImage />
             <span className="hidden lg:block font-bold text-2xl ml-3">

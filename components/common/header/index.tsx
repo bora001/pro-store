@@ -6,7 +6,7 @@ import { CONSTANTS, PATH } from "@/lib/constants";
 import NavBar, { NavBarType } from "./menu/nav-bar";
 import SearchInput from "../search-input";
 import CategoryDrawer from "./menu/category-drawer";
-import { getAllCategory } from "@/lib/actions/product.actions";
+import { getAllCategory } from "@/lib/actions/home.actions";
 
 const Header = async ({
   navList,

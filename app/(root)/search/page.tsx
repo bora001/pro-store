@@ -3,8 +3,8 @@ import MainFilter from "@/components/admin/search/main-filter";
 import SortFilter from "@/components/admin/search/sort-filter";
 import ListContainer from "@/components/common/list-container";
 import ProductCard from "@/components/home/product-card";
-import { getAllProducts } from "@/lib/actions/admin/admin.product.actions";
-import { getAllCategory } from "@/lib/actions/product.actions";
+import { getAllProducts } from "@/lib/actions/product.actions";
+import { getAllCategory } from "@/lib/actions/home.actions";
 import { CONSTANTS, PATH } from "@/lib/constants";
 
 export type SearchPageParamsType = {

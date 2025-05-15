@@ -10,7 +10,7 @@ const ProductDetailPage = async (props: {
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await props.params;
-  const product = await getProductBySlug(slug);
+  const { data: product } = await getProductBySlug(slug);
   if (!product) notFound();
   return (
     <div className=" flex flex-col h-full">

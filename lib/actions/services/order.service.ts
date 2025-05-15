@@ -22,17 +22,16 @@ import { paypal } from "@/lib/paypal";
 import { updateOrderToPaid } from "../handler/order.actions";
 import { revalidatePath } from "next/cache";
 import { sendPurchaseReceipt } from "@/lib/email/mail-handler";
+import { getUserInfo } from "../utils/session.utils";
 
 export async function handleCreateOrder(payment: PaymentFormType["type"]) {
   if (!payment) redirect(PATH.PAYMENT);
-  const session = await auth();
-  const userId = session?.user?.id;
-  if (!session || !userId) redirect(PATH.SIGN_IN);
+  const userId = await getUserInfo();
+  if (!userId) redirect(PATH.SIGN_IN);
   const cart = await getMyCart();
   if (!cart || !cart.data?.items.length) redirect(PATH.CART);
   const { data: user } = await getUserById(userId);
   if (!user) throw new Error("User not found");
-
   if (!user.address) redirect(PATH.SHIPPING);
   const activeDeal = await hasIncludedDeal({
     items: cart.data.items,

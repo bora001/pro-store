@@ -18,6 +18,7 @@ import { hashSync } from "bcrypt-ts-edge";
 import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
+import { getUserInfo } from "../utils/session.utils";
 // sign-up
 export const handleSignUpUser = async (user: signUpInfo) => {
   const newUser = await prisma.user.create({
@@ -82,11 +83,9 @@ export const handleGetUserById = async (id: string) => {
 
 // update-address
 export const handleUpdateUserAddress = async (data: ShippingType) => {
-  const session = await auth();
+  const id = await getUserInfo();
   const currentUser = await prisma.user.findFirst({
-    where: {
-      id: session?.user?.id,
-    },
+    where: { id },
   });
   if (!currentUser) throw new Error("User not found");
   const address = shippingSchema.parse(data);
@@ -101,9 +100,9 @@ export const handleUpdateUserAddress = async (data: ShippingType) => {
 
 // update-user-profile
 export const handleUpdateUserProfile = async (data: userProfileType) => {
-  const session = await auth();
+  const id = await getUserInfo();
   const currentUser = await prisma.user.findFirst({
-    where: { id: session?.user?.id },
+    where: { id },
   });
   if (!currentUser) throw new Error("User not found");
   await prisma.user.update({

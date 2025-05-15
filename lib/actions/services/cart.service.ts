@@ -26,13 +26,12 @@ export const handleAddItemToCart = async ({ data, qty }: HandleCartQueries) => {
   const product = await prisma.product.findFirst({
     where: { id: cartItem.productId },
   });
+  if (!product) throw new Error("Product not found");
   const deal = await prisma.deal.findFirst({
     where: {
       productId: cartItem.productId,
     },
   });
-
-  if (!product) throw new Error("Product not found");
   if (!cart) {
     cartItem.qty = qty;
     cartItem.discount = deal?.discount;
@@ -155,18 +154,15 @@ export const handleRemoveItemToCart = async (data: CartItemType) => {
   const existItem = cart?.data?.items.find(
     (prev: CartItemType) => prev.productId === cartItem.productId
   );
-  if (existItem) {
-    await prisma.cart.update({
-      where: { id: cart?.data?.id },
-      data: {
-        items: cart?.data?.items.filter(
-          (item) => item.productId !== data.productId
-        ),
-      },
-    });
-    revalidatePath(`${PATH.PRODUCT}/${product.slug}`);
-    return { message: `${data.name} is deleted to cart` };
-  } else {
-    throw new Error("Item is not in cart");
-  }
+  if (!existItem) throw new Error("Item is not in cart");
+  await prisma.cart.update({
+    where: { id: cart?.data?.id },
+    data: {
+      items: cart?.data?.items.filter(
+        (item) => item.productId !== data.productId
+      ),
+    },
+  });
+  revalidatePath(`${PATH.PRODUCT}/${product.slug}`);
+  return { message: `${data.name} is deleted to cart` };
 };

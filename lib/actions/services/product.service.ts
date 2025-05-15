@@ -33,8 +33,8 @@ export const handleLatestProducts = async () => {
 export const handleProductBySlug = async (slug: string) => {
   const data = await prisma.product.findUnique({
     where: {
-      slug,
       ...validProduct,
+      slug,
     },
     include: {
       Deal: {
@@ -77,6 +77,7 @@ export const handleAllProducts = async ({
     price && price !== CONSTANTS.ALL
       ? { price: { gte: minPrice, lte: maxPrice } }
       : {};
+
   const ratingFilter =
     rating && rating !== CONSTANTS.ALL ? { rating: { gte: rating } } : {};
   const sortFilter: Record<string, Prisma.ProductOrderByWithRelationInput> = {
@@ -90,11 +91,11 @@ export const handleAllProducts = async ({
 
   const product = await prisma.product.findMany({
     where: {
+      ...validProduct,
       ...queryFilter,
       ...categoryFilter,
       ...priceFilter,
       ...ratingFilter,
-      ...validProduct,
     },
     include: {
       Deal: {

@@ -16,29 +16,17 @@ export const handleAllCategory = async () => {
     },
   });
   return {
-    data: data.map(({ category, _count }) => ({
-      category,
-      count: _count,
-    })),
+    data: data.map(({ category, _count }) => ({ category, count: _count })),
   };
 };
 
 export const handleBanner = async () => {
   const cachedProduct = await getCachedData(REDIS_KEY.BANNER);
-  if (cachedProduct) {
-    return { data: cachedProduct as BannerType[] };
-  }
+  if (cachedProduct) return { data: cachedProduct as BannerType[] };
   const data = await prisma.product.findMany({
     where: { isFeatured: true },
-    orderBy: {
-      createdAt: "desc",
-    },
-    select: {
-      id: true,
-      slug: true,
-      banner: true,
-      name: true,
-    },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, slug: true, banner: true, name: true },
     take: 4,
   });
   await cacheData(REDIS_KEY.BANNER, data, 0);

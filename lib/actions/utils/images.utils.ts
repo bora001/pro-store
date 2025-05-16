@@ -1,9 +1,5 @@
 //
-import {
-  S3Client,
-  DeleteObjectCommand,
-  PutObjectCommand,
-} from "@aws-sdk/client-s3";
+import { S3Client, DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const s3 = new S3Client({
   region: process.env.AWS_S3_REGION,
@@ -18,10 +14,7 @@ export type DeleteImageResponseType<T = unknown> = {
   message: string;
   data?: T;
 };
-export const deleteImage = async (
-  keys: string[],
-  folder: string
-): Promise<DeleteImageResponseType[]> => {
+export const deleteImage = async (keys: string[], folder: string): Promise<DeleteImageResponseType[]> => {
   if (!keys.length || !folder) {
     throw new Error("Missing required fields: keys or folder");
   }
@@ -45,12 +38,7 @@ export const deleteImage = async (
     throw new Error("File deletion failed");
   }
 };
-export const uploadImage = async (
-  file: string,
-  folder: string,
-  fileName: string,
-  fileType: string
-) => {
+export const uploadImage = async (file: string, folder: string, fileName: string, fileType: string) => {
   const buffer = Buffer.from(file, "base64");
   const params = {
     Bucket: process.env.AWS_S3_BUCKET_NAME!,

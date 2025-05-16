@@ -11,12 +11,8 @@ import { Prisma } from "@prisma/client";
 export const handleLatestProducts = async () => {
   const data = await prisma.product.findMany({
     take: CONSTANTS.LATEST_PRODUCT_LIMIT,
-    orderBy: {
-      createdAt: "desc",
-    },
-    where: {
-      ...validProduct,
-    },
+    orderBy: { createdAt: "desc" },
+    where: { ...validProduct },
     include: {
       Deal: {
         where: {
@@ -32,25 +28,18 @@ export const handleLatestProducts = async () => {
 // single products by slug
 export const handleProductBySlug = async (slug: string) => {
   const data = await prisma.product.findUnique({
-    where: {
-      ...validProduct,
-      slug,
-    },
+    where: { ...validProduct, slug },
     include: {
       Deal: {
         where: {
-          product: {
-            slug,
-          },
+          product: { slug },
           isActive: true,
           endTime: { gte: new Date() },
         },
       },
     },
   });
-  if (!data) {
-    throw new Error("Product not found");
-  }
+  if (!data) throw new Error("Product not found");
   return { data: prismaToJs(data) };
 };
 
@@ -65,21 +54,13 @@ export const handleAllProducts = async ({
   limit,
 }: GetAlProductsQuery) => {
   const queryFilter: Prisma.ProductWhereInput = {
-    name: {
-      contains: query,
-      mode: "insensitive",
-    } as Prisma.StringFilter,
+    name: { contains: query, mode: "insensitive" } as Prisma.StringFilter,
   };
-  const categoryFilter =
-    category && category !== CONSTANTS.ALL ? { category } : {};
+  const categoryFilter = category && category !== CONSTANTS.ALL ? { category } : {};
   const [minPrice, maxPrice] = price ? price.split("-") : [];
-  const priceFilter =
-    price && price !== CONSTANTS.ALL
-      ? { price: { gte: minPrice, lte: maxPrice } }
-      : {};
+  const priceFilter = price && price !== CONSTANTS.ALL ? { price: { gte: minPrice, lte: maxPrice } } : {};
 
-  const ratingFilter =
-    rating && rating !== CONSTANTS.ALL ? { rating: { gte: rating } } : {};
+  const ratingFilter = rating && rating !== CONSTANTS.ALL ? { rating: { gte: rating } } : {};
   const sortFilter: Record<string, Prisma.ProductOrderByWithRelationInput> = {
     lowest: { price: "asc" },
     highest: { price: "desc" },
@@ -98,12 +79,7 @@ export const handleAllProducts = async ({
       ...ratingFilter,
     },
     include: {
-      Deal: {
-        where: {
-          isActive: true,
-          endTime: { gte: new Date() },
-        },
-      },
+      Deal: { where: { isActive: true, endTime: { gte: new Date() } } },
     },
     orderBy: sort ? sortFilter[sort] : sortFilter.default,
     take: limit,

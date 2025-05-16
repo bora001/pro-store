@@ -13,10 +13,7 @@ export type handleAddOrEditReviewType = z.infer<typeof addReviewSchema>;
 export async function handleAddOrEditReview(data: handleAddOrEditReviewType) {
   const session = await auth();
   if (!session) throw new Error("Not authenticated");
-  const review = addReviewSchema.parse({
-    ...data,
-    userId: session.user.id,
-  });
+  const review = addReviewSchema.parse({ ...data, userId: session.user.id });
   const product = await prisma.product.findFirst({
     where: { id: review.productId },
   });
@@ -31,9 +28,7 @@ export async function handleAddOrEditReview(data: handleAddOrEditReviewType) {
   await prisma.$transaction(async (tx) => {
     if (alreadyReviewed) {
       await tx.review.update({
-        where: {
-          id: alreadyReviewed.id,
-        },
+        where: { id: alreadyReviewed.id },
         data: {
           title: review.title,
           description: review.description,
@@ -41,23 +36,15 @@ export async function handleAddOrEditReview(data: handleAddOrEditReviewType) {
         },
       });
     } else {
-      await tx.review.create({
-        data: review,
-      });
+      await tx.review.create({ data: review });
     }
     const avgRating = await tx.review.aggregate({
-      _avg: {
-        rating: true,
-      },
-      where: {
-        productId: review.productId,
-      },
+      _avg: { rating: true },
+      where: { productId: review.productId },
     });
 
     const reviewCount = await tx.review.count({
-      where: {
-        productId: review.productId,
-      },
+      where: { productId: review.productId },
     });
 
     await tx.product.update({
@@ -76,17 +63,9 @@ export async function handleAddOrEditReview(data: handleAddOrEditReviewType) {
 // get-all-reviews
 export async function handleGetAllReviews(productId: string) {
   const data = await prisma.review.findMany({
-    where: {
-      productId,
-    },
-    include: {
-      user: {
-        select: { name: true },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
+    where: { productId },
+    include: { user: { select: { name: true } } },
+    orderBy: { createdAt: "desc" },
   });
   return { data };
 }
@@ -96,23 +75,15 @@ export async function handleHasUserReviewByProduct(productId: string) {
   const session = await auth();
   if (!session) throw new Error("Not authenticated");
   const data = await prisma.review.findFirst({
-    where: {
-      productId,
-      userId: session.user.id,
-    },
+    where: { productId, userId: session.user.id },
   });
-  return {
-    data,
-    message: "Successfully retrieved user's review",
-  };
+  return { data, message: "Successfully retrieved user's review" };
 }
 
 // delete-review
 export async function handleDeleteReview(reviewId: string) {
   const data = await prisma.review.delete({
-    where: {
-      id: reviewId,
-    },
+    where: { id: reviewId },
   });
 
   await prisma.$transaction(async (tx) => {
@@ -148,11 +119,7 @@ export async function handleHasPurchaseHistory(productId: string) {
   const hasPreviousOrder = await prisma.order.findFirst({
     where: {
       userId: session.user.id,
-      orderItems: {
-        some: {
-          productId: productId,
-        },
-      },
+      orderItems: { some: { productId: productId } },
     },
   });
   if (!hasPreviousOrder) throw new Error("Review available after purchase");

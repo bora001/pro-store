@@ -1,11 +1,6 @@
 "use server";
 
-import {
-  ShippingType,
-  editUserType,
-  signUpInfo,
-  userProfileType,
-} from "@/types";
+import { ShippingType, editUserType, signUpInfo, userProfileType } from "@/types";
 
 import { handleAsync } from "@/utils/handle-async";
 import {

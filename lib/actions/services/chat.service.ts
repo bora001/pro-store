@@ -2,10 +2,7 @@
 import OpenAI from "openai";
 import { getSetting, getTags } from "../handler/admin/admin.setting.actions";
 import { CHAT_ROLE, TYPESENSE_KEY } from "@/lib/constants";
-import {
-  TypesenseProductByTag,
-  searchProductByTag,
-} from "@/lib/typesense/product-by-tag/search-product-by-tag";
+import { TypesenseProductByTag, searchProductByTag } from "@/lib/typesense/product-by-tag/search-product-by-tag";
 import { checkSetupTypesense } from "@/lib/typesense/check-setup";
 import { getRecommendTags } from "../handler/chat.actions";
 
@@ -36,8 +33,7 @@ export const handleGetRecommendTags = async (question: string) => {
     temperature: 0.7,
   });
 
-  const keyword =
-    completion.choices[0].message.content?.trim().split(", ") || [];
+  const keyword = completion.choices[0].message.content?.trim().split(", ") || [];
   const recommendations = await searchProductByTag(keyword);
   return { data: recommendations };
 };
@@ -52,13 +48,8 @@ const returnMessage = ({
   content: string;
   data?: TypesenseProductByTag[];
 }) => {
-  const defaultData = {
-    role,
-    content,
-  };
-  return {
-    data: data ? { data, ...defaultData } : defaultData,
-  };
+  const defaultData = { role, content };
+  return { data: data ? { data, ...defaultData } : defaultData };
 };
 
 export const handleAskAI = async (question: string) => {

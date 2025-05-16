@@ -46,12 +46,9 @@ const addItemToExistingCart = async ({
   id,
   discount,
 }: AddItemToExistingCartDataType) => {
-  const existItem = cartItems.find(
-    (prev: CartItemType) => prev.productId === cartItem.productId
-  );
+  const existItem = cartItems.find((prev: CartItemType) => prev.productId === cartItem.productId);
   if (existItem) {
-    if (previousStock < existItem.qty + qty)
-      throw new Error("Can't add more of this item");
+    if (previousStock < existItem.qty + qty) throw new Error("Can't add more of this item");
     existItem.qty = existItem.qty + qty;
     existItem.discount = discount;
   } else {
@@ -132,10 +129,7 @@ export const handleGetMyCart = async () => {
 };
 
 // modify-cart
-export const handleModifyItemQtyToCart = async ({
-  data,
-  qty,
-}: HandleCartQueries) => {
+export const handleModifyItemQtyToCart = async ({ data, qty }: HandleCartQueries) => {
   await checkSessionCardId();
   const cart = await getMyCart();
   const product = await prisma.product.findFirst({
@@ -143,9 +137,7 @@ export const handleModifyItemQtyToCart = async ({
   });
   if (!product) throw new Error("Product not found");
 
-  const existItem = cart?.data?.items.find(
-    (prev: CartItemType) => prev.productId === data.productId
-  );
+  const existItem = cart?.data?.items.find((prev: CartItemType) => prev.productId === data.productId);
   if (!existItem) throw new Error("Item is not in cart");
   if (product.stock < qty) return { message: "Can't add more of this item" };
 
@@ -154,8 +146,7 @@ export const handleModifyItemQtyToCart = async ({
     where: { id: cart?.data?.id },
     data: {
       items: cart?.data?.items,
-      itemsCount:
-        cart?.data?.items.reduce((acc, item) => acc + item.qty, 0) || 0,
+      itemsCount: cart?.data?.items.reduce((acc, item) => acc + item.qty, 0) || 0,
     },
   });
 
@@ -173,16 +164,12 @@ export const handleRemoveItemToCart = async (data: CartItemType) => {
     where: { id: cartItem.productId },
   });
   if (!product) throw new Error("Product not found");
-  const existItem = cart?.data?.items.find(
-    (prev: CartItemType) => prev.productId === cartItem.productId
-  );
+  const existItem = cart?.data?.items.find((prev: CartItemType) => prev.productId === cartItem.productId);
   if (!existItem) throw new Error("Item is not in cart");
   await prisma.cart.update({
     where: { id: cart?.data?.id },
     data: {
-      items: cart?.data?.items.filter(
-        (item) => item.productId !== data.productId
-      ),
+      items: cart?.data?.items.filter((item) => item.productId !== data.productId),
     },
   });
   revalidatePath(`${PATH.PRODUCT}/${product.slug}`);

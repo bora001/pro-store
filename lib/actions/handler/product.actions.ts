@@ -1,11 +1,7 @@
 "use server";
 
 import { handleAsync } from "@/utils/handle-async";
-import {
-  handleAllProducts,
-  handleLatestProducts,
-  handleProductBySlug,
-} from "../services/product.service";
+import { handleAllProducts, handleLatestProducts, handleProductBySlug } from "../services/product.service";
 
 export type GetAlProductsQuery = {
   page?: number;

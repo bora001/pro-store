@@ -26,9 +26,7 @@ export const fetchGetOrderSummary = async () => {
 
   const latestSales = await prisma.order.findMany({
     orderBy: { createdAt: "desc" },
-    include: {
-      user: { select: { name: true } },
-    },
+    include: { user: { select: { name: true } } },
     take: 6,
   });
 
@@ -55,24 +53,15 @@ export const fetchGetAllOrders = async ({
   query = "",
 }: FetchGetAllOrdersType) => {
   const queryFilter: Prisma.OrderWhereInput = {
-    user: {
-      name: {
-        contains: query,
-        mode: "insensitive",
-      },
-    },
+    user: { name: { contains: query, mode: "insensitive" } },
   };
 
   const order = await prisma.order.findMany({
-    where: {
-      ...queryFilter,
-    },
+    where: { ...queryFilter },
     orderBy: { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit,
-    include: {
-      user: { select: { name: true } },
-    },
+    include: { user: { select: { name: true } } },
   });
   const orderCount = await prisma.order.count();
   return {
@@ -88,10 +77,7 @@ export type FetchUpdateOrderToPaidByAdminType = {
   orderId: string;
   paymentResult: PaymentResultType;
 };
-export const fetchUpdateOrderToPaidByAdmin = async ({
-  orderId,
-  paymentResult,
-}: FetchUpdateOrderToPaidByAdminType) => {
+export const fetchUpdateOrderToPaidByAdmin = async ({ orderId, paymentResult }: FetchUpdateOrderToPaidByAdminType) => {
   await updateOrderToPaid({ orderId, paymentResult });
   revalidatePath(`${PATH.ORDER}/${orderId}`);
   return { message: "Order updated as Paid" };
@@ -99,19 +85,13 @@ export const fetchUpdateOrderToPaidByAdmin = async ({
 
 // update-order-delivered
 export const fetchUpdateOrderToDelivered = async (orderId: string) => {
-  const order = await prisma.order.findFirst({
-    where: {
-      id: orderId,
-    },
-  });
+  const order = await prisma.order.findFirst({ where: { id: orderId } });
   if (!order) throw new Error("Order not found");
   if (!order.isPaid) throw new Error("Order is not paid");
+
   await prisma.order.update({
     where: { id: orderId },
-    data: {
-      isDelivered: true,
-      deliveredAt: new Date(),
-    },
+    data: { isDelivered: true, deliveredAt: new Date() },
   });
   revalidatePath(`${PATH.ORDER}/${orderId}`);
   return { message: "Order updated as Delivered" };
@@ -119,9 +99,7 @@ export const fetchUpdateOrderToDelivered = async (orderId: string) => {
 
 // delete-order
 export const fetchDeleteOrder = async (id: string) => {
-  await prisma.order.delete({
-    where: { id },
-  });
+  await prisma.order.delete({ where: { id } });
   revalidatePath(PATH.ORDERS);
   return { message: "Order is deleted successfully" };
 };

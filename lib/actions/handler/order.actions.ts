@@ -28,9 +28,7 @@ export async function createPaypalOrder(orderId: string) {
   return handleAsync(() => handleCreatePaypalOrder(orderId));
 }
 // approve-paypal
-export async function approvalPaypalOrder(
-  queries: handleApprovalPaypalOrderType
-) {
+export async function approvalPaypalOrder(queries: handleApprovalPaypalOrderType) {
   return handleAsync(() => handleApprovalPaypalOrder(queries));
 }
 // update paid

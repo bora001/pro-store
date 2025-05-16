@@ -20,9 +20,7 @@ export async function getAllOrders(data: FetchGetAllOrdersType) {
   return handleAsync(() => fetchGetAllOrders(data));
 }
 // update-order-paid
-export async function updateOrderToPaidByAdmin(
-  data: FetchUpdateOrderToPaidByAdminType
-) {
+export async function updateOrderToPaidByAdmin(data: FetchUpdateOrderToPaidByAdminType) {
   return handleAsync(() => fetchUpdateOrderToPaidByAdmin(data));
 }
 // update-order-delivered

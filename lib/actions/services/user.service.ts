@@ -3,17 +3,9 @@
 import { auth, signIn, signOut } from "@/auth";
 import { prisma } from "@/db/prisma";
 import { PATH } from "@/lib/constants";
-import {
-  sendDeleteAccountConfirm,
-  sendWelcomeEmail,
-} from "@/lib/email/mail-handler";
+import { sendDeleteAccountConfirm, sendWelcomeEmail } from "@/lib/email/mail-handler";
 import { shippingSchema, signInSchema } from "@/lib/validator";
-import {
-  ShippingType,
-  editUserType,
-  signUpInfo,
-  userProfileType,
-} from "@/types";
+import { ShippingType, editUserType, signUpInfo, userProfileType } from "@/types";
 import { hashSync } from "bcrypt-ts-edge";
 import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -62,9 +54,7 @@ export const handleSignOutUser = async () => {
 
 // check-duplicate-email
 export const handleCheckDuplicateEmail = async (email: string) => {
-  const user = await prisma.user.findFirst({
-    where: { email },
-  });
+  const user = await prisma.user.findFirst({ where: { email } });
   if (user) {
     throw new Error("Email already exists");
   } else {
@@ -74,9 +64,7 @@ export const handleCheckDuplicateEmail = async (email: string) => {
 
 // get-user
 export const handleGetUserById = async (id: string) => {
-  const user = await prisma.user.findFirst({
-    where: { id },
-  });
+  const user = await prisma.user.findFirst({ where: { id } });
   if (!user) throw new Error("User not found");
   return { data: user };
 };
@@ -84,15 +72,11 @@ export const handleGetUserById = async (id: string) => {
 // update-address
 export const handleUpdateUserAddress = async (data: ShippingType) => {
   const id = await getUserInfo();
-  const currentUser = await prisma.user.findFirst({
-    where: { id },
-  });
+  const currentUser = await prisma.user.findFirst({ where: { id } });
   if (!currentUser) throw new Error("User not found");
   const address = shippingSchema.parse(data);
   await prisma.user.update({
-    where: {
-      id: currentUser.id,
-    },
+    where: { id: currentUser.id },
     data: { address },
   });
   return { message: "User Address updated successfully" };
@@ -101,9 +85,7 @@ export const handleUpdateUserAddress = async (data: ShippingType) => {
 // update-user-profile
 export const handleUpdateUserProfile = async (data: userProfileType) => {
   const id = await getUserInfo();
-  const currentUser = await prisma.user.findFirst({
-    where: { id },
-  });
+  const currentUser = await prisma.user.findFirst({ where: { id } });
   if (!currentUser) throw new Error("User not found");
   await prisma.user.update({
     where: { id: currentUser.id },
@@ -114,18 +96,13 @@ export const handleUpdateUserProfile = async (data: userProfileType) => {
 
 // edit-user-profile-by-admin
 export const handleEditUserProfile = async (data: editUserType) => {
-  await prisma.user.update({
-    where: { id: data.id },
-    data,
-  });
+  await prisma.user.update({ where: { id: data.id }, data });
   return { message: "User is edited successfully" };
 };
 
 // delete-user
 export const handleDeleteUser = async (id: string) => {
-  await prisma.user.delete({
-    where: { id },
-  });
+  await prisma.user.delete({ where: { id } });
   revalidatePath(PATH.USERS);
   return { message: "User is deleted successfully" };
 };

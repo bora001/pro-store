@@ -11,9 +11,7 @@ export const handleGetSetting = async () => {
     where: { id: 1 },
     include: { tags: true },
   });
-  return {
-    data: prismaToJs(data),
-  };
+  return { data: prismaToJs(data) };
 };
 
 //update-setting
@@ -23,18 +21,11 @@ export const handleUpdateSetting = async (updates: HandleUpdateSettingType) => {
     [key: string]: string;
   }> = {};
   for (const [key, value] of Object.entries(updates)) {
-    if (value !== undefined) {
-      data[key] = value;
-    }
+    if (value !== undefined) data[key] = value;
   }
-  await prisma.setting.update({
-    where: { id: 1 },
-    data,
-  });
+  await prisma.setting.update({ where: { id: 1 }, data });
   revalidatePath(PATH.SETTING);
-  return {
-    message: "Setting updated or created successfully.",
-  };
+  return { message: "Setting updated or created successfully." };
 };
 
 // get-tags
@@ -43,38 +34,23 @@ export const handleGetTags = async () => {
     where: { id: 1 },
     select: { tags: true },
   });
-  return {
-    message: "Successfully retrieved tags",
-    data: tags,
-  };
+  return { message: "Successfully retrieved tags", data: tags };
 };
 
 // add-tag
 export const handleAddTag = async (name: string) => {
   await prisma.setting.update({
     where: { id: 1 },
-    data: {
-      tags: {
-        create: { name: name.toLowerCase() },
-      },
-    },
+    data: { tags: { create: { name: name.toLowerCase() } } },
   });
   revalidatePath(PATH.SETTING);
-  return {
-    message: "Tags updated successfully",
-  };
+  return { message: "Tags updated successfully" };
 };
 // delete-tag
 export const handleRemoveTagById = async (id: string) => {
   await prisma.setting.update({
     where: { id: 1 },
-    data: {
-      tags: {
-        delete: {
-          id,
-        },
-      },
-    },
+    data: { tags: { delete: { id } } },
   });
   revalidatePath(PATH.SETTING);
   return { message: "Tags deleted successfully" };

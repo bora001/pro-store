@@ -3,10 +3,11 @@
 import { prisma } from "@/db/prisma";
 import { CONSTANTS, REDIS_KEY } from "@/lib/constants";
 import { redis } from "@/lib/redis";
-import { deleteAllRedisKey } from "@/lib/redis/redis-handler";
+import { cacheData, deleteAllRedisKey, getCachedData } from "@/lib/redis/redis-handler";
 import { prismaToJs } from "@/lib/utils";
 import { addDealSchema } from "@/lib/validator";
-import { AdminDealResult, CartItemType, addDealType } from "@/types";
+import { AdminDealResult, CartItemType, addDealType, getDealType } from "@/types";
+import { AsyncReturn } from "@/utils/handle-async";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
@@ -17,23 +18,10 @@ export type FetchGetDealType = {
 // get-deal
 export const fetchGetDeal = async ({ id, isActive }: FetchGetDealType) => {
   const hasId = id ? { id } : {};
-  const hasActive = isActive
-    ? {
-        product: {
-          Deal: {
-            some: {
-              isActive: true,
-            },
-          },
-        },
-      }
-    : {};
+  const hasActive = isActive ? { product: { Deal: { some: { isActive: true } } } } : {};
 
   const data = await prisma.deal.findFirst({
-    where: {
-      ...hasId,
-      ...hasActive,
-    },
+    where: { ...hasId, ...hasActive },
     include: {
       product: {
         select: {
@@ -44,12 +32,8 @@ export const fetchGetDeal = async ({ id, isActive }: FetchGetDealType) => {
           id: true,
           name: true,
           Deal: {
-            where: {
-              isActive: true,
-            },
-            select: {
-              title: true,
-            },
+            where: { isActive: true },
+            select: { title: true },
           },
         },
       },
@@ -58,9 +42,7 @@ export const fetchGetDeal = async ({ id, isActive }: FetchGetDealType) => {
 
   if (!data) throw new Error("Deal not found");
 
-  return {
-    data: prismaToJs(data),
-  };
+  return { data: prismaToJs(data) };
 };
 
 // get-all-deals-by-query
@@ -104,16 +86,8 @@ export const fetchGetAllDealsByQuery = async ({
     : {};
   const deal = await prisma.deal.findMany({
     orderBy: { createdAt: "desc" },
-    include: {
-      product: {
-        select: {
-          name: true,
-        },
-      },
-    },
-    where: {
-      ...queryFilter,
-    },
+    include: { product: { select: { name: true } } },
+    where: { ...queryFilter },
     take: limit,
     skip: (page - 1) * limit,
   });
@@ -129,17 +103,53 @@ export const fetchGetAllDealsByQuery = async ({
 };
 
 // get-active-deal
+export type handleGetActiveDealType = {
+  id?: string;
+  isActive?: boolean;
+};
+export async function handleGetActiveDeal({
+  id,
+  isActive,
+}: handleGetActiveDealType): AsyncReturn<getDealType | addDealType | undefined> {
+  const hasId = id ? { id } : {};
+  const hasActive = isActive ? { product: { Deal: { some: { isActive: true } } } } : {};
+
+  const cachedDeal: { hasDeal: boolean; data: addDealType } | null = await getCachedData(REDIS_KEY.ACTIVE_DEAL);
+
+  if (cachedDeal !== null && !cachedDeal.hasDeal) return { data: undefined };
+  if (cachedDeal) return { data: cachedDeal.data };
+
+  const data = await prisma.deal.findFirst({
+    where: { ...hasId, ...hasActive },
+    include: {
+      product: {
+        select: {
+          stock: true,
+          images: true,
+          price: true,
+          slug: true,
+          id: true,
+          name: true,
+          Deal: {
+            where: { isActive: true },
+            select: { title: true },
+          },
+        },
+      },
+    },
+  });
+
+  await cacheData(REDIS_KEY.ACTIVE_DEAL, { hasDeal: !!data, data: data }, 0);
+  if (!data) throw new Error("Deal not found");
+  return { data: prismaToJs(data) };
+}
 
 // create-deal
 export type FetchCreateDealType = z.infer<typeof addDealSchema>;
 export const fetchCreateDeal = async (values: FetchCreateDealType) => {
   const data = addDealSchema.parse(values);
-  if (!data.endTime) {
-    throw new Error("End time is required.");
-  }
-  await prisma.deal.create({
-    data: { ...data, endTime: data.endTime },
-  });
+  if (!data.endTime) throw new Error("End time is required.");
+  await prisma.deal.create({ data: { ...data, endTime: data.endTime } });
   await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
   return { message: "Deal created successfully" };
 };
@@ -150,12 +160,11 @@ export const fetchUpdateDeal = async (data: Partial<addDealType>) => {
   const isOtherActive = await prisma.deal.findFirst({
     where: { isActive: true },
   });
-  if (isOtherActive && isOtherActive.id !== data.id && data.isActive)
-    throw new Error("Active deal already exists.");
-  const deals = await prisma.deal.findFirst({
-    where: { id: data.id },
-  });
+  if (isOtherActive && isOtherActive.id !== data.id && data.isActive) throw new Error("Active deal already exists.");
+
+  const deals = await prisma.deal.findFirst({ where: { id: data.id } });
   if (!deals) throw new Error("Deal not found");
+
   if (data.isActive || (deals.isActive && !data.isActive)) {
     await redis.del(REDIS_KEY.ACTIVE_DEAL);
     await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
@@ -163,10 +172,7 @@ export const fetchUpdateDeal = async (data: Partial<addDealType>) => {
   const { endTime, product: _product, ...rest } = data;
   await prisma.deal.update({
     where: { id: data.id },
-    data: {
-      ...rest,
-      ...(endTime && { endTime }),
-    },
+    data: { ...rest, ...(endTime && { endTime }) },
   });
   await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
   return { message: "Deal updated successfully" };
@@ -174,15 +180,10 @@ export const fetchUpdateDeal = async (data: Partial<addDealType>) => {
 
 // delete-deal
 export const fetchDeleteDeal = async (id: string) => {
-  const isExist = await prisma.deal.findFirst({
-    where: { id },
-  });
+  const isExist = await prisma.deal.findFirst({ where: { id } });
   if (!isExist) throw new Error("Deal not found");
-  await prisma.deal.delete({
-    where: {
-      id,
-    },
-  });
+
+  await prisma.deal.delete({ where: { id } });
   await deleteAllRedisKey(REDIS_KEY.ADMIN_DEAL_LIST);
   return { message: "Deal deleted successfully" };
 };
@@ -192,10 +193,7 @@ export type FetchHasIncludedDealType = {
   items: CartItemType[];
   dealOptions?: Prisma.DealWhereInput;
 };
-export const fetchHasIncludedDeal = async ({
-  items,
-  dealOptions,
-}: FetchHasIncludedDealType) => {
+export const fetchHasIncludedDeal = async ({ items, dealOptions }: FetchHasIncludedDealType) => {
   const productId = items.map((item) => item.productId);
   const deal = await prisma.deal.findMany({
     where: {
@@ -205,7 +203,5 @@ export const fetchHasIncludedDeal = async ({
     },
   });
   if (!deal.length) throw new Error("Deal not found");
-  return {
-    data: prismaToJs(deal[0]),
-  };
+  return { data: prismaToJs(deal[0]) };
 };

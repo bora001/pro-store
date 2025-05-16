@@ -12,18 +12,18 @@ import {
 import { measurePerformance } from "@/utils/measure-performance";
 
 // add-item-to-cart
-export async function addItemToCart(queries: HandleCartQueries) {
+export async function addItemToCart(queries: HandleCartQueries & { cartId?: string }) {
   return measurePerformance(() => handleAsync(() => handleAddItemToCart(queries)), "addItemToCart");
 }
 // get-cart
-export async function getMyCart() {
-  return handleAsync(handleGetMyCart);
+export async function getMyCart(userId?: string) {
+  return handleAsync(() => handleGetMyCart(userId));
 }
 // modify-cart
-export async function modifyItemQtyToCart(queries: HandleCartQueries) {
+export async function modifyItemQtyToCart(queries: HandleCartQueries & { cartId: string }) {
   return measurePerformance(() => handleAsync(() => handleModifyItemQtyToCart(queries)), "modifyItemQtyToCart");
 }
 // remove-item-from-cart
-export async function removeItemToCart(data: CartItemType) {
+export async function removeItemToCart(data: CartItemType & { cartId: string }) {
   return measurePerformance(() => handleAsync(() => handleRemoveItemToCart(data)), "removeItemToCart");
 }

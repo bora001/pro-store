@@ -8,26 +8,29 @@ import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Minus, Plus } from "lucide-react";
 import Flex from "../common/flex";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { PATH } from "@/lib/constants";
 import { ClassValue } from "clsx";
 import { cn } from "@/lib/utils";
+import { getCartId } from "@/lib/actions/services/cart.service";
 
-const AddToCart = ({
-  item,
-  noQty,
-  className,
-}: {
-  item: CartItemType;
-  noQty?: boolean;
-  className?: ClassValue;
-}) => {
+const AddToCart = ({ item, noQty, className }: { item: CartItemType; noQty?: boolean; className?: ClassValue }) => {
   const router = useRouter();
   const [qty, setQty] = useState(1);
   const [isPending, startTransition] = useTransition();
+  const [cartId, setCartId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const preloadCartId = async () => {
+      const id = await getCartId();
+      setCartId(id);
+    };
+    preloadCartId();
+  }, []);
+
   const handleAddCart = () => {
     startTransition(async () => {
-      const { success, message } = await addItemToCart({ data: item, qty });
+      const { success, message } = await addItemToCart({ data: item, qty, cartId });
       if (!success) {
         toast({ variant: "destructive", description: message });
       } else {
@@ -70,11 +73,7 @@ const AddToCart = ({
           </Button>
         </Flex>
       )}
-      <Button
-        className={cn(className)}
-        disabled={isPending}
-        onClick={handleAddCart}
-      >
+      <Button className={cn(className)} disabled={isPending} onClick={handleAddCart}>
         Add to Cart
       </Button>
     </div>

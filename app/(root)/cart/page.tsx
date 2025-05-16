@@ -6,9 +6,9 @@ export const metadata = {
   title: "Cart",
 };
 const CartPage = async () => {
-  const cart = await getMyCart();
-  const { data } = await hasIncludedDeal({ items: cart?.data?.items || [] });
-  return <CartTable cart={cart?.data} deal={data} />;
+  const { data: cart } = await getMyCart();
+  const { data } = await hasIncludedDeal({ items: cart?.items || [] });
+  return <CartTable cart={cart} deal={data} />;
 };
 
 export default CartPage;

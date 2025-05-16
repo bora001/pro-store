@@ -20,9 +20,7 @@ const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
   const router = useRouter();
   const [price, setPrice] = useState<[string, string][]>([]);
   useEffect(() => {
-    setPrice(
-      Object.entries(calculatePrice(cart?.items || [], deal, isActiveDeal))
-    );
+    setPrice(Object.entries(calculatePrice(cart?.items || [], deal, isActiveDeal)));
   }, [cart?.items, deal, isActiveDeal]);
 
   const startOrder = () => {
@@ -42,7 +40,7 @@ const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
   return (
     <Container title="Shopping Cart">
       <ListContainer
-        listLength={cart?.items.length || 0}
+        listLength={cart?.items?.length || 0}
         title="Cart is empty..."
         href={PATH.HOME}
         linkText="Go to shopping"
@@ -50,11 +48,7 @@ const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
         {cart && (
           <div className="flex flex-col-reverse lg:flex-row w-full gap-5 items-center lg:items-start">
             <div className="overflow-x-auto  flex-1 sm:basis-2/3  md:basis-5/7 lg:basis-3/4 w-full">
-              <ProductTable
-                items={cart.items}
-                deal={deal}
-                isActiveDeal={isActiveDeal}
-              />
+              <ProductTable cartId={cart.id} items={cart.items} deal={deal} isActiveDeal={isActiveDeal} />
             </div>
             {/* cart detail */}
             <Card className="overflow-hidden flex-1 sm:basis-1/3 md:basis-2/7 lg:basis-1/4 sm:max-w-md max-w-full w-full">
@@ -69,9 +63,7 @@ const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
                 <div className="text-xl space-y-5 mb-5">
                   <p className="space-x-2">
                     <span>Total</span>
-                    <span className="text-gray-500 text-base">
-                      ({cart.itemsCount})
-                    </span>
+                    <span className="text-gray-500 text-base">({cart.itemsCount})</span>
                   </p>
                   <PriceSummaryWithArray price={price} />
                 </div>

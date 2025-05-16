@@ -2,14 +2,7 @@
 
 import ItemQtyChanger from "../cart/item-qty-changer";
 import ItemRemoveButton from "../cart/item-remove-button";
-import {
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHead,
-  TableHeader,
-} from "../ui/table";
+import { Table, TableBody, TableRow, TableCell, TableHead, TableHeader } from "../ui/table";
 import { OrderItemType, addDealType } from "@/types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -26,11 +19,13 @@ const ProductTable = ({
   isView,
   deal,
   isActiveDeal,
+  cartId,
 }: {
   items: OrderItemType[];
   isView?: boolean;
   deal?: addDealType;
   isActiveDeal?: boolean;
+  cartId?: string;
 }) => {
   return (
     <Table>
@@ -46,19 +41,14 @@ const ProductTable = ({
           const { productId: dealID, discount: deal_discount } = deal || {};
           const { name, slug, image, productId, price } = item;
           const isOrdered = item.dealInfo?.productId === productId;
-          const discountCondition =
-            (productId === dealID && isActiveDeal) ||
-            item.dealInfo?.productId === productId;
+          const discountCondition = (productId === dealID && isActiveDeal) || item.dealInfo?.productId === productId;
           const discount = isOrdered ? item.dealInfo?.discount : deal_discount;
           const noQty = item.qty === 0;
           return (
             <TableRow key={slug} className={`${noQty && "text-gray-400"}`}>
               {/* image, name */}
               <TableCell className="p-2">
-                <Link
-                  href={`${PATH.PRODUCT}/${slug}`}
-                  className="flex items-center space-x-2"
-                >
+                <Link href={`${PATH.PRODUCT}/${slug}`} className="flex items-center space-x-2">
                   <S3Image
                     folder="product"
                     fileName={image}
@@ -70,9 +60,7 @@ const ProductTable = ({
                     <span className="pr-2" data-testid="product-name">
                       {name}
                     </span>
-                    {discountCondition && (
-                      <DiscountBadge discount={discount || 0} />
-                    )}
+                    {discountCondition && <DiscountBadge discount={discount || 0} />}
                   </div>
                 </Link>
               </TableCell>
@@ -81,16 +69,14 @@ const ProductTable = ({
                 {noQty ? (
                   <Badge className="bg-gray-400 break-keep">Sold out</Badge>
                 ) : (
-                  <ItemQtyChanger item={item} isView={isView} size="sm" />
+                  <ItemQtyChanger item={item} isView={isView} size="sm" cartId={cartId} />
                 )}
               </TableCell>
               {/* price */}
-              <TableCell className="text-center">
-                $ {discountPrice(+price, discount, discountCondition)}
-              </TableCell>
-              {!isView && (
+              <TableCell className="text-center">$ {discountPrice(+price, discount, discountCondition)}</TableCell>
+              {!isView && cartId && (
                 <TableCell className="p-0">
-                  <ItemRemoveButton item={item} />
+                  <ItemRemoveButton item={item} cartId={cartId} />
                 </TableCell>
               )}
             </TableRow>

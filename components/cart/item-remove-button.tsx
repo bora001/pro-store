@@ -5,13 +5,13 @@ import { removeItemToCart } from "@/lib/actions/handler/cart.actions";
 import { CartItemType } from "@/types";
 import { toast } from "@/hooks/use-toast";
 
-const ItemRemoveButton = ({ item }: { item: CartItemType }) => {
+const ItemRemoveButton = ({ item, cartId }: { item: CartItemType; cartId: string }) => {
   const [isPending, startTransition] = useTransition();
 
   const handleDeleteItem = () => {
     startTransition(async () => {
       try {
-        const { message } = await removeItemToCart(item);
+        const { message } = await removeItemToCart({ ...item, cartId });
         toast({ variant: "destructive", description: message });
       } catch (error) {
         toast({

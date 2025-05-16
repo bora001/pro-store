@@ -9,10 +9,14 @@ import {
   handleModifyItemQtyToCart,
   handleRemoveItemToCart,
 } from "../services/cart.service";
+import { measurePerformance } from "@/utils/measure-performance";
 
 // add-item-to-cart
 export async function addItemToCart(queries: HandleCartQueries) {
-  return handleAsync(() => handleAddItemToCart(queries));
+  return measurePerformance(
+    () => handleAsync(() => handleAddItemToCart(queries)),
+    "addItemToCart"
+  );
 }
 // get-cart
 export async function getMyCart() {
@@ -20,9 +24,15 @@ export async function getMyCart() {
 }
 // modify-cart
 export async function modifyItemQtyToCart(queries: HandleCartQueries) {
-  return handleAsync(() => handleModifyItemQtyToCart(queries));
+  return measurePerformance(
+    () => handleAsync(() => handleModifyItemQtyToCart(queries)),
+    "modifyItemQtyToCart"
+  );
 }
 // remove-item-from-cart
 export async function removeItemToCart(data: CartItemType) {
-  return handleAsync(() => handleRemoveItemToCart(data));
+  return measurePerformance(
+    () => handleAsync(() => handleRemoveItemToCart(data)),
+    "removeItemToCart"
+  );
 }

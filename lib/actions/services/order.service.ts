@@ -24,17 +24,14 @@ export async function handleCreateOrder(payment: PaymentFormType["type"]) {
   const userId = await getUserInfo();
   if (!userId) redirect(PATH.SIGN_IN);
 
-  const cart = await getMyCart();
+  const cart = await getMyCart(userId);
   if (!cart || !cart.data?.items.length) redirect(PATH.CART);
 
   const { data: user } = await getUserById(userId);
   if (!user) throw new Error("User not found");
   if (!user.address) redirect(PATH.SHIPPING);
 
-  const activeDeal = await hasIncludedDeal({
-    items: cart.data.items,
-    dealOptions: { endTime: { gte: new Date() } },
-  });
+  const activeDeal = await hasIncludedDeal({ items: cart.data.items, dealOptions: { endTime: { gte: new Date() } } });
   const cart_price = calculatePrice(cart.data.items, activeDeal.data);
   const order = orderSchema.parse({
     userId: user.id,
@@ -51,9 +48,8 @@ export async function handleCreateOrder(payment: PaymentFormType["type"]) {
         item.productId
       );
 
-      if (!product || product.stock < item.qty || !item.qty) {
+      if (!product || product.stock < item.qty || !item.qty)
         throw new Error("One or more items in your cart are no longer available");
-      }
       const updatedProduct = await tx.product.update({
         where: { id: item.productId },
         data: { stock: { decrement: item.qty } },
@@ -79,7 +75,7 @@ export async function handleCreateOrder(payment: PaymentFormType["type"]) {
     const { productId } = activeDeal.data || {};
 
     await tx.orderItem.createMany({
-      data: cart.data.items.map(({ discount: _discount, ...item }) => {
+      data: cart.data.items.map(({ ...item }) => {
         const hasDeal = productId === item.productId;
         return {
           ...item,
@@ -90,10 +86,7 @@ export async function handleCreateOrder(payment: PaymentFormType["type"]) {
       }),
     });
 
-    await tx.cart.update({
-      where: { id: cart.data.id },
-      data: { items: undefined },
-    });
+    await tx.cartItem.deleteMany({ where: { cartId: cart.data.id } });
     return newOrder.id;
   });
 
@@ -104,19 +97,14 @@ export async function handleCreateOrder(payment: PaymentFormType["type"]) {
 export async function handleGetOrderInfo(orderId: string) {
   const data = await prisma.order.findFirst({
     where: { id: orderId },
-    include: {
-      orderItems: true,
-      user: { select: { name: true, email: true } },
-    },
+    include: { orderItems: true, user: { select: { name: true, email: true } } },
   });
 
   return { data: prismaToJs(data) };
 }
 
 export async function handleCreatePaypalOrder(orderId: string) {
-  const order = await prisma.order.findFirst({
-    where: { id: orderId },
-  });
+  const order = await prisma.order.findFirst({ where: { id: orderId } });
   if (!order) throw new Error("order not found");
   const paypalOrder = await paypal.createOrder(+order.totalPrice);
   await prisma.order.update({
@@ -130,16 +118,10 @@ export async function handleCreatePaypalOrder(orderId: string) {
       },
     },
   });
-  return {
-    message: "Item order created successfully",
-    data: paypalOrder.id,
-  };
+  return { message: "Item order created successfully", data: paypalOrder.id };
 }
 
-export type handleApprovalPaypalOrderType = {
-  orderId: string;
-  data: { orderID: string };
-};
+export type handleApprovalPaypalOrderType = { orderId: string; data: { orderID: string } };
 
 export async function handleApprovalPaypalOrder({ orderId, data: { orderID } }: handleApprovalPaypalOrderType) {
   const order = await prisma.order.findFirst({ where: { id: orderId } });
@@ -172,10 +154,7 @@ export type handleUpdateOrderToPaidType = {
   paymentResult?: PaymentResultType;
 };
 export async function handleUpdateOrderToPaid({ orderId, paymentResult }: handleUpdateOrderToPaidType) {
-  const order = await prisma.order.findFirst({
-    where: { id: orderId },
-    include: { orderItems: true },
-  });
+  const order = await prisma.order.findFirst({ where: { id: orderId }, include: { orderItems: true } });
   if (!order) throw new Error("Order not found");
   if (order.isPaid) throw new Error("Order is already paid");
   await prisma.$transaction(async (tx) => {
@@ -197,12 +176,7 @@ export async function handleUpdateOrderToPaid({ orderId, paymentResult }: handle
   });
   const updateOrder = await prisma.order.findFirst({
     where: { id: orderId },
-    include: {
-      orderItems: true,
-      user: {
-        select: { name: true, email: true },
-      },
-    },
+    include: { orderItems: true, user: { select: { name: true, email: true } } },
   });
   if (!updateOrder) throw new Error("Order not found");
   return {};
@@ -215,10 +189,7 @@ export async function handleSendEmailReceipt(orderId: string) {
 
   const data = await prisma.order.findFirst({
     where: { id: orderId },
-    include: {
-      orderItems: true,
-      user: { select: { name: true, email: true } },
-    },
+    include: { orderItems: true, user: { select: { name: true, email: true } } },
   });
   if (!data) throw new Error("Order not found");
   await sendPurchaseReceipt({
@@ -233,10 +204,7 @@ export async function handleSendEmailReceipt(orderId: string) {
   return { message: "Email sent successfully" };
 }
 
-export type handleGetUserOrderType = {
-  limit?: number;
-  page: number;
-};
+export type handleGetUserOrderType = { limit?: number; page: number };
 export async function handleGetUserOrder({ limit = 5, page }: handleGetUserOrderType) {
   const session = await auth();
   if (!session) throw new Error("User not found");
@@ -248,8 +216,6 @@ export async function handleGetUserOrder({ limit = 5, page }: handleGetUserOrder
     skip: (page - 1) * limit,
   });
 
-  const dataCount = await prisma.order.count({
-    where: { userId: session.user?.id },
-  });
+  const dataCount = await prisma.order.count({ where: { userId: session.user?.id } });
   return { data: { data, totalPages: Math.ceil(dataCount / limit) } };
 }

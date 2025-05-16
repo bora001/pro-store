@@ -13,14 +13,7 @@ export const handleLatestProducts = async () => {
     take: CONSTANTS.LATEST_PRODUCT_LIMIT,
     orderBy: { createdAt: "desc" },
     where: { ...validProduct },
-    include: {
-      Deal: {
-        where: {
-          isActive: true,
-          endTime: { gte: new Date() },
-        },
-      },
-    },
+    include: { Deal: { where: { isActive: true, endTime: { gte: new Date() } } } },
   });
   return { data: prismaToJs(data) };
 };
@@ -30,13 +23,7 @@ export const handleProductBySlug = async (slug: string) => {
   const data = await prisma.product.findUnique({
     where: { ...validProduct, slug },
     include: {
-      Deal: {
-        where: {
-          product: { slug },
-          isActive: true,
-          endTime: { gte: new Date() },
-        },
-      },
+      Deal: { where: { product: { slug }, isActive: true, endTime: { gte: new Date() } } },
     },
   });
   if (!data) throw new Error("Product not found");
@@ -78,9 +65,7 @@ export const handleAllProducts = async ({
       ...priceFilter,
       ...ratingFilter,
     },
-    include: {
-      Deal: { where: { isActive: true, endTime: { gte: new Date() } } },
-    },
+    include: { Deal: { where: { isActive: true, endTime: { gte: new Date() } } } },
     orderBy: sort ? sortFilter[sort] : sortFilter.default,
     take: limit,
     ...pagination,

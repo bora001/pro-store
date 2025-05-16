@@ -7,14 +7,12 @@ import { PATH } from "@/lib/constants";
 import { ShippingType } from "@/types";
 import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Shipping",
-};
+export const metadata = { title: "Shipping" };
 const ShippingAddressPage = async () => {
-  const cart = await getMyCart();
-  if (!cart || cart.data?.items.length === 0) redirect(PATH.CART);
   const userId = await getUserInfo();
   if (!userId) throw new Error("no userId");
+  const cart = await getMyCart(userId);
+  if (!cart || cart.data?.items.length === 0) redirect(PATH.CART);
   const { data: user } = await getUserById(userId);
   return (
     <>

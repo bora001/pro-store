@@ -1,177 +1,191 @@
 "use server";
 
 import { CartItemType } from "@/types";
-import { getMyCart } from "../handler/cart.actions";
-import { cartItemSchema, insertCartSchema } from "@/lib/validator";
 import { prisma } from "@/db/prisma";
 import { revalidatePath } from "next/cache";
 import { PATH } from "@/lib/constants";
-import { prismaToJs } from "@/lib/utils";
 import { checkSessionCardId, getUserInfo } from "../utils/session.utils";
-import { z } from "zod";
 
 export type HandleCartQueries = {
   data: CartItemType;
   qty: number;
 };
 
+// get-cart-id
+export const getCartId = async () => {
+  const [sessionCartId, userId] = await Promise.all([checkSessionCardId(), getUserInfo()]);
+  const cart = await prisma.cart.findFirst({
+    where: { OR: [{ userId: userId ?? undefined }, { sessionCartId }] },
+    select: { id: true },
+  });
+
+  return cart?.id;
+};
+
 // add-item-to-cart
 type addItemToNewCartType = {
-  userId?: string;
   sessionCartId: string;
-  items: CartItemType[];
-  itemsCount: number;
+  productId: string;
+  qty: number;
 };
 const addItemToNewCart = async (data: addItemToNewCartType) => {
-  const newCart = insertCartSchema.parse(data);
   await prisma.cart.create({
-    data: newCart,
-  });
-};
-
-type AddItemToExistingCartDataType = {
-  previousStock: number;
-  cartItems: z.infer<typeof cartItemSchema>[];
-  cartItem: z.infer<typeof cartItemSchema>;
-  qty: number;
-  id?: string;
-  discount?: number;
-};
-
-const addItemToExistingCart = async ({
-  previousStock,
-  cartItems,
-  cartItem,
-  qty,
-  id,
-  discount,
-}: AddItemToExistingCartDataType) => {
-  const existItem = cartItems.find((prev: CartItemType) => prev.productId === cartItem.productId);
-  if (existItem) {
-    if (previousStock < existItem.qty + qty) throw new Error("Can't add more of this item");
-    existItem.qty = existItem.qty + qty;
-    existItem.discount = discount;
-  } else {
-    if (previousStock < 1) throw new Error("Not enough stock");
-    cartItems.push({ ...cartItem, qty });
-  }
-  await prisma.cart.update({
-    where: { id },
     data: {
-      items: cartItems,
-      itemsCount: cartItems.reduce((acc, cur) => acc + cur.qty, 0),
+      sessionCartId: data.sessionCartId,
+      itemsCount: 1,
+      items: {
+        create: {
+          productId: data.productId,
+          qty: data.qty,
+        },
+      },
     },
   });
-  return existItem;
+};
+const createNewCart = async (productId: string, qty: number, newPath: string, name: string) => {
+  const sessionCartId = await checkSessionCardId();
+  await addItemToNewCart({
+    sessionCartId,
+    productId,
+    qty,
+  });
+
+  revalidatePath(newPath);
+  return { message: `${name} added to cart`, success: true };
 };
 
-export const handleAddItemToCart = async ({ data, qty }: HandleCartQueries) => {
-  const sessionCartId = await checkSessionCardId();
-  const userId = await getUserInfo();
-  const cart = await getMyCart();
-  const cartItem = cartItemSchema.parse(data);
-  const product = await prisma.product.findFirst({
-    where: { id: cartItem.productId },
-  });
-  if (!product) throw new Error("Product not found");
-  const deal = await prisma.deal.findFirst({
-    where: {
-      productId: cartItem.productId,
-    },
-  });
-  const newPath = `${PATH.PRODUCT}/${product.slug}`;
-  if (!cart) {
-    await addItemToNewCart({
-      userId,
-      sessionCartId,
-      items: [{ ...cartItem, qty, discount: deal?.discount }],
-      itemsCount: qty,
+export const handleAddItemToCart = async ({ data, qty, cartId }: HandleCartQueries & { cartId?: string }) => {
+  const newPath = `${PATH.PRODUCT}/${data.slug}`;
+  if (!cartId) return createNewCart(data.productId, qty, newPath, data.name);
+
+  await prisma.$transaction(async (tx) => {
+    const [product, existingItem] = await Promise.all([
+      tx.product.findUnique({
+        where: { id: data.productId },
+        select: { stock: true },
+      }),
+      tx.cartItem.findUnique({
+        where: {
+          cartId_productId: {
+            cartId,
+            productId: data.productId,
+          },
+        },
+        select: { qty: true },
+      }),
+    ]);
+
+    const currentQty = existingItem?.qty || 0;
+    const newQty = currentQty + qty;
+
+    if (!product || product.stock < newQty) throw new Error("Out of stock");
+
+    await tx.cartItem.upsert({
+      where: {
+        cartId_productId: {
+          cartId,
+          productId: data.productId,
+        },
+      },
+      update: { qty: newQty },
+      create: {
+        cartId,
+        productId: data.productId,
+        qty,
+      },
     });
-    revalidatePath(newPath);
-    return { message: `${data.name} added to cart` };
-  } else {
-    const item = {
-      previousStock: product.stock,
-      cartItems: cart.data?.items || [],
-      qty,
-      id: cart.data?.id,
-      cartItem,
-      discount: deal?.discount,
-    };
-    const existItem = await addItemToExistingCart(item);
-    revalidatePath(newPath);
-    return {
-      message: `${data.name} ${existItem ? `updated` : `added`} to cart`,
-    };
-  }
+
+    await tx.cart.update({
+      where: { id: cartId },
+      data: { itemsCount: { increment: qty } },
+    });
+  });
+
+  revalidatePath(newPath);
+  return { message: `${data.name} updated to cart` };
 };
+
 // get-cart
-export const handleGetMyCart = async () => {
-  const sessionCartId = await checkSessionCardId();
-  const userId = await getUserInfo();
+export const handleGetMyCart = async (id?: string) => {
+  let sessionCartId = undefined;
+  let userId = id || undefined;
+  if (userId) {
+    sessionCartId = await checkSessionCardId();
+  } else {
+    const [session, user] = await Promise.all([checkSessionCardId(), getUserInfo()]);
+    sessionCartId = session;
+    userId = user;
+  }
   const cart = await prisma.cart.findFirst({
-    where: userId ? { userId } : { sessionCartId },
+    where: { OR: [{ userId: userId }, { sessionCartId }] },
+    include: { items: { include: { product: true } } },
   });
   if (!cart) return { data: undefined };
-  const cartItem = cartItemSchema.array().parse(cart.items);
-  const items = await Promise.all(
-    cartItem.map(async (item) => {
-      const product = await prisma.product.findUnique({
-        where: { id: item.productId },
-      });
-      const InStock = !!product && product.stock >= item.qty;
-      return { ...item, qty: InStock ? item.qty : 0 };
-    })
-  );
+  const cartItem = cart.items.map(({ product: { price, name, slug, images }, productId, qty }) => ({
+    price,
+    productId,
+    qty,
+    name,
+    slug,
+    image: images[0],
+  }));
   return {
-    data: prismaToJs({ ...cart, items }),
+    data: {
+      id: cart.id,
+      userId: cart.userId,
+      itemsCount: cart.itemsCount,
+      sessionCartId: cart.sessionCartId,
+      items: cartItem,
+    },
   };
+};
+
+// remove-item-from-cart
+export const handleRemoveItemToCart = async (data: CartItemType & { cartId: string }) => {
+  await prisma.$transaction(async (tx) => {
+    await tx.cartItem.delete({
+      where: { cartId_productId: { cartId: data.cartId, productId: data.productId } },
+    });
+    await tx.cart.update({
+      where: { id: data.cartId },
+      data: { itemsCount: { decrement: data.qty } },
+    });
+  });
+  revalidatePath(PATH.CART);
+  return { message: `${data.name} is deleted to cart` };
 };
 
 // modify-cart
-export const handleModifyItemQtyToCart = async ({ data, qty }: HandleCartQueries) => {
-  await checkSessionCardId();
-  const cart = await getMyCart();
-  const product = await prisma.product.findFirst({
-    where: { id: data.productId },
+export const handleModifyItemQtyToCart = async ({ data, qty, cartId }: HandleCartQueries & { cartId: string }) => {
+  await prisma.$transaction(async (tx) => {
+    const product = await tx.product.findFirst({
+      where: { id: data.productId },
+      select: { stock: true },
+    });
+    if (!product) throw new Error("Product not found");
+    if (product.stock < qty) throw new Error("Out of stock");
+    const qtyDifference = qty - data.qty;
+    if (qty <= 0) {
+      await tx.cartItem.delete({
+        where: { cartId_productId: { cartId, productId: data.productId } },
+      });
+      await tx.cart.update({
+        where: { id: cartId },
+        data: { itemsCount: { decrement: data.qty } },
+      });
+    } else {
+      // Update item quantity
+      await tx.cartItem.update({
+        where: { cartId_productId: { cartId, productId: data.productId } },
+        data: { qty },
+      });
+      // Update cart count
+      await tx.cart.update({
+        where: { id: cartId },
+        data: { itemsCount: { increment: qtyDifference } },
+      });
+    }
   });
-  if (!product) throw new Error("Product not found");
-
-  const existItem = cart?.data?.items.find((prev: CartItemType) => prev.productId === data.productId);
-  if (!existItem) throw new Error("Item is not in cart");
-  if (product.stock < qty) return { message: "Can't add more of this item" };
-
-  existItem.qty = qty;
-  await prisma.cart.update({
-    where: { id: cart?.data?.id },
-    data: {
-      items: cart?.data?.items,
-      itemsCount: cart?.data?.items.reduce((acc, item) => acc + item.qty, 0) || 0,
-    },
-  });
-
-  revalidatePath(`${PATH.PRODUCT}/${product.slug}`);
-  return {
-    message: `${data.name} ${existItem ? `updated` : `added`} to cart`,
-  };
-};
-// remove-item-from-cart
-export const handleRemoveItemToCart = async (data: CartItemType) => {
-  await checkSessionCardId();
-  const cart = await getMyCart();
-  const cartItem = cartItemSchema.parse(data);
-  const product = await prisma.product.findFirst({
-    where: { id: cartItem.productId },
-  });
-  if (!product) throw new Error("Product not found");
-  const existItem = cart?.data?.items.find((prev: CartItemType) => prev.productId === cartItem.productId);
-  if (!existItem) throw new Error("Item is not in cart");
-  await prisma.cart.update({
-    where: { id: cart?.data?.id },
-    data: {
-      items: cart?.data?.items.filter((item) => item.productId !== data.productId),
-    },
-  });
-  revalidatePath(`${PATH.PRODUCT}/${product.slug}`);
-  return { message: `${data.name} is deleted to cart` };
+  revalidatePath(`${PATH.PRODUCT}/${data.slug}`);
+  return { message: `${data.name} quantity updated` };
 };

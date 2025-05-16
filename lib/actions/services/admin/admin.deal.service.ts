@@ -11,10 +11,8 @@ import { AsyncReturn } from "@/utils/handle-async";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-export type FetchGetDealType = {
-  id?: string;
-  isActive?: boolean;
-};
+export type FetchGetDealType = { id?: string; isActive?: boolean };
+
 // get-deal
 export const fetchGetDeal = async ({ id, isActive }: FetchGetDealType) => {
   const hasId = id ? { id } : {};
@@ -31,26 +29,18 @@ export const fetchGetDeal = async ({ id, isActive }: FetchGetDealType) => {
           slug: true,
           id: true,
           name: true,
-          Deal: {
-            where: { isActive: true },
-            select: { title: true },
-          },
+          Deal: { where: { isActive: true }, select: { title: true } },
         },
       },
     },
   });
 
   if (!data) throw new Error("Deal not found");
-
   return { data: prismaToJs(data) };
 };
 
 // get-all-deals-by-query
-export type FetchGetAllDealsByQueryType = {
-  page: number;
-  limit?: number;
-  query: string;
-};
+export type FetchGetAllDealsByQueryType = { page: number; limit?: number; query: string };
 
 // get-all-deals-admin
 export const fetchGetAllDealsByQuery = async ({
@@ -61,26 +51,9 @@ export const fetchGetAllDealsByQuery = async ({
   const queryFilter: Prisma.DealWhereInput = query
     ? {
         OR: [
-          {
-            title: {
-              contains: query,
-              mode: "insensitive",
-            },
-          },
-          {
-            description: {
-              contains: query,
-              mode: "insensitive",
-            },
-          },
-          {
-            product: {
-              name: {
-                contains: query,
-                mode: "insensitive",
-              },
-            },
-          },
+          { title: { contains: query, mode: "insensitive" } },
+          { description: { contains: query, mode: "insensitive" } },
+          { product: { name: { contains: query, mode: "insensitive" } } },
         ],
       }
     : {};
@@ -103,17 +76,13 @@ export const fetchGetAllDealsByQuery = async ({
 };
 
 // get-active-deal
-export type handleGetActiveDealType = {
-  id?: string;
-  isActive?: boolean;
-};
+export type handleGetActiveDealType = { id?: string; isActive?: boolean };
 export async function handleGetActiveDeal({
   id,
   isActive,
 }: handleGetActiveDealType): AsyncReturn<getDealType | addDealType | undefined> {
   const hasId = id ? { id } : {};
   const hasActive = isActive ? { product: { Deal: { some: { isActive: true } } } } : {};
-
   const cachedDeal: { hasDeal: boolean; data: addDealType } | null = await getCachedData(REDIS_KEY.ACTIVE_DEAL);
 
   if (cachedDeal !== null && !cachedDeal.hasDeal) return { data: undefined };
@@ -130,10 +99,7 @@ export async function handleGetActiveDeal({
           slug: true,
           id: true,
           name: true,
-          Deal: {
-            where: { isActive: true },
-            select: { title: true },
-          },
+          Deal: { where: { isActive: true }, select: { title: true } },
         },
       },
     },
@@ -157,9 +123,7 @@ export const fetchCreateDeal = async (values: FetchCreateDealType) => {
 // update-deal
 export const fetchUpdateDeal = async (data: Partial<addDealType>) => {
   if (!data.id) throw new Error("ID is undefined");
-  const isOtherActive = await prisma.deal.findFirst({
-    where: { isActive: true },
-  });
+  const isOtherActive = await prisma.deal.findFirst({ where: { isActive: true } });
   if (isOtherActive && isOtherActive.id !== data.id && data.isActive) throw new Error("Active deal already exists.");
 
   const deals = await prisma.deal.findFirst({ where: { id: data.id } });
@@ -189,19 +153,10 @@ export const fetchDeleteDeal = async (id: string) => {
 };
 
 // deal-included
-export type FetchHasIncludedDealType = {
-  items: CartItemType[];
-  dealOptions?: Prisma.DealWhereInput;
-};
+export type FetchHasIncludedDealType = { items: CartItemType[]; dealOptions?: Prisma.DealWhereInput };
 export const fetchHasIncludedDeal = async ({ items, dealOptions }: FetchHasIncludedDealType) => {
   const productId = items.map((item) => item.productId);
-  const deal = await prisma.deal.findMany({
-    where: {
-      productId: { in: productId },
-      isActive: true,
-      ...dealOptions,
-    },
-  });
+  const deal = await prisma.deal.findMany({ where: { productId: { in: productId }, isActive: true, ...dealOptions } });
   if (!deal.length) throw new Error("Deal not found");
   return { data: prismaToJs(deal[0]) };
 };

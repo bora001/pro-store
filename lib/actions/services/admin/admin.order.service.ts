@@ -12,49 +12,28 @@ export const fetchGetOrderSummary = async () => {
   const orderCount = await prisma.order.count();
   const productCount = await prisma.product.count();
   const userCount = await prisma.user.count();
-  const totalSales = await prisma.order.aggregate({
-    _sum: { totalPrice: true },
-  });
+  const totalSales = await prisma.order.aggregate({ _sum: { totalPrice: true } });
   const salesDataRaw = await prisma.$queryRaw<
     Array<{ month: string; totalSales: Prisma.Decimal }>
   >`SELECT to_char("createdAt",'MM/YY') as "month", sum("totalPrice") as "totalSales" FROM "Order" GROUP BY to_char("createdAt",'MM/YY') ORDER BY MIN("createdAt") ASC`;
 
-  const salesData = salesDataRaw.map((item) => ({
-    month: item.month,
-    totalSales: +item.totalSales,
-  }));
-
+  const salesData = salesDataRaw.map((item) => ({ month: item.month, totalSales: +item.totalSales }));
   const latestSales = await prisma.order.findMany({
     orderBy: { createdAt: "desc" },
     include: { user: { select: { name: true } } },
     take: 6,
   });
 
-  return {
-    data: {
-      orderCount,
-      productCount,
-      userCount,
-      totalSales,
-      salesData,
-      latestSales,
-    },
-  };
+  return { data: { orderCount, productCount, userCount, totalSales, salesData, latestSales } };
 };
 // all-orders
-export type FetchGetAllOrdersType = {
-  page: number;
-  limit?: number;
-  query?: string;
-};
+export type FetchGetAllOrdersType = { page: number; limit?: number; query?: string };
 export const fetchGetAllOrders = async ({
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
   query = "",
 }: FetchGetAllOrdersType) => {
-  const queryFilter: Prisma.OrderWhereInput = {
-    user: { name: { contains: query, mode: "insensitive" } },
-  };
+  const queryFilter: Prisma.OrderWhereInput = { user: { name: { contains: query, mode: "insensitive" } } };
 
   const order = await prisma.order.findMany({
     where: { ...queryFilter },
@@ -89,10 +68,7 @@ export const fetchUpdateOrderToDelivered = async (orderId: string) => {
   if (!order) throw new Error("Order not found");
   if (!order.isPaid) throw new Error("Order is not paid");
 
-  await prisma.order.update({
-    where: { id: orderId },
-    data: { isDelivered: true, deliveredAt: new Date() },
-  });
+  await prisma.order.update({ where: { id: orderId }, data: { isDelivered: true, deliveredAt: new Date() } });
   revalidatePath(`${PATH.ORDER}/${orderId}`);
   return { message: "Order updated as Delivered" };
 };

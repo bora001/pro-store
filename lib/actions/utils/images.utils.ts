@@ -9,30 +9,17 @@ const s3 = new S3Client({
   },
 });
 
-export type DeleteImageResponseType<T = unknown> = {
-  success: boolean;
-  message: string;
-  data?: T;
-};
+export type DeleteImageResponseType<T = unknown> = { success: boolean; message: string; data?: T };
 export const deleteImage = async (keys: string[], folder: string): Promise<DeleteImageResponseType[]> => {
-  if (!keys.length || !folder) {
-    throw new Error("Missing required fields: keys or folder");
-  }
+  if (!keys.length || !folder) throw new Error("Missing required fields: keys or folder");
   try {
     const deletePromises = keys.map((key) => {
-      const params = {
-        Bucket: process.env.AWS_S3_BUCKET_NAME!,
-        Key: `${folder}/${key}`,
-      };
+      const params = { Bucket: process.env.AWS_S3_BUCKET_NAME!, Key: `${folder}/${key}` };
       return s3.send(new DeleteObjectCommand(params));
     });
 
     await Promise.all(deletePromises);
-    return keys.map((key) => ({
-      success: true,
-      message: `File ${key} deleted successfully`,
-      key,
-    }));
+    return keys.map((key) => ({ success: true, message: `File ${key} deleted successfully`, key }));
   } catch (error) {
     console.error("Error deleting files from S3:", error);
     throw new Error("File deletion failed");

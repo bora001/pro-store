@@ -20,10 +20,7 @@ import { revalidatePath } from "next/cache";
 import { deleteImage } from "../../utils/images.utils";
 
 // get-product
-export type HandleGetProductType = {
-  id: string;
-  props?: Prisma.ProductFindFirstArgs;
-};
+export type HandleGetProductType = { id: string; props?: Prisma.ProductFindFirstArgs };
 export const handleGetProduct = async ({ id, props }: HandleGetProductType) => {
   const product = await prisma.product.findFirst({ where: { id }, ...props });
   if (!product) throw new Error("Product not found");
@@ -31,10 +28,7 @@ export const handleGetProduct = async ({ id, props }: HandleGetProductType) => {
 };
 
 // get-all-product-admin
-export type HandleGetAllAdminProductType = {
-  page?: number;
-  limit?: number;
-};
+export type HandleGetAllAdminProductType = { page?: number; limit?: number };
 export const handleGetAllAdminProduct = async ({
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
@@ -72,10 +66,7 @@ export type HandleCreateProductType = z.infer<typeof insertProductSchema>;
 export const handleCreateProduct = async (data: HandleCreateProductType) => {
   const product = insertProductSchema.parse(data);
   const result = await prisma.product.create({
-    data: {
-      ...product,
-      tags: { connect: product.tags?.map((tag: TagType) => ({ id: tag.id })) },
-    },
+    data: { ...product, tags: { connect: product.tags?.map((tag: TagType) => ({ id: tag.id })) } },
   });
   if (data.isFeatured) await redis.del(REDIS_KEY.BANNER);
 
@@ -89,9 +80,7 @@ export const handleCreateProduct = async (data: HandleCreateProductType) => {
 
 // update-product
 export const handleUpdateProduct = async (data: updateProductType) => {
-  const originalProductData = await prisma.product.findFirst({
-    where: { id: data.id },
-  });
+  const originalProductData = await prisma.product.findFirst({ where: { id: data.id } });
   if (!originalProductData) throw new Error("Product not found");
   if ((originalProductData.isFeatured && !data.isFeatured) || (!originalProductData.isFeatured && data.isFeatured)) {
     await redis.del(REDIS_KEY.BANNER);
@@ -99,10 +88,7 @@ export const handleUpdateProduct = async (data: updateProductType) => {
   const product = updateProductSchema.parse(data);
   await prisma.product.update({
     where: { id: data.id },
-    data: {
-      ...product,
-      tags: { set: product.tags?.map((tag) => ({ id: tag.id })) },
-    },
+    data: { ...product, tags: { set: product.tags?.map((tag) => ({ id: tag.id })) } },
   });
 
   // redis + typesense

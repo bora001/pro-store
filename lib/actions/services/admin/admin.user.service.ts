@@ -5,31 +5,13 @@ import { CONSTANTS } from "@/lib/constants";
 import { Prisma } from "@prisma/client";
 
 // get-users
-export type HandleGetAllUsersType = {
-  page: number;
-  limit?: number;
-  query: string;
-};
-export const handleGetAllUsers = async ({
-  query,
-  page = 1,
-  limit = CONSTANTS.PAGE_LIMIT,
-}: HandleGetAllUsersType) => {
+export type HandleGetAllUsersType = { page: number; limit?: number; query: string };
+export const handleGetAllUsers = async ({ query, page = 1, limit = CONSTANTS.PAGE_LIMIT }: HandleGetAllUsersType) => {
   const queryFilter: Prisma.UserWhereInput = query
     ? {
         OR: [
-          {
-            name: {
-              contains: query,
-              mode: "insensitive",
-            } as Prisma.StringFilter,
-          },
-          {
-            email: {
-              contains: query,
-              mode: "insensitive",
-            } as Prisma.StringFilter,
-          },
+          { name: { contains: query, mode: "insensitive" } as Prisma.StringFilter },
+          { email: { contains: query, mode: "insensitive" } as Prisma.StringFilter },
         ],
       }
     : {};

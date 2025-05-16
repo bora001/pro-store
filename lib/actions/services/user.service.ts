@@ -1,6 +1,6 @@
 "use server";
 
-import { auth, signIn, signOut } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import { prisma } from "@/db/prisma";
 import { PATH } from "@/lib/constants";
 import { sendDeleteAccountConfirm, sendWelcomeEmail } from "@/lib/email/mail-handler";
@@ -11,6 +11,7 @@ import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 import { getUserInfo } from "../utils/session.utils";
+
 // sign-up
 export const handleSignUpUser = async (user: signUpInfo) => {
   const newUser = await prisma.user.create({
@@ -29,10 +30,7 @@ export const handleSignUpUser = async (user: signUpInfo) => {
 // sign-in
 export const handleSignInUser = async (_: unknown, formData: FormData) => {
   try {
-    const user = signInSchema.parse({
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
+    const user = signInSchema.parse({ email: formData.get("email"), password: formData.get("password") });
     await signIn("credentials", user);
     return { success: true, message: "Signed in successfully" };
   } catch (error) {
@@ -55,11 +53,8 @@ export const handleSignOutUser = async () => {
 // check-duplicate-email
 export const handleCheckDuplicateEmail = async (email: string) => {
   const user = await prisma.user.findFirst({ where: { email } });
-  if (user) {
-    throw new Error("Email already exists");
-  } else {
-    return { message: "Email is valid" };
-  }
+  if (user) throw new Error("Email already exists");
+  else return { message: "Email is valid" };
 };
 
 // get-user
@@ -75,10 +70,7 @@ export const handleUpdateUserAddress = async (data: ShippingType) => {
   const currentUser = await prisma.user.findFirst({ where: { id } });
   if (!currentUser) throw new Error("User not found");
   const address = shippingSchema.parse(data);
-  await prisma.user.update({
-    where: { id: currentUser.id },
-    data: { address },
-  });
+  await prisma.user.update({ where: { id: currentUser.id }, data: { address } });
   return { message: "User Address updated successfully" };
 };
 
@@ -87,10 +79,7 @@ export const handleUpdateUserProfile = async (data: userProfileType) => {
   const id = await getUserInfo();
   const currentUser = await prisma.user.findFirst({ where: { id } });
   if (!currentUser) throw new Error("User not found");
-  await prisma.user.update({
-    where: { id: currentUser.id },
-    data,
-  });
+  await prisma.user.update({ where: { id: currentUser.id }, data });
   return { message: "User profile is updated successfully" };
 };
 
@@ -109,9 +98,7 @@ export const handleDeleteUser = async (id: string) => {
 
 // delete-user-account
 export const handleDeleteUserAccount = async (id: string) => {
-  const data = await prisma.user.delete({
-    where: { id },
-  });
+  const data = await prisma.user.delete({ where: { id } });
   await sendDeleteAccountConfirm({ email: data.email, name: data.name });
   await signOut({ redirect: false });
   return { message: "User is deleted successfully" };

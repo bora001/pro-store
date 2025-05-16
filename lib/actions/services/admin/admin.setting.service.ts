@@ -7,10 +7,7 @@ import { revalidatePath } from "next/cache";
 
 //get-setting
 export const handleGetSetting = async () => {
-  const data = await prisma.setting.findFirst({
-    where: { id: 1 },
-    include: { tags: true },
-  });
+  const data = await prisma.setting.findFirst({ where: { id: 1 }, include: { tags: true } });
   return { data: prismaToJs(data) };
 };
 
@@ -30,28 +27,19 @@ export const handleUpdateSetting = async (updates: HandleUpdateSettingType) => {
 
 // get-tags
 export const handleGetTags = async () => {
-  const tags = await prisma.setting.findMany({
-    where: { id: 1 },
-    select: { tags: true },
-  });
+  const tags = await prisma.setting.findMany({ where: { id: 1 }, select: { tags: true } });
   return { message: "Successfully retrieved tags", data: tags };
 };
 
 // add-tag
 export const handleAddTag = async (name: string) => {
-  await prisma.setting.update({
-    where: { id: 1 },
-    data: { tags: { create: { name: name.toLowerCase() } } },
-  });
+  await prisma.setting.update({ where: { id: 1 }, data: { tags: { create: { name: name.toLowerCase() } } } });
   revalidatePath(PATH.SETTING);
   return { message: "Tags updated successfully" };
 };
 // delete-tag
 export const handleRemoveTagById = async (id: string) => {
-  await prisma.setting.update({
-    where: { id: 1 },
-    data: { tags: { delete: { id } } },
-  });
+  await prisma.setting.update({ where: { id: 1 }, data: { tags: { delete: { id } } } });
   revalidatePath(PATH.SETTING);
   return { message: "Tags deleted successfully" };
 };

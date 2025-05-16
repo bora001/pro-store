@@ -11,13 +11,9 @@ export const handleAllCategory = async () => {
   const data = await prisma.product.groupBy({
     by: ["category"],
     _count: true,
-    where: {
-      ...validProduct,
-    },
+    where: { ...validProduct },
   });
-  return {
-    data: data.map(({ category, _count }) => ({ category, count: _count })),
-  };
+  return { data: data.map(({ category, _count }) => ({ category, count: _count })) };
 };
 
 export const handleBanner = async () => {

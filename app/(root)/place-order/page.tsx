@@ -8,12 +8,10 @@ import { PATH } from "@/lib/constants";
 import { ShippingType } from "@/types";
 import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Place Order",
-};
+export const metadata = { title: "Place Order" };
 const PlaceOrderPage = async () => {
   const userId = await getUserInfo();
-  const cart = await getMyCart();
+  const cart = await getMyCart(userId);
   if (!userId) redirect(PATH.SIGN_IN);
   if (!cart?.data || !cart.data.items.length) redirect(PATH.CART);
   const { data: user } = await getUserById(userId);
@@ -23,11 +21,7 @@ const PlaceOrderPage = async () => {
   return (
     <>
       <CheckoutStep step="Place Order" />
-      <PlacerOrderForm
-        address={user.address as ShippingType}
-        cart={cart?.data}
-        deal={data}
-      />
+      <PlacerOrderForm address={user.address as ShippingType} cart={cart?.data} deal={data} />
     </>
   );
 };

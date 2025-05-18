@@ -38,7 +38,7 @@ const ItemQtyChanger = ({ item, isView, size = "default", cartId }: ItemQtyChang
         ) : (
           <Button
             key={type}
-            className={cn(size === "sm" && "p-3 w-0 h-0 flex items-center justify-center", isView ? "hidden" : "block")}
+            className={cn(size === "sm" && "p-3 w-0 h-0 items-center justify-center", isView ? "hidden" : "flex")}
             size={size}
             variant="outline"
             onClick={() => handleItemQty(type)}

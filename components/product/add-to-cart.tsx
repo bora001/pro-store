@@ -12,7 +12,7 @@ import { ClassValue } from "clsx";
 import { cn } from "@/lib/utils";
 import { checkSessionCardId, getUserInfo } from "@/lib/actions/utils/session.utils";
 import MoveButtonToast from "../custom/move-button-toast";
-import IconButton from "../custom/IconButton";
+import IconButton from "../custom/icon-button";
 
 export type CartInfoType = { sessionCartId: string; userId?: string };
 

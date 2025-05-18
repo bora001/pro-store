@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import IconButton from "../custom/IconButton";
+import IconButton from "../custom/icon-button";
 import { useTransition } from "react";
 import { removeItemToCart } from "@/lib/actions/handler/cart.actions";
 import { CartItemType } from "@/types";
@@ -14,9 +14,7 @@ const ItemRemoveButton = ({ item, cartId }: { item: CartItemType; cartId: string
         const { message } = await removeItemToCart({ ...item, cartId });
         toast({ variant: "destructive", description: message });
       } catch (error) {
-        toast({
-          description: error as string,
-        });
+        toast({ description: error as string });
       }
     });
   };

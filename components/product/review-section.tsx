@@ -3,21 +3,11 @@ import ReviewForm from "./review-form";
 import Link from "next/link";
 import { PATH } from "@/lib/constants";
 import ReviewList from "./review-list";
-import {
-  getAllReviews,
-  hasPurchaseHistory,
-  hasUserReviewByProduct,
-} from "@/lib/actions/handler/review.actions";
+import { getAllReviews, hasPurchaseHistory, hasUserReviewByProduct } from "@/lib/actions/handler/review.actions";
 import { auth } from "@/auth";
-import IconButton from "../custom/IconButton";
+import IconButton from "../custom/icon-button";
 
-const ReviewSection = async ({
-  productId,
-  slug,
-}: {
-  productId: string;
-  slug: string;
-}) => {
+const ReviewSection = async ({ productId, slug }: { productId: string; slug: string }) => {
   const { data: reviews } = await getAllReviews(productId);
   const wroteReview = await hasUserReviewByProduct(productId);
   const session = await auth();
@@ -29,13 +19,7 @@ const ReviewSection = async ({
       <ReviewForm
         userId={userId}
         productId={productId}
-        button={
-          <IconButton
-            variant="default"
-            icon={<PenLine />}
-            text="Write a Review"
-          />
-        }
+        button={<IconButton variant="default" icon={<PenLine />} text="Write a Review" />}
       />
     </div>
   );
@@ -43,10 +27,7 @@ const ReviewSection = async ({
   const writeReviewBeforeSignIn = (
     <p className="w-fit">
       Please
-      <Link
-        href={`${PATH.SIGN_IN}?callbackUrl=${PATH.PRODUCT}/${slug}`}
-        className="text-blue-600 mx-1 underline"
-      >
+      <Link href={`${PATH.SIGN_IN}?callbackUrl=${PATH.PRODUCT}/${slug}`} className="text-blue-600 mx-1 underline">
         sign in
       </Link>
       to write a review
@@ -59,11 +40,7 @@ const ReviewSection = async ({
         <h2 className="h2-bold">Customer Reviews</h2>
         {userId ? writeReview : writeReviewBeforeSignIn}
       </div>
-      <ReviewList
-        productId={productId}
-        reviewList={reviews || []}
-        currentUser={userId}
-      />
+      <ReviewList productId={productId} reviewList={reviews || []} currentUser={userId} />
     </section>
   );
 };

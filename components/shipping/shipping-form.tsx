@@ -6,7 +6,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "../ui/form";
 import ShippingField from "./shipping-form-field";
-import ButtonWithTransition from "../custom/ButtonWithTransition";
+import ButtonWithTransition from "../custom/button-with-transition";
 import { useTransition } from "react";
 import { updateUserAddress } from "@/lib/actions/handler/user.action";
 import { toast } from "@/hooks/use-toast";

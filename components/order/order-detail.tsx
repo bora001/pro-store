@@ -5,41 +5,25 @@ import { Badge } from "../ui/badge";
 import Flex from "../common/flex";
 import ProductTable from "../common/product-table";
 import PriceSummary from "../common/price-summary";
-import {
-  PayPalButtons,
-  PayPalScriptProvider,
-  usePayPalScriptReducer,
-} from "@paypal/react-paypal-js";
-import {
-  approvalPaypalOrder,
-  createPaypalOrder,
-  sendEmailReceipt,
-} from "@/lib/actions/handler/order.actions";
+import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+import { approvalPaypalOrder, createPaypalOrder, sendEmailReceipt } from "@/lib/actions/handler/order.actions";
 import { toast } from "@/hooks/use-toast";
 import { dateTimeConverter, idSlicer } from "@/lib/utils";
 import { AdminControlButton } from "./admin-control";
-import {
-  updateOrderToDelivered,
-  updateOrderToPaidByAdmin,
-} from "@/lib/actions/handler/admin/admin.order.actions";
+import { updateOrderToDelivered, updateOrderToPaidByAdmin } from "@/lib/actions/handler/admin/admin.order.actions";
 import StripePayment from "./stripe-payment";
 import { Mail, Wrench } from "lucide-react";
-import IconButton from "../custom/IconButton";
+import IconButton from "../custom/icon-button";
 import { useTransition } from "react";
 
-const OrderDetail = ({
-  isAdmin = false,
-  order,
-  paypalClientId,
-  stripeClientSecret,
-}: {
+type OrderDetailPropsType = {
   isAdmin?: boolean;
   order: Omit<OrderType, "paymentResult">;
   paypalClientId: string;
   stripeClientSecret: string | null;
-}) => {
+};
+const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecret }: OrderDetailPropsType) => {
   const [isPending, startTransition] = useTransition();
-
   const {
     address,
     orderItems,
@@ -54,27 +38,15 @@ const OrderDetail = ({
     deliveredAt,
     id,
   } = order;
-  const paymentMethod: PaymentResultType = {
-    status: "",
-    id,
-    pricePaid: totalPrice,
-    email_address: "",
-  };
+  const paymentMethod: PaymentResultType = { status: "", id, pricePaid: totalPrice, email_address: "" };
   const handleCreatePaypalOrder = async () => {
     const response = await createPaypalOrder(order.id);
-    if (!response.success)
-      toast({
-        variant: "destructive",
-        description: String(response.message),
-      });
+    if (!response.success) toast({ variant: "destructive", description: String(response.message) });
     return response.data;
   };
   const handleApprovePaypalOrder = async (data: { orderID: string }) => {
     const response = await approvalPaypalOrder({ orderId: order.id, data });
-    toast({
-      variant: response.success ? "default" : "destructive",
-      description: String(response.message),
-    });
+    toast({ variant: response.success ? "default" : "destructive", description: String(response.message) });
   };
 
   const LoadingPaypal = () => {
@@ -88,18 +60,14 @@ const OrderDetail = ({
   const sendEmail = () => {
     startTransition(async () => {
       const response = await sendEmailReceipt(id);
-      toast({
-        variant: response.success ? "default" : "destructive",
-        description: String(response.message),
-      });
+      toast({ variant: response.success ? "default" : "destructive", description: String(response.message) });
     });
   };
 
   return (
     <>
       <h1 className="py-4 text-2xl">
-        Order{" "}
-        <span className="text-gray-500 text-base"># {idSlicer(order.id)}</span>
+        Order <span className="text-gray-500 text-base"># {idSlicer(order.id)}</span>
       </h1>
       <div className="grid md:grid-cols-3 md:gap-5">
         <div className="col-span-2 space-y-4 overflow-x-auto">
@@ -109,9 +77,7 @@ const OrderDetail = ({
               <Flex className="gap-3 pb-4">
                 <h2 className="text-xl">Payment Method</h2>
                 {isPaid ? (
-                  <Badge variant="secondary">
-                    Paid at {dateTimeConverter(paidAt)}
-                  </Badge>
+                  <Badge variant="secondary">Paid at {dateTimeConverter(paidAt)}</Badge>
                 ) : (
                   <Badge variant="destructive">unpaid</Badge>
                 )}
@@ -125,16 +91,13 @@ const OrderDetail = ({
               <Flex className="gap-3 pb-4">
                 <h2 className="text-xl">Shipping Address</h2>
                 {isDelivered ? (
-                  <Badge variant="secondary">
-                    Delivered at {dateTimeConverter(deliveredAt)}
-                  </Badge>
+                  <Badge variant="secondary">Delivered at {dateTimeConverter(deliveredAt)}</Badge>
                 ) : (
                   <Badge variant="destructive">Not Delivered</Badge>
                 )}
               </Flex>
               <p>
-                {address.address}, {address.city}, {address.postalCode},{" "}
-                {address.country}
+                {address.address}, {address.city}, {address.postalCode}, {address.country}
               </p>
             </CardContent>
           </Card>
@@ -159,20 +122,13 @@ const OrderDetail = ({
             <>
               <PayPalScriptProvider options={{ clientId: paypalClientId }}>
                 <LoadingPaypal />
-                <PayPalButtons
-                  createOrder={handleCreatePaypalOrder}
-                  onApprove={handleApprovePaypalOrder}
-                />
+                <PayPalButtons createOrder={handleCreatePaypalOrder} onApprove={handleApprovePaypalOrder} />
               </PayPalScriptProvider>
             </>
           )}
           {/* stripe-payment */}
           {!isPaid && payment === "Stripe" && stripeClientSecret && (
-            <StripePayment
-              orderId={order.id}
-              priceInCents={order.totalPrice}
-              clientSecret={stripeClientSecret}
-            />
+            <StripePayment orderId={order.id} priceInCents={order.totalPrice} clientSecret={stripeClientSecret} />
           )}
           {/* email-receipt */}
           {order.paidAt && (

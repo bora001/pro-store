@@ -10,10 +10,10 @@ import { toast } from "@/hooks/use-toast";
 import { generateCode } from "@/utils/random-code";
 import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
-import FormSubmitButton from "@/components/custom/FormSubmitButton";
 import { sendEmailVerification } from "@/lib/email/mail-handler";
 import { checkDuplicateEmail, signUpUser } from "@/lib/actions/handler/user.action";
 import { SignUpSchemaType } from "@/types";
+import FormSubmitButton from "@/components/custom/form-submit-button";
 
 const defaultValues = { name: "", email: "", password: "", confirmPassword: "", code: "" };
 

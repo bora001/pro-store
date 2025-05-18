@@ -19,12 +19,7 @@ const ButtonWithTransition = ({
   ...props
 }: ButtonWithTransitionProps) => {
   return (
-    <Button
-      className="w-full"
-      onClick={onClick}
-      disabled={isPending}
-      {...props}
-    >
+    <Button className="w-full" onClick={onClick} disabled={isPending} {...props}>
       {/* extra left icon */}
       {leftIcon && (
         <>

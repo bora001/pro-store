@@ -4,7 +4,7 @@ import { Card, CardContent } from "../ui/card";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import ButtonWithTransition from "../custom/ButtonWithTransition";
+import ButtonWithTransition from "../custom/button-with-transition";
 import { PATH } from "@/lib/constants";
 import ProductTable from "../common/product-table";
 import Container from "../common/container";
@@ -27,10 +27,7 @@ const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
     startTransition(() => {
       const validCart = cart?.items.every((item) => item.qty > 0);
       if (!validCart) {
-        toast({
-          variant: "destructive",
-          description: "Please remove sold out items from cart",
-        });
+        toast({ variant: "destructive", description: "Please remove sold out items from cart" });
         return;
       }
       router.push(PATH.SHIPPING);

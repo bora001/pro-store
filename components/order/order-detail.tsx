@@ -1,20 +1,18 @@
 "use client";
-import { OrderType, PaymentResultSchemaType } from "@/types";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
-import Flex from "../common/flex";
+import { OrderType } from "@/types";
+import { Card, CardContent } from "../ui/card";
 import ProductTable from "../common/product-table";
 import PriceSummary from "../common/price-summary";
 import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { approvalPaypalOrder, createPaypalOrder, sendEmailReceipt } from "@/lib/actions/handler/order.actions";
 import { toast } from "@/hooks/use-toast";
-import { dateTimeConverter, idSlicer } from "@/lib/utils";
-import { AdminControlButton } from "./admin-control";
-import { updateOrderToDelivered, updateOrderToPaidByAdmin } from "@/lib/actions/handler/admin/admin.order.actions";
+import { idSlicer } from "@/lib/utils";
 import StripePayment from "./stripe-payment";
-import { Mail, Wrench } from "lucide-react";
+import { Mail } from "lucide-react";
 import IconButton from "../custom/icon-button";
 import { useTransition } from "react";
+import AdminOrderControls from "./admin-order-controls/admin-order-controls";
+import OrderDetailCard from "./order-detail-card";
 
 type OrderDetailPropsType = {
   isAdmin?: boolean;
@@ -38,7 +36,6 @@ const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecre
     deliveredAt,
     id,
   } = order;
-  const paymentMethod: PaymentResultSchemaType = { status: "", id, pricePaid: totalPrice, email_address: "" };
   const handleCreatePaypalOrder = async () => {
     const response = await createPaypalOrder(order.id);
     if (!response.success) toast({ variant: "destructive", description: String(response.message) });
@@ -72,35 +69,21 @@ const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecre
       <div className="grid md:grid-cols-3 gap-5">
         <div className="col-span-2 space-y-4 overflow-x-auto">
           {/* payment */}
-          <Card>
-            <CardContent className="p-4 gap-4">
-              <Flex className="gap-3 pb-4">
-                <h2 className="text-xl">Payment Method</h2>
-                {isPaid ? (
-                  <Badge variant="secondary">Paid at {dateTimeConverter(paidAt)}</Badge>
-                ) : (
-                  <Badge variant="destructive">unpaid</Badge>
-                )}
-              </Flex>
-              <p>{payment}</p>
-            </CardContent>
-          </Card>
+          <OrderDetailCard
+            title="Payment Method"
+            status={isPaid}
+            badgeTitle={["Paid at", "unpaid"]}
+            date={paidAt}
+            detail={payment}
+          />
           {/* shipping */}
-          <Card>
-            <CardContent className="p-4 gap-4">
-              <Flex className="gap-3 pb-4">
-                <h2 className="text-xl">Shipping Address</h2>
-                {isDelivered ? (
-                  <Badge variant="secondary">Delivered at {dateTimeConverter(deliveredAt)}</Badge>
-                ) : (
-                  <Badge variant="destructive">Not Delivered</Badge>
-                )}
-              </Flex>
-              <p>
-                {address.address}, {address.city}, {address.postalCode}, {address.country}
-              </p>
-            </CardContent>
-          </Card>
+          <OrderDetailCard
+            title="Shipping Address"
+            status={isDelivered}
+            badgeTitle={["Delivered at", "Not Delivered"]}
+            date={deliveredAt}
+            detail={`${address.address}, ${address.city}, ${address.postalCode}, ${address.country}`}
+          />
           {/* order-items */}
           <Card>
             <CardContent className="p-4 gap-4">
@@ -119,12 +102,10 @@ const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecre
           />
           {/* paypal-payment */}
           {!isPaid && payment === "PayPal" && (
-            <>
-              <PayPalScriptProvider options={{ clientId: paypalClientId }}>
-                <LoadingPaypal />
-                <PayPalButtons createOrder={handleCreatePaypalOrder} onApprove={handleApprovePaypalOrder} />
-              </PayPalScriptProvider>
-            </>
+            <PayPalScriptProvider options={{ clientId: paypalClientId }}>
+              <LoadingPaypal />
+              <PayPalButtons createOrder={handleCreatePaypalOrder} onApprove={handleApprovePaypalOrder} />
+            </PayPalScriptProvider>
           )}
           {/* stripe-payment */}
           {!isPaid && payment === "Stripe" && stripeClientSecret && (
@@ -141,30 +122,8 @@ const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecre
               icon={<Mail />}
             />
           )}
-
           {/* admin : cash-on-delivery */}
-          {isAdmin && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex gap-2 items-center">
-                  <Wrench size={18} />
-                  <p>Admin Controls</p>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex-wrap flex gap-2">
-                <AdminControlButton
-                  disabled={isPaid}
-                  title={["Mark as Paid", "Paid"]}
-                  action={() => updateOrderToPaidByAdmin({ orderId: id, paymentResult: paymentMethod })}
-                />
-                <AdminControlButton
-                  disabled={isDelivered}
-                  title={["Mark as Delivered", "Delivered"]}
-                  action={() => updateOrderToDelivered(id)}
-                />
-              </CardContent>
-            </Card>
-          )}
+          {isAdmin && <AdminOrderControls {...{ isPaid, isDelivered, pricePaid: totalPrice, id }} />}
         </div>
       </div>
     </>

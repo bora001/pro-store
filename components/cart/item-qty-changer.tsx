@@ -10,17 +10,13 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 const TYPE = ["minus", "qty", "plus"];
-const ItemQtyChanger = ({
-  item,
-  isView,
-  size = "default",
-  cartId,
-}: {
+type ItemQtyChangerPropsType = {
   item: CartItemType;
   isView?: boolean;
   size?: ButtonProps["size"];
   cartId?: string;
-}) => {
+};
+const ItemQtyChanger = ({ item, isView, size = "default", cartId }: ItemQtyChangerPropsType) => {
   const [isPending, startTransition] = useTransition();
   const handleItemQty = (type: string) => {
     if (!cartId) return;
@@ -29,23 +25,20 @@ const ItemQtyChanger = ({
       const { success, message } = qty
         ? await modifyItemQtyToCart({ data: item, qty, cartId })
         : await removeItemToCart({ ...item, cartId });
-      toast({
-        variant: success ? "default" : "destructive",
-        description: message,
-      });
+      toast({ variant: success ? "default" : "destructive", description: message });
     });
   };
   return (
     <Flex className="justify-between gap-2">
       {TYPE.map((type) =>
         type === "qty" ? (
-          <span key={type} className={cn("w-12 text-center")} data-testid="product-qty">
+          <span key={type} className={cn("w-12 text-center mx-auto")} data-testid="product-qty">
             {item.qty}
           </span>
         ) : (
           <Button
             key={type}
-            className={cn(isView ? "hidden" : "block", size === "sm" && "p-3 w-0 h-0 flex items-center justify-center")}
+            className={cn(size === "sm" && "p-3 w-0 h-0 flex items-center justify-center", isView ? "hidden" : "block")}
             size={size}
             variant="outline"
             onClick={() => handleItemQty(type)}

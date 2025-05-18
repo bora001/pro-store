@@ -12,6 +12,7 @@ import {
 import ThemeToggleItem from "./theme-toggle-item";
 import { SYSTEM_TYPE } from "@/lib/constants";
 import { useTheme } from "next-themes";
+import useIsMounted from "@/hooks/use-is-mounted";
 
 export const themeIcons = {
   [SYSTEM_TYPE.SYSTEM]: <SunMoon />,
@@ -21,13 +22,15 @@ export const themeIcons = {
 
 const ThemeToggle = () => {
   const { theme } = useTheme();
+  const isMounted = useIsMounted();
+  if (!isMounted || !theme) return <Button variant="ghost" aria-label="theme-toggle-loading" />;
 
   return (
     <DropdownMenu>
       {/* trigger */}
       <DropdownMenuTrigger asChild role="button">
         <Button variant="ghost" aria-label="theme-toggle">
-          {themeIcons[theme || "system"]}
+          {themeIcons[theme]}
         </Button>
       </DropdownMenuTrigger>
       {/* content */}

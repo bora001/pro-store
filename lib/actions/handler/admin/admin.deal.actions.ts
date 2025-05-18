@@ -1,32 +1,32 @@
 "use server";
 
-import { AddDealSchemaType, addDealType } from "@/types";
+import { AddDealSchemaType, AddDealType } from "@/types";
 import { handleAsync } from "@/utils/handle-async";
 import {
-  FetchGetAllDealsByQueryType,
-  FetchGetDealType,
-  FetchHasIncludedDealType,
-  fetchCreateDeal,
-  fetchDeleteDeal,
-  fetchGetAllDealsByQuery,
-  fetchGetDeal,
-  fetchHasIncludedDeal,
-  fetchUpdateDeal,
+  HandleGetAllDealsByQueryType,
+  HandleGetDealType,
+  HandleHasIncludedDealType,
+  handleCreateDeal,
+  handleDeleteDeal,
+  handleGetAllDealsByQuery,
+  handleGetDeal,
+  handleHasIncludedDeal,
+  handleUpdateDeal,
   handleGetActiveDeal,
   handleGetActiveDealType,
 } from "../../services/admin/admin.deal.service";
 
 // get-deal
-export async function getDeal(queries: FetchGetDealType) {
-  return handleAsync(() => fetchGetDeal(queries));
+export async function getDeal(queries: HandleGetDealType) {
+  return handleAsync(() => handleGetDeal(queries));
 }
 // get-all-deals-by-query
-export async function getAllDealsByQuery(queries: FetchGetAllDealsByQueryType) {
-  return handleAsync(() => fetchGetAllDealsByQuery(queries));
+export async function getAllDealsByQuery(queries: HandleGetAllDealsByQueryType) {
+  return handleAsync(() => handleGetAllDealsByQuery(queries));
 }
 // get-all-deals-admin
-export async function getAllDeals(queries: FetchGetAllDealsByQueryType) {
-  return handleAsync(() => fetchGetAllDealsByQuery(queries));
+export async function getAllDeals(queries: HandleGetAllDealsByQueryType) {
+  return handleAsync(() => handleGetAllDealsByQuery(queries));
 }
 // get-active-deal
 export async function getActiveDeal(queries: handleGetActiveDealType) {
@@ -34,17 +34,17 @@ export async function getActiveDeal(queries: handleGetActiveDealType) {
 }
 // create-deal
 export async function createDeal(queries: AddDealSchemaType) {
-  return handleAsync(() => fetchCreateDeal(queries));
+  return handleAsync(() => handleCreateDeal(queries));
 }
 // update-deal
-export async function updateDeal(data: Partial<addDealType>) {
-  return handleAsync(() => fetchUpdateDeal(data));
+export async function updateDeal(data: Partial<AddDealType>) {
+  return handleAsync(() => handleUpdateDeal(data));
 }
 // delete-deal
 export async function deleteDeal(id: string) {
-  return handleAsync(() => fetchDeleteDeal(id));
+  return handleAsync(() => handleDeleteDeal(id));
 }
 // deal-included
-export async function hasIncludedDeal(queries: FetchHasIncludedDealType) {
-  return handleAsync(() => fetchHasIncludedDeal(queries));
+export async function hasIncludedDeal(queries: HandleHasIncludedDealType) {
+  return handleAsync(() => handleHasIncludedDeal(queries));
 }

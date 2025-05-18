@@ -6,14 +6,14 @@ import { redis } from "@/lib/redis";
 import { cacheData, deleteAllRedisKey, getCachedData } from "@/lib/redis/redis-handler";
 import { prismaToJs } from "@/lib/utils";
 import { addDealSchema } from "@/lib/validator";
-import { AddDealSchemaType, AdminDealResult, CartItemType, addDealType, getDealType } from "@/types";
+import { AddDealSchemaType, AdminDealResult, CartItemType, AddDealType, GetDealType } from "@/types";
 import { AsyncReturn } from "@/utils/handle-async";
 import { Prisma } from "@prisma/client";
 
-export type FetchGetDealType = { id?: string; isActive?: boolean };
+export type HandleGetDealType = { id?: string; isActive?: boolean };
 
 // get-deal
-export const fetchGetDeal = async ({ id, isActive }: FetchGetDealType) => {
+export const handleGetDeal = async ({ id, isActive }: HandleGetDealType) => {
   const hasId = id ? { id } : {};
   const hasActive = isActive ? { product: { Deal: { some: { isActive: true } } } } : {};
 
@@ -39,14 +39,14 @@ export const fetchGetDeal = async ({ id, isActive }: FetchGetDealType) => {
 };
 
 // get-all-deals-by-query
-export type FetchGetAllDealsByQueryType = { page: number; limit?: number; query: string };
+export type HandleGetAllDealsByQueryType = { page: number; limit?: number; query: string };
 
 // get-all-deals-admin
-export const fetchGetAllDealsByQuery = async ({
+export const handleGetAllDealsByQuery = async ({
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
   query,
-}: FetchGetAllDealsByQueryType): Promise<{ data: AdminDealResult }> => {
+}: HandleGetAllDealsByQueryType): Promise<{ data: AdminDealResult }> => {
   const queryFilter: Prisma.DealWhereInput = query
     ? {
         OR: [
@@ -75,10 +75,10 @@ export type handleGetActiveDealType = { id?: string; isActive?: boolean };
 export async function handleGetActiveDeal({
   id,
   isActive,
-}: handleGetActiveDealType): AsyncReturn<getDealType | addDealType | undefined> {
+}: handleGetActiveDealType): AsyncReturn<GetDealType | AddDealType | undefined> {
   const hasId = id ? { id } : {};
   const hasActive = isActive ? { product: { Deal: { some: { isActive: true } } } } : {};
-  const cachedDeal: { hasDeal: boolean; data: addDealType } | null = await getCachedData(REDIS_KEY.ACTIVE_DEAL);
+  const cachedDeal: { hasDeal: boolean; data: AddDealType } | null = await getCachedData(REDIS_KEY.ACTIVE_DEAL);
 
   if (cachedDeal !== null && !cachedDeal.hasDeal) return { data: undefined };
   if (cachedDeal) return { data: cachedDeal.data };
@@ -106,7 +106,7 @@ export async function handleGetActiveDeal({
 }
 
 // create-deal
-export const fetchCreateDeal = async (values: AddDealSchemaType) => {
+export const handleCreateDeal = async (values: AddDealSchemaType) => {
   const data = addDealSchema.parse(values);
   if (!data.endTime) throw new Error("End time is required.");
   await prisma.deal.create({ data: { ...data, endTime: data.endTime } });
@@ -115,7 +115,7 @@ export const fetchCreateDeal = async (values: AddDealSchemaType) => {
 };
 
 // update-deal
-export const fetchUpdateDeal = async (data: Partial<addDealType>) => {
+export const handleUpdateDeal = async (data: Partial<AddDealType>) => {
   if (!data.id) throw new Error("ID is undefined");
   const isOtherActive = await prisma.deal.findFirst({ where: { isActive: true } });
   if (isOtherActive && isOtherActive.id !== data.id && data.isActive) throw new Error("Active deal already exists.");
@@ -137,7 +137,7 @@ export const fetchUpdateDeal = async (data: Partial<addDealType>) => {
 };
 
 // delete-deal
-export const fetchDeleteDeal = async (id: string) => {
+export const handleDeleteDeal = async (id: string) => {
   const isExist = await prisma.deal.findFirst({ where: { id } });
   if (!isExist) throw new Error("Deal not found");
 
@@ -147,8 +147,8 @@ export const fetchDeleteDeal = async (id: string) => {
 };
 
 // deal-included
-export type FetchHasIncludedDealType = { items: CartItemType[]; dealOptions?: Prisma.DealWhereInput };
-export const fetchHasIncludedDeal = async ({ items, dealOptions }: FetchHasIncludedDealType) => {
+export type HandleHasIncludedDealType = { items: CartItemType[]; dealOptions?: Prisma.DealWhereInput };
+export const handleHasIncludedDeal = async ({ items, dealOptions }: HandleHasIncludedDealType) => {
   const productId = items.map((item) => item.productId);
   const deal = await prisma.deal.findMany({ where: { productId: { in: productId }, isActive: true, ...dealOptions } });
   if (!deal.length) throw new Error("Deal not found");

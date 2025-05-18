@@ -12,9 +12,8 @@ import {
 import { updateIndex } from "@/lib/typesense/update-index";
 import { prismaToJs } from "@/lib/utils";
 import { insertProductSchema, updateProductSchema } from "@/lib/validator";
-import { AdminProductResult, TagType, updateProductType } from "@/types";
+import { AdminProductResult, InsertProductSchemaType, TagType, updateProductType } from "@/types";
 import { Prisma } from "@prisma/client";
-import { z } from "zod";
 import { deleteOneItemIndex } from "@/lib/typesense/delete-one-item-index";
 import { revalidatePath } from "next/cache";
 import { deleteImage } from "../../utils/images.utils";
@@ -52,18 +51,13 @@ export const handleGetAllAdminProduct = async ({
     ...pagination,
   });
   const count = await prisma.product.count();
-  const result = {
-    product: prismaToJs(product),
-    count,
-    totalPages: limit ? Math.ceil(count / limit) : 0,
-  };
+  const result = { product: prismaToJs(product), count, totalPages: limit ? Math.ceil(count / limit) : 0 };
   await cacheData(cacheKey, result, 0);
   return { data: result };
 };
 
 // create-product
-export type HandleCreateProductType = z.infer<typeof insertProductSchema>;
-export const handleCreateProduct = async (data: HandleCreateProductType) => {
+export const handleCreateProduct = async (data: InsertProductSchemaType) => {
   const product = insertProductSchema.parse(data);
   const result = await prisma.product.create({
     data: { ...product, tags: { connect: product.tags?.map((tag: TagType) => ({ id: tag.id })) } },

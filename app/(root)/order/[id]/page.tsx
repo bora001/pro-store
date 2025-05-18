@@ -1,15 +1,14 @@
 import OrderDetail from "@/components/order/order-detail";
 import { getOrderInfo } from "@/lib/actions/handler/order.actions";
-import { OrderItemType, ShippingType } from "@/types";
+import { OrderItemType, ShippingSchemaType } from "@/types";
 import { notFound } from "next/navigation";
 import { PaymentFormType } from "@/components/payment/payment-form";
 import { auth } from "@/auth";
 import { CONSTANTS } from "@/lib/constants";
 import Stripe from "stripe";
 
-export const metadata = {
-  title: "Order",
-};
+export const metadata = { title: "Order" };
+
 const OrderInfoPage = async (props: { params: Promise<{ id: string }> }) => {
   const { id } = await props.params;
   const session = await auth();
@@ -34,7 +33,7 @@ const OrderInfoPage = async (props: { params: Promise<{ id: string }> }) => {
       order={{
         ...order.data,
         orderItems: order.data.orderItems as OrderItemType[],
-        address: order.data.address as ShippingType,
+        address: order.data.address as ShippingSchemaType,
         payment: order.data.payment as PaymentFormType["type"],
       }}
     />

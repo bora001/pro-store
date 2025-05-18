@@ -4,10 +4,11 @@ import { getMyCart } from "@/lib/actions/handler/cart.actions";
 import { getUserById } from "@/lib/actions/handler/user.action";
 import { getUserInfo } from "@/lib/actions/utils/session.utils";
 import { PATH } from "@/lib/constants";
-import { ShippingType } from "@/types";
+import { ShippingSchemaType } from "@/types";
 import { redirect } from "next/navigation";
 
 export const metadata = { title: "Shipping" };
+
 const ShippingAddressPage = async () => {
   const userId = await getUserInfo();
   if (!userId) throw new Error("no userId");
@@ -17,7 +18,7 @@ const ShippingAddressPage = async () => {
   return (
     <>
       <CheckoutStep step="Shipping Address" />
-      <ShippingForm address={user?.address as ShippingType} />
+      <ShippingForm address={user?.address as ShippingSchemaType} />
     </>
   );
 };

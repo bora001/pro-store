@@ -5,7 +5,7 @@ import { prisma } from "@/db/prisma";
 import { PATH } from "@/lib/constants";
 import { sendDeleteAccountConfirm, sendWelcomeEmail } from "@/lib/email/mail-handler";
 import { shippingSchema, signInSchema } from "@/lib/validator";
-import { ShippingType, editUserType, signUpInfo, userProfileType } from "@/types";
+import { ShippingSchemaType, EditUserSchemaType, SignUpSchemaType, userProfileType } from "@/types";
 import { hashSync } from "bcrypt-ts-edge";
 import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -13,13 +13,9 @@ import { cookies } from "next/headers";
 import { getUserInfo } from "../utils/session.utils";
 
 // sign-up
-export const handleSignUpUser = async (user: signUpInfo) => {
+export const handleSignUpUser = async (user: SignUpSchemaType) => {
   const newUser = await prisma.user.create({
-    data: {
-      name: user.name,
-      email: user.email,
-      password: hashSync(user.password, 10),
-    },
+    data: { name: user.name, email: user.email, password: hashSync(user.password, 10) },
   });
   if (!newUser) throw new Error("Sign up failed");
   await sendWelcomeEmail({ name: user.name, email: user.email });
@@ -35,11 +31,7 @@ export const handleSignInUser = async (_: unknown, formData: FormData) => {
     return { success: true, message: "Signed in successfully" };
   } catch (error) {
     if (isRedirectError(error)) throw error;
-    return {
-      success: false,
-      message: "Invalid email or password",
-      data: { email: formData.get("email") },
-    };
+    return { success: false, message: "Invalid email or password", data: { email: formData.get("email") } };
   }
 };
 // sign-out
@@ -65,7 +57,7 @@ export const handleGetUserById = async (id: string) => {
 };
 
 // update-address
-export const handleUpdateUserAddress = async (data: ShippingType) => {
+export const handleUpdateUserAddress = async (data: ShippingSchemaType) => {
   const id = await getUserInfo();
   const currentUser = await prisma.user.findFirst({ where: { id } });
   if (!currentUser) throw new Error("User not found");
@@ -84,7 +76,7 @@ export const handleUpdateUserProfile = async (data: userProfileType) => {
 };
 
 // edit-user-profile-by-admin
-export const handleEditUserProfile = async (data: editUserType) => {
+export const handleEditUserProfile = async (data: EditUserSchemaType) => {
   await prisma.user.update({ where: { id: data.id }, data });
   return { message: "User is edited successfully" };
 };

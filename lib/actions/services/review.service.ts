@@ -4,13 +4,11 @@ import { auth } from "@/auth";
 import { prisma } from "@/db/prisma";
 import { CONSTANTS, PATH } from "@/lib/constants";
 import { addReviewSchema } from "@/lib/validator";
+import { AddReviewSchemaType } from "@/types";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
-
-export type handleAddOrEditReviewType = z.infer<typeof addReviewSchema>;
 
 // add-edit-review
-export async function handleAddOrEditReview(data: handleAddOrEditReviewType) {
+export async function handleAddOrEditReview(data: AddReviewSchemaType) {
   const session = await auth();
   if (!session) throw new Error("Not authenticated");
   const review = addReviewSchema.parse({ ...data, userId: session.user.id });
@@ -24,11 +22,7 @@ export async function handleAddOrEditReview(data: handleAddOrEditReviewType) {
     if (alreadyReviewed) {
       await tx.review.update({
         where: { id: alreadyReviewed.id },
-        data: {
-          title: review.title,
-          description: review.description,
-          rating: review.rating,
-        },
+        data: { title: review.title, description: review.description, rating: review.rating },
       });
     } else {
       await tx.review.create({ data: review });
@@ -69,11 +63,7 @@ export async function handleDeleteReview(reviewId: string) {
   const data = await prisma.review.delete({ where: { id: reviewId } });
 
   await prisma.$transaction(async (tx) => {
-    const avgRating = await tx.review.aggregate({
-      _avg: { rating: true },
-      where: { productId: data.productId },
-    });
-
+    const avgRating = await tx.review.aggregate({ _avg: { rating: true }, where: { productId: data.productId } });
     const reviewCount = await tx.review.count({ where: { productId: data.productId } });
 
     await tx.product.update({

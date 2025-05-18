@@ -1,6 +1,6 @@
 "use server";
 
-import { ShippingType, editUserType, signUpInfo, userProfileType } from "@/types";
+import { ShippingSchemaType, EditUserSchemaType, SignUpSchemaType, userProfileType } from "@/types";
 
 import { handleAsync } from "@/utils/handle-async";
 import {
@@ -17,7 +17,7 @@ import {
 } from "../services/user.service";
 
 // sign-up
-export async function signUpUser(user: signUpInfo) {
+export async function signUpUser(user: SignUpSchemaType) {
   return handleAsync(() => handleSignUpUser(user));
 }
 // no handleAsync // sign-in
@@ -37,7 +37,7 @@ export async function getUserById(id: string) {
   return handleAsync(() => handleGetUserById(id));
 }
 // update-address
-export async function updateUserAddress(data: ShippingType) {
+export async function updateUserAddress(data: ShippingSchemaType) {
   return handleAsync(() => handleUpdateUserAddress(data));
 }
 // update-user-profile
@@ -45,7 +45,7 @@ export async function updateUserProfile(data: userProfileType) {
   return handleAsync(() => handleUpdateUserProfile(data));
 }
 // edit-user-profile-by-admin
-export async function editUserProfile(data: editUserType) {
+export async function editUserProfile(data: EditUserSchemaType) {
   return handleAsync(() => handleEditUserProfile(data));
 }
 // delete-user

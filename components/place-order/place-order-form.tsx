@@ -1,19 +1,12 @@
 "use client";
 
-import { CartType, PaymentType, ShippingType, addDealType } from "@/types";
+import { CartType, PaymentType, ShippingSchemaType, addDealType } from "@/types";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { PATH } from "@/lib/constants";
 import { useSearchParams } from "next/navigation";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { useEffect, useState, useTransition } from "react";
 import { createOrder } from "@/lib/actions/handler/order.actions";
 import { BadgeAlert } from "lucide-react";
@@ -33,7 +26,7 @@ const PlacerOrderForm = ({
   cart,
   deal,
 }: {
-  address: ShippingType;
+  address: ShippingSchemaType;
   cart: CartType;
   deal?: addDealType;
 }) => {
@@ -48,17 +41,12 @@ const PlacerOrderForm = ({
   const handlePlaceOrder = () => {
     startTransition(async () => {
       const { success, message } = await createOrder(method as PaymentType);
-      toast({
-        variant: success ? "default" : "destructive",
-        description: message,
-      });
+      toast({ variant: success ? "default" : "destructive", description: message });
     });
   };
 
   useEffect(() => {
-    setPrice(
-      Object.entries(calculatePrice(cart?.items || [], deal, isActiveDeal))
-    );
+    setPrice(Object.entries(calculatePrice(cart?.items || [], deal, isActiveDeal)));
   }, [cart?.items, deal, isActiveDeal]);
 
   return (
@@ -108,57 +96,43 @@ const PlacerOrderForm = ({
                   <TableRow>
                     <TableHead>Item</TableHead>
                     <TableHead className="border min-w-16">Quantity</TableHead>
-                    <TableHead className="border text-right min-w-24">
-                      Price
-                    </TableHead>
+                    <TableHead className="border text-right min-w-24">Price</TableHead>
                   </TableRow>
                 </TableHeader>
                 {/* body : image + qty + price */}
                 <TableBody>
-                  {cart.items.map(
-                    ({ productId, slug, name, image, qty, price }) => {
-                      const discountCondition =
-                        productId === deal?.productId && isActiveDeal;
-                      const noQty = qty === 0;
+                  {cart.items.map(({ productId, slug, name, image, qty, price }) => {
+                    const discountCondition = productId === deal?.productId && isActiveDeal;
+                    const noQty = qty === 0;
 
-                      return (
-                        <TableRow key={slug}>
-                          {/* image */}
-                          <TableCell>
-                            <Link
-                              href={`${PATH.PRODUCT}/${slug}`}
-                              className="flex items-center gap-2"
-                            >
-                              <S3Image
-                                folder="product"
-                                fileName={image}
-                                alt={name}
-                                size={PLACE_ORDER_IMAGE_SIZE}
-                                className={`${noQty && "grayscale"} hidden sm:block`}
-                              />
-                              <div>
-                                <span className="pr-2">{name}</span>
+                    return (
+                      <TableRow key={slug}>
+                        {/* image */}
+                        <TableCell>
+                          <Link href={`${PATH.PRODUCT}/${slug}`} className="flex items-center gap-2">
+                            <S3Image
+                              folder="product"
+                              fileName={image}
+                              alt={name}
+                              size={PLACE_ORDER_IMAGE_SIZE}
+                              className={`${noQty && "grayscale"} hidden sm:block`}
+                            />
+                            <div>
+                              <span className="pr-2">{name}</span>
 
-                                {discountCondition && (
-                                  <DiscountBadge discount={discount || 0} />
-                                )}
-                              </div>
-                            </Link>
-                          </TableCell>
-                          {/* qty */}
-                          <TableCell className="text-center">{qty}</TableCell>
-                          {/* price */}
-                          <TableCell className="text-right">
-                            {`$ ${discountPrice(
-                              +price,
-                              discount,
-                              discountCondition
-                            )}`}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    }
-                  )}
+                              {discountCondition && <DiscountBadge discount={discount || 0} />}
+                            </div>
+                          </Link>
+                        </TableCell>
+                        {/* qty */}
+                        <TableCell className="text-center">{qty}</TableCell>
+                        {/* price */}
+                        <TableCell className="text-right">
+                          {`$ ${discountPrice(+price, discount, discountCondition)}`}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -180,11 +154,7 @@ const PlacerOrderForm = ({
               </div>
             </CardContent>
           </Card>
-          <Button
-            className="w-full"
-            onClick={handlePlaceOrder}
-            disabled={isPending}
-          >
+          <Button className="w-full" onClick={handlePlaceOrder} disabled={isPending}>
             Place Order
           </Button>
         </div>

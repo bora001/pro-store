@@ -1,9 +1,8 @@
 "use server";
 
-import { addDealType } from "@/types";
+import { AddDealSchemaType, addDealType } from "@/types";
 import { handleAsync } from "@/utils/handle-async";
 import {
-  FetchCreateDealType,
   FetchGetAllDealsByQueryType,
   FetchGetDealType,
   FetchHasIncludedDealType,
@@ -34,7 +33,7 @@ export async function getActiveDeal(queries: handleGetActiveDealType) {
   return handleAsync(() => handleGetActiveDeal(queries));
 }
 // create-deal
-export async function createDeal(queries: FetchCreateDealType) {
+export async function createDeal(queries: AddDealSchemaType) {
   return handleAsync(() => fetchCreateDeal(queries));
 }
 // update-deal

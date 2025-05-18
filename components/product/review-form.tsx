@@ -4,42 +4,18 @@ import { addReviewSchema } from "@/lib/validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import FormInput from "../common/form-input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Star } from "lucide-react";
 import { addOrEditReview } from "@/lib/actions/handler/review.actions";
 import { toast } from "@/hooks/use-toast";
 import { CONSTANTS } from "@/lib/constants";
+import { AddReviewSchemaType } from "@/types";
 type ReviewFormType = "create" | "edit";
-type ReviewFormPropsReview = {
-  title: string;
-  description: string;
-  rating: number;
-};
+type ReviewFormPropsReview = { title: string; description: string; rating: number };
 const ReviewForm = ({
   type = "create",
   userId,
@@ -66,20 +42,11 @@ const ReviewForm = ({
     [productId, userId, review]
   );
 
-  const form = useForm<z.infer<typeof addReviewSchema>>({
-    resolver: zodResolver(addReviewSchema),
-    defaultValues,
-  });
+  const form = useForm<AddReviewSchemaType>({ resolver: zodResolver(addReviewSchema), defaultValues });
 
-  const onSubmit = async (values: z.infer<typeof addReviewSchema>) => {
-    const { success, message } = await addOrEditReview({
-      ...values,
-      productId,
-    });
-    toast({
-      variant: success ? "default" : "destructive",
-      description: message,
-    });
+  const onSubmit = async (values: AddReviewSchemaType) => {
+    const { success, message } = await addOrEditReview({ ...values, productId });
+    toast({ variant: success ? "default" : "destructive", description: message });
     if (success) setOpen(false);
   };
 
@@ -89,12 +56,7 @@ const ReviewForm = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button
-        variant="ghost"
-        className="p-0"
-        onClick={() => setOpen(true)}
-        asChild
-      >
+      <Button variant="ghost" className="p-0" onClick={() => setOpen(true)} asChild>
         {button}
       </Button>
       <DialogContent className="sm:max-w-[425px]">
@@ -102,44 +64,33 @@ const ReviewForm = ({
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle>{isEdit ? "Edit" : "Write a"} review</DialogTitle>
-              <DialogDescription>
-                Share your thoughts with other customer
-              </DialogDescription>
+              <DialogDescription>Share your thoughts with other customer</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <FormInput placeholder="Enter Title" name="title" />
-              <FormInput
-                type="textarea"
-                placeholder="Enter Description"
-                name="description"
-              />
+              <FormInput type="textarea" placeholder="Enter Description" name="description" />
               <FormField
                 control={form.control}
                 name="rating"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Role</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={String(field.value)}
-                    >
+                    <Select onValueChange={field.onChange} value={String(field.value)}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a rating" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {Array.from({ length: 5 }, (v, i) => i + 1).map(
-                          (role) => (
-                            <SelectItem key={role} value={role.toString()}>
-                              <div className="flex">
-                                {new Array(role).fill(null).map((_, i) => (
-                                  <Star key={i} fill="gold" color="gold" />
-                                ))}
-                              </div>
-                            </SelectItem>
-                          )
-                        )}
+                        {Array.from({ length: 5 }, (v, i) => i + 1).map((role) => (
+                          <SelectItem key={role} value={role.toString()}>
+                            <div className="flex">
+                              {new Array(role).fill(null).map((_, i) => (
+                                <Star key={i} fill="gold" color="gold" />
+                              ))}
+                            </div>
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -148,11 +99,7 @@ const ReviewForm = ({
               />
             </div>
             <DialogFooter>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={form.formState.isSubmitting}
-              >
+              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                 {isEdit ? "Edit" : "Submit"}
               </Button>
             </DialogFooter>

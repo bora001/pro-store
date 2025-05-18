@@ -20,16 +20,16 @@ import { z } from "zod";
 
 export type BannerType = Pick<Product, "id" | "slug" | "banner">;
 
-export type ProductItemType = z.infer<typeof insertProductSchema> & {
+// schema
+export type InsertProductSchemaType = z.infer<typeof insertProductSchema>;
+export type ProductItemType = InsertProductSchemaType & {
   id: string;
   rating: string;
   createdAt: Date;
   Deal: addDealType[];
 };
 
-export type CartType = z.infer<typeof insertCartSchema> & {
-  id: string;
-};
+export type CartType = z.infer<typeof insertCartSchema> & { id: string };
 
 export type OrderType = z.infer<typeof orderSchema> & {
   id: string;
@@ -39,100 +39,53 @@ export type OrderType = z.infer<typeof orderSchema> & {
   isPaid: boolean;
   isDelivered: boolean;
   orderItems: OrderItemType[];
-  user: {
-    name: string;
-    email: string;
-  };
+  user: { name: string; email: string };
   paymentResult: PaymentResultType;
 };
-export type CartItemType = z.infer<typeof cartItemSchema> & {
-  InStock?: boolean;
-};
-export type ShippingType = z.infer<typeof shippingSchema>;
-export type OrderItemType = z.infer<typeof orderItemSchema> & {
-  dealInfo?: addDealType | null;
-};
+export type CartItemType = z.infer<typeof cartItemSchema> & { InStock?: boolean };
+export type ShippingSchemaType = z.infer<typeof shippingSchema>;
+export type OrderItemType = z.infer<typeof orderItemSchema> & { dealInfo?: addDealType | null };
 export type PaymentResultType = z.infer<typeof paymentResultSchema>;
-export type signUpInfo = z.infer<typeof signUpSchema>;
+export type SignUpSchemaType = z.infer<typeof signUpSchema>;
 export type userProfileType = z.infer<typeof userProfileSchema>;
-export type ResponseType<T = unknown> = {
-  success: boolean;
-  message?: string;
-  data: T;
-};
+export type ResponseType<T = unknown> = { success: boolean; message?: string; data: T };
 export type PaymentType = (typeof PAYMENT_METHODS)[number];
 export type updateProductType = z.infer<typeof updateProductSchema>;
-export type editUserType = z.infer<typeof editUserSchema>;
-export type CategoryType = {
-  category: string;
-  count: number;
-};
-export type reviewType = z.infer<typeof addReviewSchema> & {
-  id: string;
-  createdAt: Date;
-  user?: {
-    name: string;
-  };
-};
+export type EditUserSchemaType = z.infer<typeof editUserSchema>;
+export type CategoryType = { category: string; count: number };
 
-export type addDealType = z.infer<typeof addDealSchema> & {
-  id: string;
-  product?: ProductItemType;
-};
-export type getDealType = z.infer<typeof addDealSchema> & {
+export type AddReviewSchemaType = z.infer<typeof addReviewSchema>;
+export type reviewType = AddReviewSchemaType & { id: string; createdAt: Date; user?: { name: string } };
+
+export type AddDealSchemaType = z.infer<typeof addDealSchema>;
+export type addDealType = AddDealSchemaType & { id: string; product?: ProductItemType };
+export type getDealType = AddDealSchemaType & {
   product?: Omit<
     ProductItemType,
-    | "category"
-    | "brand"
-    | "description"
-    | "isFeatured"
-    | "banner"
-    | "numReviews"
-    | "rating"
-    | "createdAt"
-    | "Deal"
-  > & {
-    Deal?: { title: string }[];
-  };
+    "category" | "brand" | "description" | "isFeatured" | "banner" | "numReviews" | "rating" | "createdAt" | "Deal"
+  > & { Deal?: { title: string }[] };
 };
 
 // pages
-type pageInformation = {
-  count: number;
-  totalPages: number;
-};
+type pageInformation = { count: number; totalPages: number };
 
 // result
-export type AdminDealType = z.infer<typeof addDealSchema> & {
-  id: string;
-  product: Pick<ProductItemType, "name">;
-};
+export type AdminDealType = AddDealSchemaType & { id: string; product: Pick<ProductItemType, "name"> };
 
 export interface AdminProductResult extends pageInformation {
-  product: Pick<
-    ProductItemType,
-    "id" | "name" | "price" | "category" | "stock" | "rating"
-  >[];
+  product: Pick<ProductItemType, "id" | "name" | "price" | "category" | "stock" | "rating">[];
 }
 export interface AdminDealResult extends pageInformation {
   deal: AdminDealType[];
 }
 
-export type TagType = {
-  id: string;
-  name: string;
-};
+export type TagType = { id: string; name: string };
 
 // chat
 export type ChatRoleType = (typeof CHAT_ROLE)[keyof typeof CHAT_ROLE];
 export type DefaultQuestionKeyType = keyof typeof MANUAL_QUESTIONS;
 
-type DefaultQuestionType = {
-  [key in DefaultQuestionKeyType]: {
-    question: string;
-    answer: string;
-  };
-};
+type DefaultQuestionType = { [key in DefaultQuestionKeyType]: { question: string; answer: string } };
 
 export type Message =
   | ({

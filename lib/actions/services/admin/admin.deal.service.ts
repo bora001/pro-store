@@ -6,10 +6,9 @@ import { redis } from "@/lib/redis";
 import { cacheData, deleteAllRedisKey, getCachedData } from "@/lib/redis/redis-handler";
 import { prismaToJs } from "@/lib/utils";
 import { addDealSchema } from "@/lib/validator";
-import { AdminDealResult, CartItemType, addDealType, getDealType } from "@/types";
+import { AddDealSchemaType, AdminDealResult, CartItemType, addDealType, getDealType } from "@/types";
 import { AsyncReturn } from "@/utils/handle-async";
 import { Prisma } from "@prisma/client";
-import { z } from "zod";
 
 export type FetchGetDealType = { id?: string; isActive?: boolean };
 
@@ -67,11 +66,7 @@ export const fetchGetAllDealsByQuery = async ({
   if (!deal) throw new Error("Deal not found");
   const count = await prisma.deal.count();
   return {
-    data: {
-      deal: prismaToJs(deal),
-      count,
-      totalPages: limit ? Math.ceil(count / limit) : 0,
-    },
+    data: { deal: prismaToJs(deal), count, totalPages: limit ? Math.ceil(count / limit) : 0 },
   };
 };
 
@@ -111,8 +106,7 @@ export async function handleGetActiveDeal({
 }
 
 // create-deal
-export type FetchCreateDealType = z.infer<typeof addDealSchema>;
-export const fetchCreateDeal = async (values: FetchCreateDealType) => {
+export const fetchCreateDeal = async (values: AddDealSchemaType) => {
   const data = addDealSchema.parse(values);
   if (!data.endTime) throw new Error("End time is required.");
   await prisma.deal.create({ data: { ...data, endTime: data.endTime } });

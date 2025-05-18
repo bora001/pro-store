@@ -1,10 +1,9 @@
 "use server";
 
-import { updateProductType } from "@/types";
+import { InsertProductSchemaType, updateProductType } from "@/types";
 
 import { handleAsync } from "@/utils/handle-async";
 import {
-  HandleCreateProductType,
   HandleGetAllAdminProductType,
   HandleGetProductType,
   handleCreateProduct,
@@ -23,7 +22,7 @@ export async function getAllAdminProduct(data: HandleGetAllAdminProductType) {
   return handleAsync(() => handleGetAllAdminProduct(data));
 }
 // create-product
-export async function createProduct(data: HandleCreateProductType) {
+export async function createProduct(data: InsertProductSchemaType) {
   return handleAsync(() => handleCreateProduct(data));
 }
 // update-product

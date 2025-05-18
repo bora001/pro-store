@@ -3,15 +3,15 @@
 import { handleAsync } from "@/utils/handle-async";
 import {
   handleAddOrEditReview,
-  handleAddOrEditReviewType,
   handleDeleteReview,
   handleGetAllReviews,
   handleHasPurchaseHistory,
   handleHasUserReviewByProduct,
 } from "../services/review.service";
+import { AddReviewSchemaType } from "@/types";
 
 // add-edit-review
-export async function addOrEditReview(data: handleAddOrEditReviewType) {
+export async function addOrEditReview(data: AddReviewSchemaType) {
   return handleAsync(() => handleAddOrEditReview(data));
 }
 // get-all-reviews

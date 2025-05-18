@@ -10,7 +10,7 @@ import { PaymentFormType } from "@/components/payment/payment-form";
 import { calculatePrice } from "@/utils/price/calculate-price";
 import { orderSchema } from "@/lib/validator";
 import { prisma } from "@/db/prisma";
-import { OrderItemType, PaymentResultType, ProductItemType, ShippingType } from "@/types";
+import { OrderItemType, PaymentResultType, ProductItemType, ShippingSchemaType } from "@/types";
 import { updateIndex } from "@/lib/typesense/update-index";
 import { prismaToJs } from "@/lib/utils";
 import { paypal } from "@/lib/paypal";
@@ -33,12 +33,7 @@ export async function handleCreateOrder(payment: PaymentFormType["type"]) {
 
   const activeDeal = await hasIncludedDeal({ items: cart.data.items, dealOptions: { endTime: { gte: new Date() } } });
   const cart_price = calculatePrice(cart.data.items, activeDeal.data);
-  const order = orderSchema.parse({
-    userId: user.id,
-    address: user.address,
-    payment,
-    ...cart_price,
-  });
+  const order = orderSchema.parse({ userId: user.id, address: user.address, payment, ...cart_price });
 
   const newOrderId = await prisma.$transaction(async (tx) => {
     if (!cart.data) throw new Error("Cart is empty");
@@ -77,12 +72,7 @@ export async function handleCreateOrder(payment: PaymentFormType["type"]) {
     await tx.orderItem.createMany({
       data: cart.data.items.map(({ ...item }) => {
         const hasDeal = productId === item.productId;
-        return {
-          ...item,
-          price: item.price,
-          orderId: newOrder.id,
-          dealInfo: hasDeal ? activeDeal.data : {},
-        };
+        return { ...item, price: item.price, orderId: newOrder.id, dealInfo: hasDeal ? activeDeal.data : {} };
       }),
     });
 
@@ -109,14 +99,7 @@ export async function handleCreatePaypalOrder(orderId: string) {
   const paypalOrder = await paypal.createOrder(+order.totalPrice);
   await prisma.order.update({
     where: { id: orderId },
-    data: {
-      paymentResult: {
-        id: paypalOrder.id,
-        email_address: "",
-        pricePaid: "",
-        status: "",
-      },
-    },
+    data: { paymentResult: { id: paypalOrder.id, email_address: "", pricePaid: "", status: "" } },
   });
   return { message: "Item order created successfully", data: paypalOrder.id };
 }
@@ -149,10 +132,8 @@ export async function handleApprovalPaypalOrder({ orderId, data: { orderID } }: 
   return { message: "Order has been paid" };
 }
 
-export type handleUpdateOrderToPaidType = {
-  orderId: string;
-  paymentResult?: PaymentResultType;
-};
+export type handleUpdateOrderToPaidType = { orderId: string; paymentResult?: PaymentResultType };
+
 export async function handleUpdateOrderToPaid({ orderId, paymentResult }: handleUpdateOrderToPaidType) {
   const order = await prisma.order.findFirst({ where: { id: orderId }, include: { orderItems: true } });
   if (!order) throw new Error("Order not found");
@@ -167,11 +148,7 @@ export async function handleUpdateOrderToPaid({ orderId, paymentResult }: handle
 
     await tx.order.update({
       where: { id: orderId },
-      data: {
-        isPaid: true,
-        paidAt: new Date(),
-        paymentResult,
-      },
+      data: { isPaid: true, paidAt: new Date(), paymentResult },
     });
   });
   const updateOrder = await prisma.order.findFirst({
@@ -196,7 +173,7 @@ export async function handleSendEmailReceipt(orderId: string) {
     order: {
       ...data,
       orderItems: data.orderItems as OrderItemType[],
-      address: data.address as ShippingType,
+      address: data.address as ShippingSchemaType,
       paymentResult: data.paymentResult as PaymentResultType,
     },
     email: session.user.email,

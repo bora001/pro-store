@@ -9,9 +9,10 @@ import {
   handleModifyItemQtyToCart,
   handleRemoveItemToCart,
 } from "../services/cart.service";
+import { CartInfoType } from "@/components/product/add-to-cart";
 
 // add-item-to-cart
-export async function addItemToCart(queries: HandleCartQueries & { cartId?: string }) {
+export async function addItemToCart(queries: HandleCartQueries & CartInfoType) {
   return handleAsync(() => handleAddItemToCart(queries));
 }
 // get-cart

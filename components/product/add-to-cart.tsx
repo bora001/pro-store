@@ -2,50 +2,44 @@
 
 import { CartItemType } from "@/types";
 import { Button } from "../ui/button";
-import { ToastAction } from "../ui/toast";
 import { addItemToCart } from "@/lib/actions/handler/cart.actions";
 import { toast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
 import { Minus, Plus } from "lucide-react";
 import Flex from "../common/flex";
 import { useEffect, useState, useTransition } from "react";
 import { PATH } from "@/lib/constants";
 import { ClassValue } from "clsx";
 import { cn } from "@/lib/utils";
-import { getCartId } from "@/lib/actions/services/cart.service";
+import { checkSessionCardId, getUserInfo } from "@/lib/actions/utils/session.utils";
+import MoveButtonToast from "../custom/move-button-toast";
+import IconButton from "../custom/IconButton";
+
+export type CartInfoType = { sessionCartId: string; userId?: string };
 
 const AddToCart = ({ item, noQty, className }: { item: CartItemType; noQty?: boolean; className?: ClassValue }) => {
-  const router = useRouter();
   const [qty, setQty] = useState(1);
   const [isPending, startTransition] = useTransition();
-  const [cartId, setCartId] = useState<string | undefined>(undefined);
+  const [cartInfo, setCartInfo] = useState<CartInfoType>({ sessionCartId: "", userId: undefined });
 
   useEffect(() => {
-    const preloadCartId = async () => {
-      const id = await getCartId();
-      setCartId(id);
+    const preloadCartInfo = async () => {
+      const [sessionCartId, userId] = await Promise.all([checkSessionCardId(), getUserInfo()]);
+      setCartInfo({ sessionCartId, userId });
     };
-    preloadCartId();
+    preloadCartInfo();
   }, []);
 
   const handleAddCart = () => {
     startTransition(async () => {
-      const { success, message } = await addItemToCart({ data: item, qty, cartId });
+      if (!cartInfo.sessionCartId) {
+        toast({ variant: "destructive", description: "Failed to load cart information. Please try again shortly." });
+        return;
+      }
+      const { success, message } = await addItemToCart({ data: item, qty, ...cartInfo });
       if (!success) {
         toast({ variant: "destructive", description: message });
       } else {
-        toast({
-          description: message,
-          action: (
-            <ToastAction
-              className="bg-primary text-white hover:bg-gray-800"
-              altText="go to cart"
-              onClick={() => router.push(PATH.CART)}
-            >
-              Go to Cart
-            </ToastAction>
-          ),
-        });
+        toast({ description: message, action: <MoveButtonToast text="go to cart" path={PATH.CART} /> });
       }
     });
   };
@@ -54,23 +48,21 @@ const AddToCart = ({ item, noQty, className }: { item: CartItemType; noQty?: boo
     <div className="flex flex-col gap-2 w-full">
       {!noQty && (
         <Flex className="justify-between">
-          <Button
+          <IconButton
+            aria-label="decrease-item-qty"
             variant="outline"
             onClick={() => setQty((prev) => prev - 1)}
             disabled={qty === 1}
-            aria-label="decrease-item-qty"
-          >
-            <Minus />
-          </Button>
+            icon={<Minus />}
+          />
           <span className="w-12 text-center">{qty}</span>
-          <Button
+          <IconButton
+            aria-label="increase-item-qty"
             variant="outline"
             onClick={() => setQty((prev) => prev + 1)}
             disabled={qty === 99}
-            aria-label="increase-item-qty"
-          >
-            <Plus />
-          </Button>
+            icon={<Plus />}
+          />
         </Flex>
       )}
       <Button className={cn(className)} disabled={isPending} onClick={handleAddCart}>

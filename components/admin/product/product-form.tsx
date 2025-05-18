@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
-import { z } from "zod";
 import ProductFormImageInput from "./product-form-image-input";
 import { v4 as uuidv4 } from "uuid";
 import ProductTags from "./form-items/product-tags";

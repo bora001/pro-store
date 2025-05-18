@@ -5,9 +5,18 @@ import { prisma } from "@/db/prisma";
 import { revalidatePath } from "next/cache";
 import { PATH } from "@/lib/constants";
 import { checkSessionCardId, getUserInfo } from "../utils/session.utils";
+import { CartInfoType } from "@/components/product/add-to-cart";
 
 export type HandleCartQueries = { data: CartItemType; qty: number };
-type addItemToNewCartType = { sessionCartId: string; productId: string; qty: number };
+type addItemToNewCartType = { productId: string; qty: number } & CartInfoType;
+type CreateNewCartType = {
+  productId: string;
+  qty: number;
+  newPath: string;
+  name: string;
+  sessionCartId: string;
+  userId?: string;
+};
 
 // get-cart-id
 export const getCartId = async () => {
@@ -18,13 +27,13 @@ export const getCartId = async () => {
 
 // add-item-to-cart
 const addItemToNewCart = async (data: addItemToNewCartType) => {
-  const { sessionCartId, qty, productId } = data;
-  await prisma.cart.create({ data: { sessionCartId, itemsCount: qty, items: { create: { productId, qty } } } });
+  if (!data.sessionCartId) throw new Error("Error : Cart has not been created");
+  const { sessionCartId, userId, qty, productId } = data;
+  await prisma.cart.create({ data: { userId, sessionCartId, itemsCount: qty, items: { create: { productId, qty } } } });
 };
 
-const createNewCart = async (productId: string, qty: number, newPath: string, name: string) => {
-  const sessionCartId = await checkSessionCardId();
-  await addItemToNewCart({ sessionCartId, productId, qty });
+const createNewCart = async ({ userId, sessionCartId, productId, qty, newPath, name }: CreateNewCartType) => {
+  await addItemToNewCart({ userId, sessionCartId, productId, qty });
   revalidatePath(newPath);
   return { message: `${name} added to cart`, success: true };
 };
@@ -50,11 +59,12 @@ const updateExistCart = async ({ cartId, productId, qty }: { cartId: string; pro
   });
 };
 
-export const handleAddItemToCart = async ({ data, qty, cartId }: HandleCartQueries & { cartId?: string }) => {
+export const handleAddItemToCart = async ({ data, qty, sessionCartId, userId }: HandleCartQueries & CartInfoType) => {
   const { productId, name, slug } = data;
   const newPath = `${PATH.PRODUCT}/${slug}`;
-  if (!cartId) return createNewCart(productId, qty, newPath, name);
-  await updateExistCart({ cartId, productId, qty });
+  const hasExistingCart = await prisma.cart.findFirst({ where: { sessionCartId } });
+  if (!hasExistingCart) return createNewCart({ productId, qty, newPath, name, userId, sessionCartId });
+  await updateExistCart({ cartId: hasExistingCart.id, productId, qty });
   revalidatePath(newPath);
   return { message: `${name} updated to cart` };
 };

@@ -1,5 +1,5 @@
-import { PaymentFormType } from "@/components/payment/payment-form";
 import sampleData from "@/db/sample-data";
+import { PAYMENT_METHODS } from "@/lib/constants";
 import { CONFIG } from "@/lib/constants/config";
 import { dateTimeConverter, formatNumberWithDecimal } from "@/lib/utils";
 import { OrderType } from "@/types";
@@ -83,7 +83,7 @@ PurchaseReceiptTemplate.PreviewProps = {
     id: crypto.randomUUID(),
     userId: "ID123",
     user: { name: "John Doe", email: "test@test.co" },
-    payment: "Stripe" as PaymentFormType["type"],
+    payment: PAYMENT_METHODS.Stripe.key,
     address: { name: "John Doe", city: "New york", address: "123 Main st", postalCode: "10001", country: "US" },
     createdAt: new Date(),
     shippingPrice: "0",

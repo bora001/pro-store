@@ -1,10 +1,10 @@
 "use client";
 
-import { CartType, PaymentType, ShippingSchemaType, AddDealType } from "@/types";
+import { CartType, ShippingSchemaType, AddDealType } from "@/types";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { PATH } from "@/lib/constants";
+import { PATH, PAYMENT_METHODS } from "@/lib/constants";
 import { useSearchParams } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { useEffect, useState, useTransition } from "react";
@@ -23,7 +23,7 @@ const PLACE_ORDER_IMAGE_SIZE = 50;
 type PlacerOrderFormPropsType = { address: ShippingSchemaType; cart: CartType; deal?: AddDealType };
 const PlacerOrderForm = ({ address, cart, deal }: PlacerOrderFormPropsType) => {
   const searchParams = useSearchParams();
-  const method = searchParams.get("method");
+  const method = searchParams.get("method") as keyof typeof PAYMENT_METHODS;
   const [price, setPrice] = useState<[string, string][]>([]);
   const [isActiveDeal, setIsActiveDeal] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -32,7 +32,7 @@ const PlacerOrderForm = ({ address, cart, deal }: PlacerOrderFormPropsType) => {
 
   const handlePlaceOrder = () => {
     startTransition(async () => {
-      const { success, message } = await createOrder(method as PaymentType);
+      const { success, message } = await createOrder(method);
       toast({ variant: success ? "default" : "destructive", description: message });
     });
   };
@@ -71,7 +71,7 @@ const PlacerOrderForm = ({ address, cart, deal }: PlacerOrderFormPropsType) => {
           <Card>
             <CardContent className="p-4 gap-4">
               <h2 className="text-xl pb-4">Payment Method</h2>
-              <p>{method}</p>
+              <p>{PAYMENT_METHODS[`${method}`].label}</p>
               <div className="mt-3">
                 <Link href={PATH.PAYMENT}>
                   <Button variant="outline">Edit</Button>

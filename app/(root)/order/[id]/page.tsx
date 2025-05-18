@@ -1,10 +1,9 @@
 import OrderDetail from "@/components/order/order-detail";
 import { getOrderInfo } from "@/lib/actions/handler/order.actions";
-import { OrderItemType, ShippingSchemaType } from "@/types";
+import { OrderItemType, PaymentFormType, ShippingSchemaType } from "@/types";
 import { notFound } from "next/navigation";
-import { PaymentFormType } from "@/components/payment/payment-form";
 import { auth } from "@/auth";
-import { CONSTANTS } from "@/lib/constants";
+import { CONSTANTS, PAYMENT_METHODS } from "@/lib/constants";
 import Stripe from "stripe";
 
 export const metadata = { title: "Order" };
@@ -16,7 +15,7 @@ const OrderInfoPage = async (props: { params: Promise<{ id: string }> }) => {
   if (!order.data) notFound();
 
   let client_secret = null;
-  if (order.data.payment === "Stripe" && !order.data.isPaid) {
+  if (order.data.payment === PAYMENT_METHODS.Stripe.key && !order.data.isPaid) {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(Number(order.data.totalPrice) * 100),

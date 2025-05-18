@@ -1,3 +1,5 @@
+import { PaymentKeyType } from "@/types";
+
 export const CONSTANTS = {
   LATEST_PRODUCT_LIMIT: 4,
   PAGE_LIMIT: 5,
@@ -39,7 +41,14 @@ export const SYSTEM_TYPE = {
   LIGHT: "light",
 };
 
-export const PAYMENT_METHODS = ["PayPal", "Stripe", "CashOnDelivery"] as const;
+export const PAYMENT_METHODS = {
+  PayPal: { key: "PayPal", label: "PayPal" },
+  Stripe: { key: "Stripe", label: "Stripe" },
+  CashOnDelivery: { key: "CashOnDelivery", label: "Cash On Delivery" },
+} as const;
+export const PAYMENT_METHODS_KEYS = Object.values(PAYMENT_METHODS).map(({ key }) => key);
+export const PAYMENT_METHODS_LIST = PAYMENT_METHODS_KEYS as [PaymentKeyType, ...PaymentKeyType[]];
+
 export const USER_ROLE = ["admin", "user"];
 export const CHAT_ROLE = {
   USER: "user",

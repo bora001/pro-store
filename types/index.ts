@@ -14,6 +14,7 @@ import {
   addReviewSchema,
   addDealSchema,
   signUpSchema,
+  paymentSchema,
 } from "@/lib/validator";
 import { Product } from "@prisma/client";
 import { z } from "zod";
@@ -47,7 +48,8 @@ export type OrderItemType = z.infer<typeof orderItemSchema> & { dealInfo?: AddDe
 export type PaymentResultSchemaType = z.infer<typeof paymentResultSchema>;
 export type SignUpSchemaType = z.infer<typeof signUpSchema>;
 export type UserProfileSchemaType = z.infer<typeof userProfileSchema>;
-export type PaymentType = (typeof PAYMENT_METHODS)[number];
+export type PaymentKeyType = (typeof PAYMENT_METHODS)[keyof typeof PAYMENT_METHODS]["key"];
+export type PaymentFormType = z.infer<typeof paymentSchema>;
 export type UpdateProductSchemaType = z.infer<typeof updateProductSchema>;
 export type EditUserSchemaType = z.infer<typeof editUserSchema>;
 export type CategoryType = { category: string; count: number };
@@ -68,7 +70,6 @@ type PageInformation = { count: number; totalPages: number };
 
 // result
 export type AdminDealType = AddDealSchemaType & { id: string; product: Pick<ProductItemType, "name"> };
-
 export interface AdminProductResult extends PageInformation {
   product: Pick<ProductItemType, "id" | "name" | "price" | "category" | "stock" | "rating">[];
 }
@@ -81,9 +82,7 @@ export type TagType = { id: string; name: string };
 // chat
 export type ChatRoleType = (typeof CHAT_ROLE)[keyof typeof CHAT_ROLE];
 export type DefaultQuestionKeyType = keyof typeof MANUAL_QUESTIONS;
-
 type DefaultQuestionType = { [key in DefaultQuestionKeyType]: { question: string; answer: string } };
-
 export type Message =
   | ({
       role: Extract<ChatRoleType, "user" | "assistant">;
@@ -98,5 +97,4 @@ export type Message =
       data: TypesenseProductByTag[];
       content: string;
     } & { entry?: never });
-
 export type SettingKeyType = "manual" | "prompt" | "recommendation";

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { formatNumberWithDecimal } from "./utils";
-import { PAYMENT_METHODS } from "./constants";
+import { PAYMENT_METHODS_LIST } from "./constants";
 
 const currency = z
   .string()
@@ -82,7 +82,7 @@ export const shippingSchema = z.object({
 // order
 export const orderSchema = z.object({
   userId: z.string().min(3, "UserId must be at least 3 characters long"),
-  payment: z.enum(PAYMENT_METHODS, { errorMap: () => ({ message: "Invalid payment method" }) }),
+  payment: z.enum(PAYMENT_METHODS_LIST, { errorMap: () => ({ message: "Invalid payment method" }) }),
   address: shippingSchema,
   itemPrice: currency,
   shippingPrice: currency,
@@ -102,7 +102,7 @@ export const orderItemSchema = z.object({
 
 // payment
 export const paymentSchema = z.object({
-  type: z.enum(PAYMENT_METHODS, { errorMap: () => ({ message: "Invalid payment method" }) }),
+  type: z.enum(PAYMENT_METHODS_LIST, { errorMap: () => ({ message: "Invalid payment method" }) }),
 });
 
 // paypal-payment

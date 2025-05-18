@@ -13,6 +13,7 @@ import IconButton from "../custom/icon-button";
 import { useTransition } from "react";
 import AdminOrderControls from "./admin-order-controls/admin-order-controls";
 import OrderDetailCard from "./order-detail-card";
+import { PAYMENT_METHODS } from "@/lib/constants";
 
 type OrderDetailPropsType = {
   isAdmin?: boolean;
@@ -101,14 +102,14 @@ const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecre
             totalPrice={totalPrice}
           />
           {/* paypal-payment */}
-          {!isPaid && payment === "PayPal" && (
+          {!isPaid && payment === PAYMENT_METHODS.PayPal.key && (
             <PayPalScriptProvider options={{ clientId: paypalClientId }}>
               <LoadingPaypal />
               <PayPalButtons createOrder={handleCreatePaypalOrder} onApprove={handleApprovePaypalOrder} />
             </PayPalScriptProvider>
           )}
           {/* stripe-payment */}
-          {!isPaid && payment === "Stripe" && stripeClientSecret && (
+          {!isPaid && payment === PAYMENT_METHODS.Stripe.key && stripeClientSecret && (
             <StripePayment orderId={order.id} priceInCents={order.totalPrice} clientSecret={stripeClientSecret} />
           )}
           {/* email-receipt */}

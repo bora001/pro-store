@@ -1,6 +1,5 @@
 "use server";
 
-import { PaymentFormType } from "@/components/payment/payment-form";
 import { handleAsync } from "@/utils/handle-async";
 import {
   handleApprovalPaypalOrder,
@@ -14,6 +13,7 @@ import {
   handleUpdateOrderToPaid,
   handleUpdateOrderToPaidType,
 } from "../services/order.service";
+import { PaymentFormType } from "@/types";
 
 // place-order
 export async function createOrder(payment: PaymentFormType["type"]) {

@@ -8,7 +8,7 @@ import { updateOrderToPaid } from "../../handler/order.actions";
 import { revalidatePath } from "next/cache";
 
 // order-summary
-export const fetchGetOrderSummary = async () => {
+export const handleGetOrderSummary = async () => {
   const orderCount = await prisma.order.count();
   const productCount = await prisma.product.count();
   const userCount = await prisma.user.count();
@@ -27,12 +27,12 @@ export const fetchGetOrderSummary = async () => {
   return { data: { orderCount, productCount, userCount, totalSales, salesData, latestSales } };
 };
 // all-orders
-export type FetchGetAllOrdersType = { page: number; limit?: number; query?: string };
-export const fetchGetAllOrders = async ({
+export type HandleGetAllOrdersType = { page: number; limit?: number; query?: string };
+export const handleGetAllOrders = async ({
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
   query = "",
-}: FetchGetAllOrdersType) => {
+}: HandleGetAllOrdersType) => {
   const queryFilter: Prisma.OrderWhereInput = { user: { name: { contains: query, mode: "insensitive" } } };
 
   const order = await prisma.order.findMany({
@@ -43,20 +43,21 @@ export const fetchGetAllOrders = async ({
     include: { user: { select: { name: true } } },
   });
   const orderCount = await prisma.order.count();
-  return {
-    data: { order, orderCount, totalPages: Math.ceil(orderCount / limit) },
-  };
+  return { data: { order, orderCount, totalPages: Math.ceil(orderCount / limit) } };
 };
 // update-order-paid
-export type FetchUpdateOrderToPaidByAdminType = { orderId: string; paymentResult: PaymentResultSchemaType };
-export const fetchUpdateOrderToPaidByAdmin = async ({ orderId, paymentResult }: FetchUpdateOrderToPaidByAdminType) => {
+export type HandleUpdateOrderToPaidByAdminType = { orderId: string; paymentResult: PaymentResultSchemaType };
+export const handleUpdateOrderToPaidByAdmin = async ({
+  orderId,
+  paymentResult,
+}: HandleUpdateOrderToPaidByAdminType) => {
   await updateOrderToPaid({ orderId, paymentResult });
   revalidatePath(`${PATH.ORDER}/${orderId}`);
   return { message: "Order updated as Paid" };
 };
 
 // update-order-delivered
-export const fetchUpdateOrderToDelivered = async (orderId: string) => {
+export const handleUpdateOrderToDelivered = async (orderId: string) => {
   const order = await prisma.order.findFirst({ where: { id: orderId } });
   if (!order) throw new Error("Order not found");
   if (!order.isPaid) throw new Error("Order is not paid");
@@ -67,7 +68,7 @@ export const fetchUpdateOrderToDelivered = async (orderId: string) => {
 };
 
 // delete-order
-export const fetchDeleteOrder = async (id: string) => {
+export const handleDeleteOrder = async (id: string) => {
   await prisma.order.delete({ where: { id } });
   revalidatePath(PATH.ORDERS);
   return { message: "Order is deleted successfully" };

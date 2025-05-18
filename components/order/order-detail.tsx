@@ -69,7 +69,7 @@ const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecre
       <h1 className="py-4 text-2xl">
         Order <span className="text-gray-500 text-base"># {idSlicer(order.id)}</span>
       </h1>
-      <div className="grid md:grid-cols-3 md:gap-5">
+      <div className="grid md:grid-cols-3 gap-5">
         <div className="col-span-2 space-y-4 overflow-x-auto">
           {/* payment */}
           <Card>
@@ -110,7 +110,7 @@ const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecre
           </Card>
         </div>
         {/* price-summary */}
-        <div className="space-y-4">
+        <div className="space-y-4 col-span-2 md:col-span-1">
           <PriceSummary
             itemPrice={itemPrice}
             taxPrice={taxPrice}
@@ -151,16 +151,11 @@ const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecre
                   <p>Admin Controls</p>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-x-2">
+              <CardContent className="flex-wrap flex gap-2">
                 <AdminControlButton
                   disabled={isPaid}
                   title={["Mark as Paid", "Paid"]}
-                  action={() =>
-                    updateOrderToPaidByAdmin({
-                      orderId: id,
-                      paymentResult: paymentMethod,
-                    })
-                  }
+                  action={() => updateOrderToPaidByAdmin({ orderId: id, paymentResult: paymentMethod })}
                 />
                 <AdminControlButton
                   disabled={isDelivered}

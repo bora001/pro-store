@@ -1,5 +1,5 @@
 import { CONSTANTS } from "@/lib/constants";
-import { CartItemType, addDealType } from "@/types";
+import { CartItemType, AddDealType } from "@/types";
 import Decimal from "decimal.js";
 
 /**
@@ -23,11 +23,7 @@ import Decimal from "decimal.js";
  * const cartPrice = calculatePrice(cart.data.items, activeDeal.data, false);
  */
 
-export function calculatePrice(
-  item: CartItemType[],
-  deal?: addDealType,
-  isActiveDeal: boolean = true
-) {
+export function calculatePrice(item: CartItemType[], deal?: AddDealType, isActiveDeal: boolean = true) {
   const itemPrice = item.reduce((acc, item) => {
     const price = new Decimal(item.price);
     const discountedPrice =

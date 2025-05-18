@@ -1,6 +1,6 @@
 "use server";
 
-import { InsertProductSchemaType, updateProductType } from "@/types";
+import { InsertProductSchemaType, UpdateProductSchemaType } from "@/types";
 
 import { handleAsync } from "@/utils/handle-async";
 import {
@@ -26,7 +26,7 @@ export async function createProduct(data: InsertProductSchemaType) {
   return handleAsync(() => handleCreateProduct(data));
 }
 // update-product
-export async function updateProduct(data: updateProductType) {
+export async function updateProduct(data: UpdateProductSchemaType) {
   return handleAsync(() => handleUpdateProduct(data));
 }
 // delete-product

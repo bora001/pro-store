@@ -1,5 +1,5 @@
 "use client";
-import { CartType, addDealType } from "@/types";
+import { CartType, AddDealType } from "@/types";
 import { Card, CardContent } from "../ui/card";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
@@ -14,7 +14,7 @@ import PriceSummaryWithArray from "../common/price-summary-with-array";
 import { calculatePrice } from "@/utils/price/calculate-price";
 import { toast } from "@/hooks/use-toast";
 
-const CartTable = ({ cart, deal }: { cart?: CartType; deal?: addDealType }) => {
+const CartTable = ({ cart, deal }: { cart?: CartType; deal?: AddDealType }) => {
   const [isPending, startTransition] = useTransition();
   const [isActiveDeal, setIsActiveDeal] = useState(false);
   const router = useRouter();

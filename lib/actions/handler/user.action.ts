@@ -1,6 +1,6 @@
 "use server";
 
-import { ShippingSchemaType, EditUserSchemaType, SignUpSchemaType, userProfileType } from "@/types";
+import { ShippingSchemaType, EditUserSchemaType, SignUpSchemaType, UserProfileSchemaType } from "@/types";
 
 import { handleAsync } from "@/utils/handle-async";
 import {
@@ -41,7 +41,7 @@ export async function updateUserAddress(data: ShippingSchemaType) {
   return handleAsync(() => handleUpdateUserAddress(data));
 }
 // update-user-profile
-export async function updateUserProfile(data: userProfileType) {
+export async function updateUserProfile(data: UserProfileSchemaType) {
   return handleAsync(() => handleUpdateUserProfile(data));
 }
 // edit-user-profile-by-admin

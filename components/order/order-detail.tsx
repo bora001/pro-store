@@ -1,5 +1,5 @@
 "use client";
-import { OrderType, PaymentResultType } from "@/types";
+import { OrderType, PaymentResultSchemaType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import Flex from "../common/flex";
@@ -38,7 +38,7 @@ const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecre
     deliveredAt,
     id,
   } = order;
-  const paymentMethod: PaymentResultType = { status: "", id, pricePaid: totalPrice, email_address: "" };
+  const paymentMethod: PaymentResultSchemaType = { status: "", id, pricePaid: totalPrice, email_address: "" };
   const handleCreatePaypalOrder = async () => {
     const response = await createPaypalOrder(order.id);
     if (!response.success) toast({ variant: "destructive", description: String(response.message) });

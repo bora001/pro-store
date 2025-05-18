@@ -2,7 +2,7 @@
 
 import { prisma } from "@/db/prisma";
 import { CONSTANTS, PATH } from "@/lib/constants";
-import { PaymentResultType } from "@/types";
+import { PaymentResultSchemaType } from "@/types";
 import { Prisma } from "@prisma/client";
 import { updateOrderToPaid } from "../../handler/order.actions";
 import { revalidatePath } from "next/cache";
@@ -44,18 +44,11 @@ export const fetchGetAllOrders = async ({
   });
   const orderCount = await prisma.order.count();
   return {
-    data: {
-      order,
-      orderCount,
-      totalPages: Math.ceil(orderCount / limit),
-    },
+    data: { order, orderCount, totalPages: Math.ceil(orderCount / limit) },
   };
 };
 // update-order-paid
-export type FetchUpdateOrderToPaidByAdminType = {
-  orderId: string;
-  paymentResult: PaymentResultType;
-};
+export type FetchUpdateOrderToPaidByAdminType = { orderId: string; paymentResult: PaymentResultSchemaType };
 export const fetchUpdateOrderToPaidByAdmin = async ({ orderId, paymentResult }: FetchUpdateOrderToPaidByAdminType) => {
   await updateOrderToPaid({ orderId, paymentResult });
   revalidatePath(`${PATH.ORDER}/${orderId}`);

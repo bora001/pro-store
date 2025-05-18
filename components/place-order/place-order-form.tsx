@@ -1,6 +1,6 @@
 "use client";
 
-import { CartType, PaymentType, ShippingSchemaType, addDealType } from "@/types";
+import { CartType, PaymentType, ShippingSchemaType, AddDealType } from "@/types";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -20,16 +20,8 @@ import { discountPrice } from "@/utils/price/discountPrice";
 import { calculatePrice } from "@/utils/price/calculate-price";
 
 const PLACE_ORDER_IMAGE_SIZE = 50;
-
-const PlacerOrderForm = ({
-  address,
-  cart,
-  deal,
-}: {
-  address: ShippingSchemaType;
-  cart: CartType;
-  deal?: addDealType;
-}) => {
+type PlacerOrderFormPropsType = { address: ShippingSchemaType; cart: CartType; deal?: AddDealType };
+const PlacerOrderForm = ({ address, cart, deal }: PlacerOrderFormPropsType) => {
   const searchParams = useSearchParams();
   const method = searchParams.get("method");
   const [price, setPrice] = useState<[string, string][]>([]);

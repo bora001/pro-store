@@ -12,7 +12,7 @@ import {
 import { updateIndex } from "@/lib/typesense/update-index";
 import { prismaToJs } from "@/lib/utils";
 import { insertProductSchema, updateProductSchema } from "@/lib/validator";
-import { AdminProductResult, InsertProductSchemaType, TagType, updateProductType } from "@/types";
+import { AdminProductResult, InsertProductSchemaType, TagType, UpdateProductSchemaType } from "@/types";
 import { Prisma } from "@prisma/client";
 import { deleteOneItemIndex } from "@/lib/typesense/delete-one-item-index";
 import { revalidatePath } from "next/cache";
@@ -73,7 +73,7 @@ export const handleCreateProduct = async (data: InsertProductSchemaType) => {
 };
 
 // update-product
-export const handleUpdateProduct = async (data: updateProductType) => {
+export const handleUpdateProduct = async (data: UpdateProductSchemaType) => {
   const originalProductData = await prisma.product.findFirst({ where: { id: data.id } });
   if (!originalProductData) throw new Error("Product not found");
   if ((originalProductData.isFeatured && !data.isFeatured) || (!originalProductData.isFeatured && data.isFeatured)) {

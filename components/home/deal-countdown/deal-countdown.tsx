@@ -2,25 +2,17 @@
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlarmClock } from "lucide-react";
-import { getDealType } from "@/types";
+import { GetDealType } from "@/types";
 import { cn } from "@/lib/utils";
 import DealCountdownContent from "./deal-countdown-content";
 
-const DealCountDown = ({ deal }: { deal?: getDealType }) => {
+const DealCountDown = ({ deal }: { deal?: GetDealType }) => {
   if (!deal) return <></>;
   return (
-    <Card
-      className={cn(
-        "w-full mx-auto py-4 rounded-lg shadow-lg relative bg-yellow-400",
-        "dark:text-black"
-      )}
-    >
+    <Card className={cn("w-full mx-auto py-4 rounded-lg shadow-lg relative bg-yellow-400", "dark:text-black")}>
       <CardHeader>
         <CardTitle className="text-3xl flex justify-center items-center gap-4">
-          <AlarmClock
-            size={30}
-            className="animate-[shake_0.15s_ease-in-out_4s_infinite]"
-          />
+          <AlarmClock size={30} className="animate-[shake_0.15s_ease-in-out_4s_infinite]" />
           <p>{deal.title}</p>
         </CardTitle>
       </CardHeader>

@@ -1,7 +1,7 @@
-import { updateProductType } from "@/types";
+import { UpdateProductSchemaType } from "@/types";
 import { ProductByTagIndexType, ProductIndexType } from "./type";
 
-export const ProductSchemaIndexConvertor = (product: updateProductType[]): ProductIndexType[] => {
+export const ProductSchemaIndexConvertor = (product: UpdateProductSchemaType[]): ProductIndexType[] => {
   return product.map(({ id = "", name, category, description, brand, stock }) => ({
     id,
     name,
@@ -11,7 +11,7 @@ export const ProductSchemaIndexConvertor = (product: updateProductType[]): Produ
     stock,
   }));
 };
-export const ProductByTagSchemaIndexConvertor = (product: updateProductType[]): ProductByTagIndexType[] => {
+export const ProductByTagSchemaIndexConvertor = (product: UpdateProductSchemaType[]): ProductByTagIndexType[] => {
   return product.map(({ id = "", name, description, brand, stock, slug, tags, images }) => ({
     id,
     name,

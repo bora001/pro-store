@@ -3,7 +3,7 @@
 import ItemQtyChanger from "../cart/item-qty-changer";
 import ItemRemoveButton from "../cart/item-remove-button";
 import { Table, TableBody, TableRow, TableCell, TableHead, TableHeader } from "../ui/table";
-import { OrderItemType, addDealType } from "@/types";
+import { OrderItemType, AddDealType } from "@/types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { PATH } from "@/lib/constants";
@@ -13,20 +13,14 @@ import { discountPrice } from "@/utils/price/discountPrice";
 import { Badge } from "../ui/badge";
 
 const PRODUCT_TABLE_IMAGE_SIZE = 50;
-
-const ProductTable = ({
-  items,
-  isView,
-  deal,
-  isActiveDeal,
-  cartId,
-}: {
+type ProductTablePropsType = {
   items: OrderItemType[];
   isView?: boolean;
-  deal?: addDealType;
+  deal?: AddDealType;
   isActiveDeal?: boolean;
   cartId?: string;
-}) => {
+};
+const ProductTable = ({ items, isView, deal, isActiveDeal, cartId }: ProductTablePropsType) => {
   return (
     <Table>
       <TableHeader>

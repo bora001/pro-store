@@ -26,11 +26,10 @@ export type ProductItemType = InsertProductSchemaType & {
   id: string;
   rating: string;
   createdAt: Date;
-  Deal: addDealType[];
+  Deal: AddDealType[];
 };
 
 export type CartType = z.infer<typeof insertCartSchema> & { id: string };
-
 export type OrderType = z.infer<typeof orderSchema> & {
   id: string;
   createdAt: Date;
@@ -40,42 +39,40 @@ export type OrderType = z.infer<typeof orderSchema> & {
   isDelivered: boolean;
   orderItems: OrderItemType[];
   user: { name: string; email: string };
-  paymentResult: PaymentResultType;
+  paymentResult: PaymentResultSchemaType;
 };
 export type CartItemType = z.infer<typeof cartItemSchema> & { InStock?: boolean };
 export type ShippingSchemaType = z.infer<typeof shippingSchema>;
-export type OrderItemType = z.infer<typeof orderItemSchema> & { dealInfo?: addDealType | null };
-export type PaymentResultType = z.infer<typeof paymentResultSchema>;
+export type OrderItemType = z.infer<typeof orderItemSchema> & { dealInfo?: AddDealType | null };
+export type PaymentResultSchemaType = z.infer<typeof paymentResultSchema>;
 export type SignUpSchemaType = z.infer<typeof signUpSchema>;
-export type userProfileType = z.infer<typeof userProfileSchema>;
-export type ResponseType<T = unknown> = { success: boolean; message?: string; data: T };
+export type UserProfileSchemaType = z.infer<typeof userProfileSchema>;
 export type PaymentType = (typeof PAYMENT_METHODS)[number];
-export type updateProductType = z.infer<typeof updateProductSchema>;
+export type UpdateProductSchemaType = z.infer<typeof updateProductSchema>;
 export type EditUserSchemaType = z.infer<typeof editUserSchema>;
 export type CategoryType = { category: string; count: number };
-
 export type AddReviewSchemaType = z.infer<typeof addReviewSchema>;
-export type reviewType = AddReviewSchemaType & { id: string; createdAt: Date; user?: { name: string } };
-
+export type ReviewType = AddReviewSchemaType & { id: string; createdAt: Date; user?: { name: string } };
 export type AddDealSchemaType = z.infer<typeof addDealSchema>;
-export type addDealType = AddDealSchemaType & { id: string; product?: ProductItemType };
-export type getDealType = AddDealSchemaType & {
+export type AddDealType = AddDealSchemaType & { id: string; product?: ProductItemType };
+export type GetDealType = AddDealSchemaType & {
   product?: Omit<
     ProductItemType,
     "category" | "brand" | "description" | "isFeatured" | "banner" | "numReviews" | "rating" | "createdAt" | "Deal"
   > & { Deal?: { title: string }[] };
 };
+export type ResponseType<T = unknown> = { success: boolean; message?: string; data: T };
 
 // pages
-type pageInformation = { count: number; totalPages: number };
+type PageInformation = { count: number; totalPages: number };
 
 // result
 export type AdminDealType = AddDealSchemaType & { id: string; product: Pick<ProductItemType, "name"> };
 
-export interface AdminProductResult extends pageInformation {
+export interface AdminProductResult extends PageInformation {
   product: Pick<ProductItemType, "id" | "name" | "price" | "category" | "stock" | "rating">[];
 }
-export interface AdminDealResult extends pageInformation {
+export interface AdminDealResult extends PageInformation {
   deal: AdminDealType[];
 }
 

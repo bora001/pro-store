@@ -5,7 +5,7 @@ import { prisma } from "@/db/prisma";
 import { PATH } from "@/lib/constants";
 import { sendDeleteAccountConfirm, sendWelcomeEmail } from "@/lib/email/mail-handler";
 import { shippingSchema, signInSchema } from "@/lib/validator";
-import { ShippingSchemaType, EditUserSchemaType, SignUpSchemaType, userProfileType } from "@/types";
+import { ShippingSchemaType, EditUserSchemaType, SignUpSchemaType, UserProfileSchemaType } from "@/types";
 import { hashSync } from "bcrypt-ts-edge";
 import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -67,7 +67,7 @@ export const handleUpdateUserAddress = async (data: ShippingSchemaType) => {
 };
 
 // update-user-profile
-export const handleUpdateUserProfile = async (data: userProfileType) => {
+export const handleUpdateUserProfile = async (data: UserProfileSchemaType) => {
   const id = await getUserInfo();
   const currentUser = await prisma.user.findFirst({ where: { id } });
   if (!currentUser) throw new Error("User not found");

@@ -10,7 +10,7 @@ import { PaymentFormType } from "@/components/payment/payment-form";
 import { calculatePrice } from "@/utils/price/calculate-price";
 import { orderSchema } from "@/lib/validator";
 import { prisma } from "@/db/prisma";
-import { OrderItemType, PaymentResultType, ProductItemType, ShippingSchemaType } from "@/types";
+import { OrderItemType, PaymentResultSchemaType, ProductItemType, ShippingSchemaType } from "@/types";
 import { updateIndex } from "@/lib/typesense/update-index";
 import { prismaToJs } from "@/lib/utils";
 import { paypal } from "@/lib/paypal";
@@ -113,7 +113,7 @@ export async function handleApprovalPaypalOrder({ orderId, data: { orderID } }: 
   const captureData = await paypal.capturePayment(orderID);
   if (
     !captureData ||
-    captureData.id !== (order.paymentResult as PaymentResultType).id ||
+    captureData.id !== (order.paymentResult as PaymentResultSchemaType).id ||
     captureData.status !== CONSTANTS.COMPLETED
   ) {
     throw new Error("Error in paypal payment");
@@ -132,7 +132,7 @@ export async function handleApprovalPaypalOrder({ orderId, data: { orderID } }: 
   return { message: "Order has been paid" };
 }
 
-export type handleUpdateOrderToPaidType = { orderId: string; paymentResult?: PaymentResultType };
+export type handleUpdateOrderToPaidType = { orderId: string; paymentResult?: PaymentResultSchemaType };
 
 export async function handleUpdateOrderToPaid({ orderId, paymentResult }: handleUpdateOrderToPaidType) {
   const order = await prisma.order.findFirst({ where: { id: orderId }, include: { orderItems: true } });
@@ -140,16 +140,10 @@ export async function handleUpdateOrderToPaid({ orderId, paymentResult }: handle
   if (order.isPaid) throw new Error("Order is already paid");
   await prisma.$transaction(async (tx) => {
     for (const item of order.orderItems) {
-      await tx.product.update({
-        where: { id: item.productId },
-        data: { stock: { increment: -item.qty } },
-      });
+      await tx.product.update({ where: { id: item.productId }, data: { stock: { increment: -item.qty } } });
     }
 
-    await tx.order.update({
-      where: { id: orderId },
-      data: { isPaid: true, paidAt: new Date(), paymentResult },
-    });
+    await tx.order.update({ where: { id: orderId }, data: { isPaid: true, paidAt: new Date(), paymentResult } });
   });
   const updateOrder = await prisma.order.findFirst({
     where: { id: orderId },
@@ -174,7 +168,7 @@ export async function handleSendEmailReceipt(orderId: string) {
       ...data,
       orderItems: data.orderItems as OrderItemType[],
       address: data.address as ShippingSchemaType,
-      paymentResult: data.paymentResult as PaymentResultType,
+      paymentResult: data.paymentResult as PaymentResultSchemaType,
     },
     email: session.user.email,
   });

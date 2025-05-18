@@ -1,13 +1,4 @@
-import {
-  Body,
-  Container,
-  Head,
-  Html,
-  Preview,
-  Section,
-  Tailwind,
-  Text,
-} from "@react-email/components";
+import { Body, Container, Head, Html, Preview, Section, Tailwind, Text } from "@react-email/components";
 import LogoTemplate from "./logo-template";
 
 const DeleteAccountTemplate = ({ name }: { name: string }) => {
@@ -22,13 +13,10 @@ const DeleteAccountTemplate = ({ name }: { name: string }) => {
             <Section>
               <Text className="text-lg text-gray-800">Goodbye! {name}! 🍂</Text>
               <Text className="text-base text-gray-700">
-                As requested, your account has been deleted. We value your
-                feedback and would appreciate hearing any issues or suggestions
-                you have for us.
+                As requested, your account has been deleted. We value your feedback and would appreciate hearing any
+                issues or suggestions you have for us.
               </Text>
-              <Text className="text-base text-gray-700">
-                we will be more than happy to welcome you back!
-              </Text>
+              <Text className="text-base text-gray-700">we will be more than happy to welcome you back!</Text>
             </Section>
           </Container>
         </Body>
@@ -36,8 +24,5 @@ const DeleteAccountTemplate = ({ name }: { name: string }) => {
     </Html>
   );
 };
-DeleteAccountTemplate.PreviewProps = {
-  name: "bora",
-};
-
+DeleteAccountTemplate.PreviewProps = { name: "bora" };
 export default DeleteAccountTemplate;

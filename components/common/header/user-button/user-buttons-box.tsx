@@ -6,16 +6,9 @@ import { PATH } from "@/lib/constants";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 
-const UserButtonBox = ({
-  isAdmin,
-  ...props
-}: {
-  isAdmin: boolean;
-  childList?: { title: string; content: ReactNode }[];
-} & ButtonProps) => {
-  const ADMIN_BUTTON = isAdmin
-    ? [{ action: () => redirect(PATH.DASHBOARD), title: "Admin" }]
-    : [];
+type UserButtonBoxPropsType = { isAdmin: boolean; childList?: { title: string; content: ReactNode }[] };
+const UserButtonBox = ({ isAdmin, ...props }: UserButtonBoxPropsType & ButtonProps) => {
+  const ADMIN_BUTTON = isAdmin ? [{ action: () => redirect(PATH.DASHBOARD), title: "Admin" }] : [];
   const USER_BUTTON = [
     ...ADMIN_BUTTON,
     { action: () => redirect(PATH.MY_PROFILE), title: "My Profile" },
@@ -24,7 +17,6 @@ const UserButtonBox = ({
   ];
   return (
     <div className="space-y-1">
-      {/* <SheetClose>dlc</SheetClose> */}
       {USER_BUTTON.map(({ action, title }) => (
         <div key={title}>
           <Button

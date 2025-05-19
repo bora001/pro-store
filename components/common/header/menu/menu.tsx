@@ -1,12 +1,6 @@
 import Flex from "../../flex";
 import { EllipsisVertical } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import UserButton from "../user-button/user-button";
 import MobileMenuDrawer from "./mobile-menu-drawer";
 import CartIconButton from "../buttons/cart-icon-button";
@@ -27,14 +21,10 @@ const Menu = () => {
       <nav className="md:hidden">
         <Sheet>
           <SheetDescription className="sr-only">
-            Open the menu to change the browser theme, access the cart page, or
-            navigate to the profile page, admin page, order page, or sign
-            in/sign out
+            Open the menu to change the browser theme, access the cart page, or navigate to the profile page, admin
+            page, order page, or sign in/sign out
           </SheetDescription>
-          <SheetTrigger
-            className="align-middle"
-            aria-label="mobile-menu-button"
-          >
+          <SheetTrigger className="align-middle" aria-label="mobile-menu-button">
             <EllipsisVertical />
           </SheetTrigger>
           <SheetContent className="flex flex-col items-start w-[220px] ">

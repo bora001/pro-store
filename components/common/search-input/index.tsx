@@ -1,35 +1,26 @@
 "use client";
 
 import { SearchIcon } from "lucide-react";
-import { Input } from "../ui/input";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { Input } from "../../ui/input";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { URLChanger, cn } from "@/lib/utils";
+import { URLChanger } from "@/lib/utils";
 import { autoComplete } from "@/lib/typesense/auto-complete";
 import { debounce } from "lodash";
+import RecommendationList from "./recommendations-list";
 
-const SearchInput = ({
-  path,
-  autoCompleteRequired,
-}: {
-  path?: string;
-  autoCompleteRequired?: boolean;
-}) => {
+const SearchInput = ({ path, autoCompleteRequired }: { path?: string; autoCompleteRequired?: boolean }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const query = searchParams.get("query") || "";
   const [searchKeyword, setSearchKeyword] = useState(query);
   const [recommendations, setRecommendations] = useState<string[]>([]);
-  const pathname = usePathname();
+  const [activeIndex, setActiveIndex] = useState<null | number>(null);
+
   const generateURL = useCallback(
-    (value: string) =>
-      URLChanger({
-        params: searchParams.toString(),
-        pathname: path || pathname,
-        key: "query",
-        value,
-      }),
+    (value: string) => URLChanger({ params: searchParams.toString(), pathname: path || pathname, key: "query", value }),
     [searchParams, path, pathname]
   );
 
@@ -44,26 +35,32 @@ const SearchInput = ({
   }, [query]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    const n = recommendations.length;
     if (e.key === "Enter") {
       e.preventDefault();
-      router.replace(generateURL(searchKeyword));
+      const keyword = activeIndex === null ? searchKeyword : recommendations[activeIndex];
+      if (!keyword.trim()) return;
+      router.replace(generateURL(keyword));
+    } else if (e.key === "ArrowDown") {
+      setActiveIndex((prev) => (prev === null ? 0 : (prev + 1) % n));
+    } else if (e.key === "ArrowUp") {
+      setActiveIndex((prev) => (prev === null ? n - 1 : (prev - 1 + n) % n));
     }
   };
-  const debouncedAutocomplete = useMemo(() => {
-    return debounce((value: string) => {
-      autoComplete(value)
-        .then((results) => {
-          setRecommendations(results as string[]);
-        })
-        .catch((error) => console.error("Autocomplete failed:", error));
-    }, 300);
-  }, [setRecommendations]);
 
   useEffect(() => {
+    const debouncedAutocomplete = debounce((value: string) => {
+      autoComplete(value)
+        .then((results) => setRecommendations(results as string[]))
+        .catch(console.error);
+    }, 300);
+
     if (searchKeyword && autoCompleteRequired) {
       debouncedAutocomplete(searchKeyword);
     }
-  }, [autoCompleteRequired, debouncedAutocomplete, searchKeyword]);
+
+    return () => debouncedAutocomplete.cancel();
+  }, [searchKeyword, autoCompleteRequired]);
 
   const getRecommendation = (value: string) => {
     router.replace(generateURL(value));
@@ -81,6 +78,10 @@ const SearchInput = ({
     }, 1000);
   };
 
+  useEffect(() => {
+    setActiveIndex(null);
+  }, [searchKeyword]);
+
   return (
     <div className="relative">
       <div className="flex gap-2 w-80">
@@ -91,8 +92,8 @@ const SearchInput = ({
           onKeyDown={handleKeyDown}
           onChange={handleInput}
           onBlur={handleBlur}
+          autoComplete="off"
         />
-
         <Link
           href={generateURL(searchKeyword)}
           className="bg-black px-3 flex items-center justify-center rounded-sm"
@@ -101,23 +102,14 @@ const SearchInput = ({
           <SearchIcon color="white" width={16} />
         </Link>
       </div>
-
-      <div
-        className={cn(
-          "w-80 text-sm absolute bg-white px-4 py-3 mt-3 rounded-sm shadow-lg max-h-52 overflow-y-scroll dark:bg-black",
-          hasRecommendations ? "block" : "hidden"
-        )}
-      >
-        {recommendations.map((item, idx) => (
-          <div
-            className="py-2 cursor-pointer hover:font-semibold"
-            key={idx}
-            onClick={() => getRecommendation(item)}
-          >
-            {item}
-          </div>
-        ))}
-      </div>
+      {hasRecommendations && (
+        <RecommendationList
+          activeIndex={activeIndex}
+          recommendations={recommendations}
+          getRecommendation={getRecommendation}
+          setActiveIndex={setActiveIndex}
+        />
+      )}
     </div>
   );
 };

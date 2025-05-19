@@ -2,14 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectTrigger,
-  SelectValue,
-  SelectItem,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectTrigger, SelectValue, SelectItem } from "@/components/ui/select";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
 
@@ -22,14 +15,7 @@ const PcNavBar = ({ navList }: { navList: NavBarType }) => {
     <div className="hidden lg:block">
       {navList.map(({ title, href }) => (
         <Link key={title} href={href}>
-          <Button
-            variant="ghost"
-            className={
-              pathname.includes(href)
-                ? "text-black font-semibold"
-                : "text-gray-400"
-            }
-          >
+          <Button variant="ghost" className={pathname.includes(href) ? "text-black font-semibold" : "text-gray-400"}>
             {title}
           </Button>
         </Link>
@@ -44,10 +30,7 @@ const MobileNavBar = ({ navList }: { navList: NavBarType }) => {
   const moveLink = (link: string) => {
     router.push(link);
   };
-  const defaultValue = useMemo(
-    () => navList.find((item) => pathname.includes(item.href))?.href,
-    [navList, pathname]
-  );
+  const defaultValue = useMemo(() => navList.find((item) => pathname.includes(item.href))?.href, [navList, pathname]);
   return (
     <div className="block lg:hidden">
       <Select onValueChange={moveLink} defaultValue={defaultValue}>

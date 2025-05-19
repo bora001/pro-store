@@ -1,32 +1,18 @@
 import Pagination from "@/components/common/pagination";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { idSlicer } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import {
-  deleteProduct,
-  getAllAdminProduct,
-} from "@/lib/actions/handler/admin/admin.product.actions";
+import { deleteProduct, getAllAdminProduct } from "@/lib/actions/handler/admin/admin.product.actions";
 import { getAllProducts } from "@/lib/actions/handler/product.actions";
 
 import { PATH } from "@/lib/constants";
 import DeleteButton from "@/components/common/delete-button";
-import SearchContainer from "@/components/admin/search-container";
 import { Button } from "@/components/ui/button";
+import SearchContainer from "@/components/admin/common/search-container";
 
-export const metadata = {
-  title: "Products",
-};
-const ADMIN_PRODUCT = {
-  HEADER: ["ID", "NAME", "PRICE", "CATEGORY", "STOCK", "RATING", "DETAIL"],
-};
+export const metadata = { title: "Products" };
+const ADMIN_PRODUCT = { HEADER: ["ID", "NAME", "PRICE", "CATEGORY", "STOCK", "RATING", "DETAIL"] };
 const AdminProductPage = async (props: {
   searchParams: Promise<{ page: string; query: string; category: string }>;
 }) => {
@@ -38,7 +24,7 @@ const AdminProductPage = async (props: {
   return (
     <SearchContainer
       title="Products"
-      hasList={data?.product.length === 0}
+      noList={data?.product.length === 0}
       resetPath={PATH.PRODUCTS}
       query={query}
       emptyText="No products available"
@@ -71,25 +57,14 @@ const AdminProductPage = async (props: {
                     Edit
                   </Badge>
                 </Link>
-                <DeleteButton
-                  type="badge"
-                  id={product.id}
-                  action={deleteProduct}
-                  buttonLabel="delete-product-button"
-                />
+                <DeleteButton type="badge" id={product.id} action={deleteProduct} buttonLabel="delete-product-button" />
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
       <div className="flex justify-center">
-        {data && data.totalPages > 1 && (
-          <Pagination
-            page={page || 1}
-            urlParams="page"
-            totalPages={data.totalPages}
-          />
-        )}
+        {data && data.totalPages > 1 && <Pagination page={page || 1} urlParams="page" totalPages={data.totalPages} />}
       </div>
     </SearchContainer>
   );

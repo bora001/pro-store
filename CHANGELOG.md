@@ -1,5 +1,14 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.7.0](https://github.com/bora001/pro-store/compare/v1.6.0...v1.7.0) (2025-05-19)
+This release includes several enhancements, such as new features, code refactoring.
+
+### 🚀 New Features
+* (autocomplete): support keyboard navigation ([e5c74fd](https://github.com/bora001/pro-store/commit/e5c74fd8b08a9cd386b318e524bb8cf5d37967c1))
+
+### 🔧 Code Refactoring
+* (header) : enhance code readability ([e309184](https://github.com/bora001/pro-store/commit/e3091846ea62573de0d2c83660e3ea4f63f2742c))
+
 ## Release Overview [1.6.0](https://github.com/bora001/pro-store/compare/v1.5.0...v1.6.0) (2025-05-19)
 This release includes several enhancements, such as new features, bug fixes, code refactoring.
 

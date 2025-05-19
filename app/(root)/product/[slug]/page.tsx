@@ -1,6 +1,6 @@
 import ProductSection from "@/components/product/product-section";
 import ReviewSection from "@/components/product/review-section";
-import { getProductBySlug } from "@/lib/actions/product.actions";
+import { getProductBySlug } from "@/lib/actions/handler/product.actions";
 
 import { notFound } from "next/navigation";
 export const metadata = {
@@ -10,7 +10,7 @@ const ProductDetailPage = async (props: {
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await props.params;
-  const product = await getProductBySlug(slug);
+  const { data: product } = await getProductBySlug(slug);
   if (!product) notFound();
   return (
     <div className=" flex flex-col h-full">

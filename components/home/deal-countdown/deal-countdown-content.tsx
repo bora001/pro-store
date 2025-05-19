@@ -7,20 +7,14 @@ import { CONFIG } from "@/lib/constants/config";
 import { cn } from "@/lib/utils";
 import AddToCart from "../../product/add-to-cart";
 import DealCountdownTimer from "./deal-countdown-timer";
-import { getDealType } from "@/types";
+import { GetDealType } from "@/types";
 import { useState } from "react";
 import { Button } from "../../ui/button";
 import Link from "next/link";
 import DiscountBadge from "../../product/discount-badge";
 import { discountPrice } from "@/utils/price/discountPrice";
 
-const DealCountdownContent = ({
-  deal,
-  soldOut,
-}: {
-  deal: getDealType;
-  soldOut: boolean;
-}) => {
+const DealCountdownContent = ({ deal, soldOut }: { deal: GetDealType; soldOut: boolean }) => {
   const [isActiveDeal, setIsActiveDeal] = useState(true);
   return (
     <>
@@ -49,11 +43,7 @@ const DealCountdownContent = ({
       ) : (
         <CardContent className={cn("flex justify-center")}>
           <div className="flex gap-8 flex-col lg:flex-row items-center">
-            <div
-              className={cn(
-                "rounded-lg overflow-hidden shadow-lg aspect-square relative size-56 lg:size-72"
-              )}
-            >
+            <div className={cn("rounded-lg overflow-hidden shadow-lg aspect-square relative size-56 lg:size-72")}>
               <Image
                 src={`https://${CONFIG.IMAGE_URL}/product/${deal.product?.images[0]}`}
                 alt="Promo"
@@ -63,18 +53,14 @@ const DealCountdownContent = ({
               />
             </div>
             <div className="flex flex-col items-center justify-center gap-4 px-4">
-              <p className="text-lg text-center text-primary dark:text-black">
-                {deal.description}
-              </p>
+              <p className="text-lg text-center text-primary dark:text-black">{deal.description}</p>
               <DealCountdownTimer
                 endTime={String(deal.endTime) || ""}
                 isActiveDeal={isActiveDeal}
                 setIsActiveDeal={setIsActiveDeal}
               />
               <div className="flex items-center gap-2 my-2">
-                <span className="line-through text-sm text-gray-700">
-                  {`$${deal.product?.price}`}
-                </span>
+                <span className="line-through text-sm text-gray-700">{`$${deal.product?.price}`}</span>
                 {deal.product && (
                   <span className="text-2xl font-bold text-red-600">
                     {`$${discountPrice(+deal.product.price, deal.discount, !!deal.product)}`}

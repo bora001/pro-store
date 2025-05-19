@@ -27,6 +27,7 @@ model Product {
   Review      Review[]
   Deal        Deal[]
   tags        Tag[]       @relation("ProductTags")
+  CartItem    CartItem[]
 }
 
 model User {
@@ -88,14 +89,25 @@ model verificationToken {
   @@id([identifier, token])
 }
 
+model CartItem {
+  cartId    String   @db.Uuid
+  productId String   @db.Uuid
+  qty       Int
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@id([cartId, productId], map: "cartItem_cartId_productId_pk")
+}
+
 model Cart {
-  id            String   @id @default(uuid()) @db.Uuid
-  userId        String?  @db.Uuid
+  id            String     @id @default(uuid()) @db.Uuid
+  userId        String?    @db.Uuid
   sessionCartId String
-  items         Json[]   @default([]) @db.Json
-  createdAt     DateTime @default(now()) @db.Timestamp(6)
-  itemsCount    Int
-  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items         CartItem[]
+  createdAt     DateTime   @default(now()) @db.Timestamp(6)
+  itemsCount    Int        @default(0)
+  user          User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Order {

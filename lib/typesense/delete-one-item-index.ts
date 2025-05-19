@@ -1,12 +1,6 @@
 import client from "../typesense";
 
-export async function deleteOneItemIndex({
-  model,
-  id,
-}: {
-  model: string;
-  id: string;
-}) {
+export async function deleteOneItemIndex({ model, id }: { model: string; id: string }) {
   try {
     const response = await client
       .collections(model)

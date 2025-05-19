@@ -1,6 +1,6 @@
 import EditUserForm from "@/components/admin/user/user-form";
 import Container from "@/components/common/container";
-import { getUserById } from "@/lib/actions/user.action";
+import { getUserById } from "@/lib/actions/handler/user.action";
 import { notFound } from "next/navigation";
 
 export const metadata = {
@@ -8,7 +8,7 @@ export const metadata = {
 };
 const EditUserPage = async (props: { params: Promise<{ id: string }> }) => {
   const { id } = await props.params;
-  const user = await getUserById(id);
+  const { data: user } = await getUserById(id);
   if (!user) return notFound();
 
   return (

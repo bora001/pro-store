@@ -19,7 +19,7 @@ import {
   deleteDeal,
   getAllDeals,
   getAllDealsByQuery,
-} from "@/lib/actions/admin.actions";
+} from "@/lib/actions/handler/admin/admin.deal.actions";
 import { PATH } from "@/lib/constants";
 import DeleteButton from "@/components/common/delete-button";
 import SearchContainer from "@/components/admin/search-container";
@@ -46,13 +46,13 @@ const AdminDealsPage = async (props: {
 }) => {
   const currentDate = new Date();
   const { page, query } = await props.searchParams;
-  const deals = query
+  const { data: deals } = query
     ? await getAllDealsByQuery({ page: +page || 1, query })
-    : await getAllDeals({ page: +page || 1 });
+    : await getAllDeals({ page: +page || 1, query });
   return (
     <SearchContainer
       title="Deals"
-      hasList={deals.deal.length === 0}
+      hasList={deals?.deal.length === 0}
       resetPath={PATH.DEALS}
       query={query}
       emptyText="No deals available"
@@ -71,7 +71,7 @@ const AdminDealsPage = async (props: {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {deals.deal.map((deal) => {
+          {deals?.deal.map((deal) => {
             const isValidDate = deal.endTime
               ? new Date(deal.endTime) > currentDate
               : false;
@@ -117,7 +117,7 @@ const AdminDealsPage = async (props: {
         </TableBody>
       </Table>
       <div className="flex justify-center">
-        {deals.totalPages > 1 && (
+        {deals && deals.totalPages > 1 && (
           <Pagination
             page={page || 1}
             urlParams="page"

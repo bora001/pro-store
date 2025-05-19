@@ -1,7 +1,7 @@
 import { useTransition } from "react";
 import { Button } from "../ui/button";
-import { ResponseType } from "@/types";
 import { toast } from "@/hooks/use-toast";
+import { ResponseType } from "@/types";
 
 export const AdminControlButton = ({
   title: [active, inactive],

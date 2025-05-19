@@ -26,8 +26,7 @@ export function divideByDecimal(num: number) {
 }
 
 // capitalize
-export const capitalize = (str: string) =>
-  str.length && str.charAt(0).toUpperCase() + str.slice(1);
+export const capitalize = (str: string) => str.length && str.charAt(0).toUpperCase() + str.slice(1);
 
 // currency
 export const currencyFormatter = new Intl.NumberFormat("en-US", {
@@ -45,8 +44,7 @@ export const dateTimeConverter = (time: Date | null) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function formatError(error: any) {
   const isZodError = error.name === "ZodError";
-  const isPrismaError =
-    error.name === "PrismaClientKnownRequestError" && error.code === "P2002";
+  const isPrismaError = error.name === "PrismaClientKnownRequestError" && error.code === "P2002";
   let message = "";
   if (isZodError) {
     message = Object.keys(error.errors)
@@ -71,11 +69,8 @@ export function formatError(error: any) {
 }
 
 // handle success-response
-export function formatSuccess(message: string) {
-  return {
-    success: true,
-    message,
-  };
+export function formatSuccess<T>({ message, data }: { message?: string; data?: T }) {
+  return { success: true, message, data };
 }
 
 // long-id-slicer
@@ -97,27 +92,14 @@ export function URLChanger({
 }) {
   const query = qs.parse(params);
 
-  if (value === "" || value === undefined || value === null) {
-    delete query[key];
-  } else {
-    query[key] = String(value);
-  }
-
-  return qs.stringifyUrl(
-    { url: pathname || PATH.HOME, query },
-    { skipNull: true, skipEmptyString: true }
-  );
+  if (value === "" || value === undefined || value === null) delete query[key];
+  else query[key] = String(value);
+  return qs.stringifyUrl({ url: pathname || PATH.HOME, query }, { skipNull: true, skipEmptyString: true });
 }
 
 // calculate time
 export const calculateTime = (endTime: string) => {
-  const MILLISECONDS = {
-    day: 1000 * 60 * 60 * 24,
-    hour: 1000 * 60 * 60,
-    minute: 1000 * 60,
-    second: 1000,
-  };
-
+  const MILLISECONDS = { day: 1000 * 60 * 60 * 24, hour: 1000 * 60 * 60, minute: 1000 * 60, second: 1000 };
   const diff = +new Date(endTime) - +new Date();
   if (diff <= 0) return null;
 

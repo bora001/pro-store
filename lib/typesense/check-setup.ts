@@ -10,10 +10,8 @@ const INITIAL_SETUP = {
 export async function checkSetupTypesense(key: string) {
   try {
     const setupFn = INITIAL_SETUP[key];
-    if (setupFn) {
-      const success = await setupFn();
-      return success;
-    } else {
+    if (setupFn) return await setupFn();
+    else {
       console.warn(`No setup function found for key: ${key}`);
       return false;
     }

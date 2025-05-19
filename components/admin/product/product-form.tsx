@@ -3,17 +3,10 @@ import FormInput from "@/components/common/form-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { createProduct, updateProduct } from "@/lib/actions/admin.actions";
+import { createProduct, updateProduct } from "@/lib/actions/handler/admin/admin.product.actions";
 import { CONSTANTS, PATH } from "@/lib/constants";
 import { capitalize } from "@/lib/utils";
 import { insertProductSchema, updateProductSchema } from "@/lib/validator";
@@ -22,11 +15,10 @@ import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
-import { z } from "zod";
 import ProductFormImageInput from "./product-form-image-input";
 import { v4 as uuidv4 } from "uuid";
 import ProductTags from "./form-items/product-tags";
-import { TagType } from "@/types";
+import { InsertProductSchemaType, TagType } from "@/types";
 
 type ProductFormType = "create" | "edit";
 
@@ -54,7 +46,7 @@ const ProductForm = ({
   allTags,
 }: {
   type: ProductFormType;
-  product?: z.infer<typeof insertProductSchema>;
+  product?: InsertProductSchemaType;
   productId?: string;
   deleteButton?: ReactNode;
   allTags: TagType[];
@@ -65,7 +57,7 @@ const ProductForm = ({
   const [deleteBanner, setDeleteBanner] = useState<string[]>([]);
   const router = useRouter();
   const isEdit = type === "edit";
-  const form = useForm<z.infer<typeof insertProductSchema>>({
+  const form = useForm<InsertProductSchemaType>({
     resolver: zodResolver(isEdit ? updateProductSchema : insertProductSchema),
     defaultValues: product && isEdit ? product : defaultValue,
   });
@@ -88,12 +80,7 @@ const ProductForm = ({
     const response = await fetch(PATH.API_UPLOAD_IMAGE, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        file: base64File,
-        fileName: `${uuidv4()}-${file.name}`,
-        fileType: file.type,
-        folder,
-      }),
+      body: JSON.stringify({ file: base64File, fileName: `${uuidv4()}-${file.name}`, fileType: file.type, folder }),
     });
 
     const responseBody = await response.text();
@@ -101,16 +88,11 @@ const ProductForm = ({
     if (response.ok) {
       return result?.fileName || file.name;
     } else {
-      throw new Error(
-        result?.error || `Upload failed (status: ${response.status})`
-      );
+      throw new Error(result?.error || `Upload failed (status: ${response.status})`);
     }
   };
 
-  const handleUpload = async (
-    folder: string,
-    files: File[]
-  ): Promise<string[]> => {
+  const handleUpload = async (folder: string, files: File[]): Promise<string[]> => {
     if (!files.length) return [];
     try {
       const uploadPromises = files.map((file) => uploadFile(file, folder));
@@ -141,9 +123,7 @@ const ProductForm = ({
     // delete images
     if (deleteImages.length) {
       await handleDelete("product", deleteImages);
-      formData.images = formData.images.filter(
-        (image) => !deleteImages.some((deleteImage) => deleteImage === image)
-      );
+      formData.images = formData.images.filter((image) => !deleteImages.some((deleteImage) => deleteImage === image));
     }
     // upload banner
     if (banners.length) {
@@ -158,9 +138,7 @@ const ProductForm = ({
 
     // extra-validate
     if (!formData.images.length && !files.length) {
-      return form.setError("images", {
-        message: "Product must have at least one image",
-      });
+      return form.setError("images", { message: "Product must have at least one image" });
     }
     if (!formData.banner) formData.isFeatured = false;
 
@@ -196,12 +174,7 @@ const ProductForm = ({
                     <Input placeholder="Enter slug" {...field} />
                     <Button
                       type="button"
-                      onClick={() =>
-                        form.setValue(
-                          "slug",
-                          slugify(form.getValues("name"), { lower: true })
-                        )
-                      }
+                      onClick={() => form.setValue("slug", slugify(form.getValues("name"), { lower: true }))}
                     >
                       Generate Slug
                     </Button>
@@ -257,10 +230,7 @@ const ProductForm = ({
                 render={({ field }) => (
                   <FormItem className="space-x-2 items-center">
                     <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                     <FormLabel>Is Featured?</FormLabel>
                     <FormMessage />
@@ -284,20 +254,14 @@ const ProductForm = ({
           </Card>
         </div>
         {/* description */}
-        <FormInput
-          type="textarea"
-          placeholder="Enter Product Description"
-          name="description"
-        />
+        <FormInput type="textarea" placeholder="Enter Product Description" name="description" />
         {/* tags */}
         <ProductTags allTags={allTags} />
         {/* buttons */}
         <div className="flex gap-2">
           {/* submit */}
           <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting
-              ? "Submitting"
-              : `${capitalize(type)} Product`}
+            {form.formState.isSubmitting ? "Submitting" : `${capitalize(type)} Product`}
           </Button>
           {deleteButton}
         </div>

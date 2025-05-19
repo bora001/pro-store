@@ -6,14 +6,7 @@ interface IconButtonProps extends ButtonProps {
   icon: ReactNode;
   text?: string;
 }
-const IconButton = ({
-  className,
-  icon,
-  text,
-  variant = "ghost",
-  onClick,
-  ...props
-}: IconButtonProps) => {
+const IconButton = ({ className, icon, text, variant = "ghost", onClick, ...props }: IconButtonProps) => {
   return (
     <Button
       {...props}

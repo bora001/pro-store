@@ -14,11 +14,7 @@ const FormSubmitButton = ({
   const { pending } = useFormStatus();
   const [processingText, defaultText] = text;
   return (
-    <Button
-      className={`${className} w-full`}
-      disabled={pending || disabled}
-      {...props}
-    >
+    <Button className={`${className} w-full`} disabled={pending || disabled} {...props}>
       {pending ? processingText : defaultText}
     </Button>
   );

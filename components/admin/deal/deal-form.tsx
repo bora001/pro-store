@@ -1,34 +1,20 @@
 "use client";
 import FormInput from "@/components/common/form-input";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectItem,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { createDeal, updateDeal } from "@/lib/actions/admin.actions";
+import { createDeal, updateDeal } from "@/lib/actions/handler/admin/admin.deal.actions";
 import { PATH } from "@/lib/constants";
 import { CONFIG } from "@/lib/constants/config";
 import { capitalize } from "@/lib/utils";
 import { addDealSchema } from "@/lib/validator";
-import { ProductItemType } from "@/types";
+import { AddDealSchemaType, ProductItemType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 type DealFormType = "create" | "edit";
 
@@ -50,28 +36,22 @@ const DealForm = ({
   products,
 }: {
   type: DealFormType;
-  deal?: z.infer<typeof addDealSchema>;
+  deal?: AddDealSchemaType;
   dealId?: string;
   deleteButton?: ReactNode;
   products: ProductItemType[];
 }) => {
   const router = useRouter();
   const isEdit = type === "edit";
-  const form = useForm<z.infer<typeof addDealSchema>>({
+  const form = useForm<AddDealSchemaType>({
     resolver: zodResolver(addDealSchema),
     defaultValues: deal && isEdit ? deal : defaultValue,
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
     const formData = { ...values };
-    const { success, message } = isEdit
-      ? await updateDeal({ ...formData, id: dealId })
-      : await createDeal(formData);
-
-    if (!success) {
-      toast({ variant: "destructive", description: message });
-      return;
-    }
+    const { success, message } = isEdit ? await updateDeal({ ...formData, id: dealId }) : await createDeal(formData);
+    if (!success) return toast({ variant: "destructive", description: message });
     router.replace(PATH.DEALS);
   });
 
@@ -86,11 +66,7 @@ const DealForm = ({
           <FormInput placeholder="Enter Deal Title" name="title" />
         </div>
         {/* description */}
-        <FormInput
-          type="textarea"
-          placeholder="Enter Deal Description"
-          name="description"
-        />
+        <FormInput type="textarea" placeholder="Enter Deal Description" name="description" />
         {/* product */}
         <FormField
           control={form.control}
@@ -98,10 +74,7 @@ const DealForm = ({
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Product</FormLabel>
-              <Select
-                value={String(field.value)}
-                onValueChange={field.onChange}
-              >
+              <Select value={String(field.value)} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a Product" />
@@ -111,12 +84,7 @@ const DealForm = ({
                   {products.map(({ name, id, images }) => (
                     <SelectItem key={id} value={id}>
                       <span className="flex items-center gap-3">
-                        <Image
-                          src={`https://${CONFIG.IMAGE_URL}/product/${images[0]}`}
-                          width={30}
-                          height={30}
-                          alt=""
-                        />
+                        <Image src={`https://${CONFIG.IMAGE_URL}/product/${images[0]}`} width={30} height={30} alt="" />
                         {capitalize(name)}
                       </span>
                       {/* {capitalize(name)} */}
@@ -130,25 +98,15 @@ const DealForm = ({
         />
         {/* discount */}
         <div className="flex flex-col gap-5 md:flex-row">
-          <FormInput
-            placeholder="Enter Discount"
-            name="discount"
-            type="number"
-          />
+          <FormInput placeholder="Enter Discount" name="discount" type="number" />
         </div>
         {/* end-time */}
-        <FormInput
-          placeholder="Enter Deal Type"
-          name="endTime"
-          type="datetime-local"
-        />
+        <FormInput placeholder="Enter Deal Type" name="endTime" type="datetime-local" />
         {/* buttons */}
         <div className="flex gap-2">
           {/* submit */}
           <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting
-              ? "Submitting"
-              : `${capitalize(type)} Deal`}
+            {form.formState.isSubmitting ? "Submitting" : `${capitalize(type)} Deal`}
           </Button>
           {deleteButton}
         </div>

@@ -1,32 +1,18 @@
 "use client";
 
-import { reviewType } from "@/types";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { ReviewType } from "@/types";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Calendar, Pencil, Trash, User } from "lucide-react";
 import dayjs from "dayjs";
 import RatingStar from "../common/rating-star";
-import IconButton from "../custom/IconButton";
+import IconButton from "../custom/icon-button";
 import ReviewForm from "./review-form";
 import DeleteButton from "../common/delete-button";
-import { deleteReview } from "@/lib/actions/review.actions";
+import { deleteReview } from "@/lib/actions/handler/review.actions";
 import ListContainer from "../common/list-container";
 
-const ReviewList = ({
-  productId,
-  reviewList,
-
-  currentUser,
-}: {
-  productId: string;
-  reviewList: reviewType[];
-  currentUser?: string;
-}) => {
+type ReviewListPropsType = { productId: string; reviewList: ReviewType[]; currentUser?: string };
+const ReviewList = ({ productId, reviewList, currentUser }: ReviewListPropsType) => {
   return (
     <div className="flex-1 flex flex-col gap-3">
       <ListContainer listLength={reviewList.length} title="No reviews yet">
@@ -47,9 +33,7 @@ const ReviewList = ({
                         }}
                         userId={currentUser}
                         productId={productId}
-                        button={
-                          <IconButton icon={<Pencil />} className="p-3" />
-                        }
+                        button={<IconButton icon={<Pencil />} className="p-3" />}
                       />
                       <DeleteButton
                         type="custom"

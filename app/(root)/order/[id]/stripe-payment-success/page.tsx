@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { getOrderInfo } from "@/lib/actions/order.actions";
+import { getOrderInfo } from "@/lib/actions/handler/order.actions";
 import { PATH } from "@/lib/constants";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";

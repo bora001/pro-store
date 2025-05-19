@@ -22,7 +22,6 @@ const ProductCard = ({
       <div className="relative">
         <ProductDiscountBadge endTime={endTime} discount={Deal[0]?.discount} />
       </div>
-
       <CardHeader className="items-center p-0 ">
         <Link href={`${PATH.PRODUCT}/${slug}`}>
           <S3Image
@@ -44,11 +43,7 @@ const ProductCard = ({
         <div className="flex-between gap-4">
           <RatingStar rating={rating} />
           {stock > 0 ? (
-            <ProductPrice
-              discount={Deal?.[0]?.discount}
-              endTime={endTime}
-              price={price}
-            />
+            <ProductPrice discount={Deal?.[0]?.discount} endTime={endTime} price={price} />
           ) : (
             <Badge variant="destructive">Out of Stock</Badge>
           )}

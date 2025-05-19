@@ -5,7 +5,7 @@ import SubContainer from "./sub-container";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
-import { updateSetting } from "@/lib/actions/admin.actions";
+import { updateSetting } from "@/lib/actions/handler/admin/admin.setting.actions";
 import useCustomToast from "@/hooks/use-custom-toast";
 import { SettingKeyType } from "@/types";
 

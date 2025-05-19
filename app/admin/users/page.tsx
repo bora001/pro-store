@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllUsers } from "@/lib/actions/admin.actions";
-import { deleteUser } from "@/lib/actions/user.action";
+import { getAllUsers } from "@/lib/actions/handler/admin/admin.user.actions";
+import { deleteUser } from "@/lib/actions/handler/user.action";
 import { CONSTANTS, PATH } from "@/lib/constants";
 import { idSlicer } from "@/lib/utils";
 import Link from "next/link";
@@ -22,15 +22,15 @@ const ADMIN_USER = {
   HEADER: ["ID", "NAME", "EMAIL", "ROLE", "DETAIL"],
 };
 const AdminUserPage = async (props: {
-  searchParams: Promise<{ page: string; query: string; category: string }>;
+  searchParams: Promise<{ page: string; query: string }>;
 }) => {
-  const { page, query, category } = await props.searchParams;
-  const data = await getAllUsers({ page: +page || 1, query, category });
+  const { page, query } = await props.searchParams;
+  const { data } = await getAllUsers({ page: +page || 1, query });
 
   return (
     <SearchContainer
       title="Users"
-      hasList={data.user.length === 0}
+      hasList={data?.user.length === 0}
       resetPath={PATH.USERS}
       query={query}
       emptyText="No users available"
@@ -44,7 +44,7 @@ const AdminUserPage = async (props: {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.user.map(({ id, name, email, role }) => (
+          {data?.user.map(({ id, name, email, role }) => (
             <TableRow key={id}>
               <TableCell>#{idSlicer(id)}</TableCell>
               <TableCell>{name}</TableCell>
@@ -75,7 +75,7 @@ const AdminUserPage = async (props: {
         </TableBody>
       </Table>
       <div className="flex justify-center">
-        {data.totalPages > 1 && (
+        {data && data.totalPages > 1 && (
           <Pagination
             page={page || 1}
             urlParams="page"

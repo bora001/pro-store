@@ -7,9 +7,7 @@ import { productByTagSchema } from "../model/schema";
 
 export async function initProductByTagSearch() {
   try {
-    const collections = await client
-      .collections(TYPESENSE_KEY.PRODUCT_BY_TAG)
-      .exists();
+    const collections = await client.collections(TYPESENSE_KEY.PRODUCT_BY_TAG).exists();
     if (!collections) {
       await initializeModel(productByTagSchema);
       await importProductsByTagToTypesense();

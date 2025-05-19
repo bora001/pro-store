@@ -1,35 +1,21 @@
 "use client";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { editUserSchema } from "@/lib/validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormInput from "@/components/common/form-input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PATH, USER_ROLE } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
-import { editUserProfile } from "@/lib/actions/user.action";
-import { editUserType } from "@/types";
+import { editUserProfile } from "@/lib/actions/handler/user.action";
+import { EditUserSchemaType } from "@/types";
 import { capitalize } from "@/lib/utils";
 
-const EditUserForm = ({ user }: { user: editUserType }) => {
+const EditUserForm = ({ user }: { user: EditUserSchemaType }) => {
   const router = useRouter();
-  const form = useForm<z.infer<typeof editUserSchema>>({
+  const form = useForm<EditUserSchemaType>({
     resolver: zodResolver(editUserSchema),
     defaultValues: user,
   });
@@ -72,11 +58,7 @@ const EditUserForm = ({ user }: { user: editUserType }) => {
           )}
         />
         {/* submit */}
-        <Button
-          type="submit"
-          disabled={form.formState.isSubmitting}
-          className="w-full"
-        >
+        <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
           {form.formState.isSubmitting ? "Submitting" : `Edit`}
         </Button>
       </form>

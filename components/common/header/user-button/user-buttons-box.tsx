@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, ButtonProps } from "@/components/ui/button";
-import { signOutUser } from "@/lib/actions/user.action";
+import { signOutUser } from "@/lib/actions/handler/user.action";
 import { PATH } from "@/lib/constants";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";

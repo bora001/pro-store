@@ -17,11 +17,7 @@ describe("PayPal API", () => {
 
   test("simulates capturing a payment from an order", async () => {
     const orderId = `1PR${Math.floor(Math.random() * 100000000000000)}`;
-    const mockCapturePayment = jest
-      .spyOn(paypal, "capturePayment")
-      .mockResolvedValue({
-        status: "COMPLETE",
-      });
+    const mockCapturePayment = jest.spyOn(paypal, "capturePayment").mockResolvedValue({ status: "COMPLETE" });
     const captureResponse = await paypal.capturePayment(orderId);
     expect(captureResponse).toHaveProperty("status", "COMPLETE");
     mockCapturePayment.mockRestore();

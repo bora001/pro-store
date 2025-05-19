@@ -1,4 +1,4 @@
-import type { CartItemType, addDealType } from "@/types";
+import type { CartItemType, AddDealType } from "@/types";
 import { calculatePrice } from "@/utils/price/calculate-price";
 
 const dummyProductObject = {
@@ -20,13 +20,7 @@ const dummyDealObject = {
 describe("calculatePrice", () => {
   // assumes that only valid deals (with endTime >= now) are passed
   it("calculates price without discount", async () => {
-    const item: CartItemType[] = [
-      {
-        ...dummyProductObject,
-        price: "50",
-        qty: 2,
-      },
-    ];
+    const item: CartItemType[] = [{ ...dummyProductObject, price: "50", qty: 2 }];
     const result = calculatePrice(item);
     expect(result).toEqual({
       itemPrice: "100.00",
@@ -36,10 +30,8 @@ describe("calculatePrice", () => {
     });
   });
   it("calculates price with discount deal", async () => {
-    const item: CartItemType[] = [
-      { ...dummyProductObject, price: "39.95", qty: 2 },
-    ];
-    const deal: addDealType = {
+    const item: CartItemType[] = [{ ...dummyProductObject, price: "39.95", qty: 2 }];
+    const deal: AddDealType = {
       ...dummyDealObject,
       discount: 10, // 10%
     };
@@ -55,16 +47,12 @@ describe("calculatePrice", () => {
     });
   });
   it("sets shipping fee to 0 when item price is 100 or more", async () => {
-    const item: CartItemType[] = [
-      { ...dummyProductObject, price: "10", qty: 10 },
-    ];
+    const item: CartItemType[] = [{ ...dummyProductObject, price: "10", qty: 10 }];
     const result = calculatePrice(item);
     expect(result.shippingPrice).toBe("0.00");
   });
   it("applies 10 shipping fee when item price is less than 100", async () => {
-    const item: CartItemType[] = [
-      { ...dummyProductObject, price: "39", qty: 1 },
-    ];
+    const item: CartItemType[] = [{ ...dummyProductObject, price: "39", qty: 1 }];
     const result = calculatePrice(item);
     expect(result.shippingPrice).toBe("10.00");
   });

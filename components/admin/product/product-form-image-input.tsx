@@ -1,6 +1,6 @@
 "use client";
 import S3Image from "@/components/common/S3Image";
-import IconButton from "@/components/custom/IconButton";
+import IconButton from "@/components/custom/icon-button";
 import { Button } from "@/components/ui/button";
 import { FormControl } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
@@ -43,9 +43,7 @@ const ProductFormImageInput = ({
     if (event.target.files) {
       const selectedFiles = Array.from(event.target.files);
       const newFiles = files.concat(selectedFiles);
-      const newPreviews = selectedFiles.map((file) =>
-        URL.createObjectURL(file)
-      );
+      const newPreviews = selectedFiles.map((file) => URL.createObjectURL(file));
       setFiles(newFiles);
       setPreviews(previews.concat(newPreviews));
     }
@@ -88,10 +86,7 @@ const ProductFormImageInput = ({
               type="button"
               variant="ghost"
               onClick={() => fileInputRef.current?.click()}
-              className={cn(
-                "w-24 h-24 border rounded-md flex flex-col",
-                noMultiple && hasImages && "hidden"
-              )}
+              className={cn("w-24 h-24 border rounded-md flex flex-col", noMultiple && hasImages && "hidden")}
             >
               <Upload />
               Upload
@@ -102,12 +97,7 @@ const ProductFormImageInput = ({
               {/* image-delete-button */}
               <DeleteButton action={() => deleteFile(preview)} />
               {/* preview-thumbnail */}
-              <Image
-                src={preview}
-                width={width}
-                height={height}
-                alt={`Preview ${index}`}
-              />
+              <Image src={preview} width={width} height={height} alt={`Preview ${index}`} />
             </div>
           ))}
         </div>
@@ -115,13 +105,7 @@ const ProductFormImageInput = ({
       {imageList.map((image) => (
         <div key={String(image)} className="relative">
           <DeleteButton action={() => deleteImage(image)} />
-          <S3Image
-            folder={folder}
-            fileName={String(image)}
-            alt={`${folder} image`}
-            width={width}
-            height={height}
-          />
+          <S3Image folder={folder} fileName={String(image)} alt={`${folder} image`} width={width} height={height} />
         </div>
       ))}
     </div>

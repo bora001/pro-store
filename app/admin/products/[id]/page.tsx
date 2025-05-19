@@ -4,8 +4,8 @@ import DeleteButton from "@/components/common/delete-button";
 import {
   deleteProduct,
   getProduct,
-  getTags,
-} from "@/lib/actions/admin.actions";
+} from "@/lib/actions/handler/admin/admin.product.actions";
+import { getTags } from "@/lib/actions/handler/admin/admin.setting.actions";
 import { PATH } from "@/lib/constants";
 import { notFound } from "next/navigation";
 
@@ -14,11 +14,15 @@ export const metadata = {
 };
 const EditProductPage = async (props: { params: Promise<{ id: string }> }) => {
   const { id } = await props.params;
-  const product = await getProduct(id, {
-    include: {
-      tags: true,
+  const { data: product } = await getProduct({
+    id,
+    props: {
+      include: {
+        tags: true,
+      },
     },
   });
+
   const { data } = await getTags();
   if (!product) return notFound();
 

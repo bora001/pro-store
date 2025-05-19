@@ -1,45 +1,28 @@
 "use client";
-import { OrderType, PaymentResultType } from "@/types";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
-import Flex from "../common/flex";
+import { OrderType } from "@/types";
+import { Card, CardContent } from "../ui/card";
 import ProductTable from "../common/product-table";
 import PriceSummary from "../common/price-summary";
-import {
-  PayPalButtons,
-  PayPalScriptProvider,
-  usePayPalScriptReducer,
-} from "@paypal/react-paypal-js";
-import {
-  approvalPaypalOrder,
-  createPaypalOrder,
-  sendEmailReceipt,
-} from "@/lib/actions/order.actions";
+import { PayPalButtons, PayPalScriptProvider, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+import { approvalPaypalOrder, createPaypalOrder, sendEmailReceipt } from "@/lib/actions/handler/order.actions";
 import { toast } from "@/hooks/use-toast";
-import { dateTimeConverter, idSlicer } from "@/lib/utils";
-import { AdminControlButton } from "./admin-control";
-import {
-  updateOrderToDelivered,
-  updateOrderToPaidByAdmin,
-} from "@/lib/actions/admin.actions";
+import { idSlicer } from "@/lib/utils";
 import StripePayment from "./stripe-payment";
-import { Mail, Wrench } from "lucide-react";
-import IconButton from "../custom/IconButton";
+import { Mail } from "lucide-react";
+import IconButton from "../custom/icon-button";
 import { useTransition } from "react";
+import AdminOrderControls from "./admin-order-controls/admin-order-controls";
+import OrderDetailCard from "./order-detail-card";
+import { PAYMENT_METHODS } from "@/lib/constants";
 
-const OrderDetail = ({
-  isAdmin = false,
-  order,
-  paypalClientId,
-  stripeClientSecret,
-}: {
+type OrderDetailPropsType = {
   isAdmin?: boolean;
   order: Omit<OrderType, "paymentResult">;
   paypalClientId: string;
   stripeClientSecret: string | null;
-}) => {
+};
+const OrderDetail = ({ isAdmin = false, order, paypalClientId, stripeClientSecret }: OrderDetailPropsType) => {
   const [isPending, startTransition] = useTransition();
-
   const {
     address,
     orderItems,
@@ -54,27 +37,14 @@ const OrderDetail = ({
     deliveredAt,
     id,
   } = order;
-  const paymentMethod: PaymentResultType = {
-    status: "",
-    id,
-    pricePaid: totalPrice,
-    email_address: "",
-  };
   const handleCreatePaypalOrder = async () => {
     const response = await createPaypalOrder(order.id);
-    if (!response.success)
-      toast({
-        variant: "destructive",
-        description: String(response.message),
-      });
+    if (!response.success) toast({ variant: "destructive", description: String(response.message) });
     return response.data;
   };
   const handleApprovePaypalOrder = async (data: { orderID: string }) => {
-    const response = await approvalPaypalOrder(order.id, data);
-    toast({
-      variant: response.success ? "default" : "destructive",
-      description: String(response.message),
-    });
+    const response = await approvalPaypalOrder({ orderId: order.id, data });
+    toast({ variant: response.success ? "default" : "destructive", description: String(response.message) });
   };
 
   const LoadingPaypal = () => {
@@ -88,56 +58,33 @@ const OrderDetail = ({
   const sendEmail = () => {
     startTransition(async () => {
       const response = await sendEmailReceipt(id);
-      toast({
-        variant: response.success ? "default" : "destructive",
-        description: String(response.message),
-      });
+      toast({ variant: response.success ? "default" : "destructive", description: String(response.message) });
     });
   };
 
   return (
     <>
       <h1 className="py-4 text-2xl">
-        Order{" "}
-        <span className="text-gray-500 text-base"># {idSlicer(order.id)}</span>
+        Order <span className="text-gray-500 text-base"># {idSlicer(order.id)}</span>
       </h1>
-      <div className="grid md:grid-cols-3 md:gap-5">
+      <div className="grid md:grid-cols-3 gap-5">
         <div className="col-span-2 space-y-4 overflow-x-auto">
           {/* payment */}
-          <Card>
-            <CardContent className="p-4 gap-4">
-              <Flex className="gap-3 pb-4">
-                <h2 className="text-xl">Payment Method</h2>
-                {isPaid ? (
-                  <Badge variant="secondary">
-                    Paid at {dateTimeConverter(paidAt)}
-                  </Badge>
-                ) : (
-                  <Badge variant="destructive">unpaid</Badge>
-                )}
-              </Flex>
-              <p>{payment}</p>
-            </CardContent>
-          </Card>
+          <OrderDetailCard
+            title="Payment Method"
+            status={isPaid}
+            badgeTitle={["Paid at", "unpaid"]}
+            date={paidAt}
+            detail={payment}
+          />
           {/* shipping */}
-          <Card>
-            <CardContent className="p-4 gap-4">
-              <Flex className="gap-3 pb-4">
-                <h2 className="text-xl">Shipping Address</h2>
-                {isDelivered ? (
-                  <Badge variant="secondary">
-                    Delivered at {dateTimeConverter(deliveredAt)}
-                  </Badge>
-                ) : (
-                  <Badge variant="destructive">Not Delivered</Badge>
-                )}
-              </Flex>
-              <p>
-                {address.address}, {address.city}, {address.postalCode},{" "}
-                {address.country}
-              </p>
-            </CardContent>
-          </Card>
+          <OrderDetailCard
+            title="Shipping Address"
+            status={isDelivered}
+            badgeTitle={["Delivered at", "Not Delivered"]}
+            date={deliveredAt}
+            detail={`${address.address}, ${address.city}, ${address.postalCode}, ${address.country}`}
+          />
           {/* order-items */}
           <Card>
             <CardContent className="p-4 gap-4">
@@ -147,7 +94,7 @@ const OrderDetail = ({
           </Card>
         </div>
         {/* price-summary */}
-        <div className="space-y-4">
+        <div className="space-y-4 col-span-2 md:col-span-1">
           <PriceSummary
             itemPrice={itemPrice}
             taxPrice={taxPrice}
@@ -155,24 +102,15 @@ const OrderDetail = ({
             totalPrice={totalPrice}
           />
           {/* paypal-payment */}
-          {!isPaid && payment === "PayPal" && (
-            <>
-              <PayPalScriptProvider options={{ clientId: paypalClientId }}>
-                <LoadingPaypal />
-                <PayPalButtons
-                  createOrder={handleCreatePaypalOrder}
-                  onApprove={handleApprovePaypalOrder}
-                />
-              </PayPalScriptProvider>
-            </>
+          {!isPaid && payment === PAYMENT_METHODS.PayPal.key && (
+            <PayPalScriptProvider options={{ clientId: paypalClientId }}>
+              <LoadingPaypal />
+              <PayPalButtons createOrder={handleCreatePaypalOrder} onApprove={handleApprovePaypalOrder} />
+            </PayPalScriptProvider>
           )}
           {/* stripe-payment */}
-          {!isPaid && payment === "Stripe" && stripeClientSecret && (
-            <StripePayment
-              orderId={order.id}
-              priceInCents={order.totalPrice}
-              clientSecret={stripeClientSecret}
-            />
+          {!isPaid && payment === PAYMENT_METHODS.Stripe.key && stripeClientSecret && (
+            <StripePayment orderId={order.id} priceInCents={order.totalPrice} clientSecret={stripeClientSecret} />
           )}
           {/* email-receipt */}
           {order.paidAt && (
@@ -185,30 +123,8 @@ const OrderDetail = ({
               icon={<Mail />}
             />
           )}
-
           {/* admin : cash-on-delivery */}
-          {isAdmin && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex gap-2 items-center">
-                  <Wrench size={18} />
-                  <p>Admin Controls</p>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-x-2">
-                <AdminControlButton
-                  disabled={isPaid}
-                  title={["Mark as Paid", "Paid"]}
-                  action={() => updateOrderToPaidByAdmin(id, paymentMethod)}
-                />
-                <AdminControlButton
-                  disabled={isDelivered}
-                  title={["Mark as Delivered", "Delivered"]}
-                  action={() => updateOrderToDelivered(id)}
-                />
-              </CardContent>
-            </Card>
-          )}
+          {isAdmin && <AdminOrderControls {...{ isPaid, isDelivered, pricePaid: totalPrice, id }} />}
         </div>
       </div>
     </>

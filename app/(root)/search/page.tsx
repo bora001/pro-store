@@ -3,8 +3,8 @@ import MainFilter from "@/components/admin/search/main-filter";
 import SortFilter from "@/components/admin/search/sort-filter";
 import ListContainer from "@/components/common/list-container";
 import ProductCard from "@/components/home/product-card";
-import { getAllProducts } from "@/lib/actions/admin.actions";
-import { getAllCategory } from "@/lib/actions/product.actions";
+import { getAllProducts } from "@/lib/actions/handler/product.actions";
+import { getAllCategory } from "@/lib/actions/handler/home.actions";
 import { CONSTANTS, PATH } from "@/lib/constants";
 
 export type SearchPageParamsType = {
@@ -36,7 +36,7 @@ const SearchPage = async (props: {
     page = "1",
   } = params;
 
-  const product = await getAllProducts({
+  const { data: product } = await getAllProducts({
     query,
     category,
     price,
@@ -46,8 +46,7 @@ const SearchPage = async (props: {
   });
 
   const computedHeight = `calc(100vh - ${CONSTANTS.HEADER_HEIGHT * 2 + 26}px)`;
-  const allCategory = await getAllCategory();
-
+  const { data: allCategory } = await getAllCategory();
   return (
     <div className=" h-full">
       <div
@@ -56,7 +55,7 @@ const SearchPage = async (props: {
       >
         <div className="grid h-full sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9">
           <div className=" sm:relative absolute sm:col-span-2 md:col-span-2 lg:col-span-2 overflow-hidden">
-            <MainFilter category={allCategory} />
+            <MainFilter category={allCategory || []} />
           </div>
           <div className=" space-y-4 flex flex-col h-full p-3 sm:p-0 sm:col-span-3 md:col-span-5 lg:col-span-7 ">
             {/* search-keyword & sort */}
@@ -83,10 +82,10 @@ const SearchPage = async (props: {
                   title="No product found"
                   href={PATH.HOME}
                   linkText="Back to home"
-                  listLength={product.product?.length || 0}
+                  listLength={product?.product?.length || 0}
                 >
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 ">
-                    {product.product?.map((product) => (
+                    {product?.product?.map((product) => (
                       <ProductCard key={product.id} product={product} />
                     ))}
                   </div>

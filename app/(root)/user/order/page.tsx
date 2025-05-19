@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getUserOrder } from "@/lib/actions/order.actions";
+import { getUserOrder } from "@/lib/actions/handler/order.actions";
 import { PATH } from "@/lib/constants";
 import { dateTimeConverter, idSlicer } from "@/lib/utils";
 import Link from "next/link";
@@ -22,14 +22,14 @@ const MyOrderPage = async (props: {
   searchParams: Promise<{ page: string }>;
 }) => {
   const { page } = await props.searchParams;
-  const order = await getUserOrder({ page: +page || 1 });
+  const { data: order } = await getUserOrder({ page: +page || 1 });
   const TABLE_HEAD = ["ID", "DATE", "TOTAL", "PAID", "DELIVERED", "DETAILS"];
 
   return (
     <Container title="My Order">
       <ListContainer
         title="No orders have been placed yet"
-        listLength={order.data.length}
+        listLength={order?.data.length || 0}
       >
         <div className="overflow-x-auto h-full flex flex-col justify-between">
           {/* table */}
@@ -44,7 +44,7 @@ const MyOrderPage = async (props: {
             </TableHeader>
             {/* body */}
             <TableBody>
-              {order.data.map((orderItem) => (
+              {order?.data.map((orderItem) => (
                 <TableRow key={orderItem.id}>
                   <TableCell># {idSlicer(orderItem.id)}</TableCell>
                   <TableCell>
@@ -78,11 +78,11 @@ const MyOrderPage = async (props: {
           </Table>
           {/* pagination */}
           <div className="flex justify-center">
-            {order.totalPages > 1 && (
+            {order && order?.totalPages > 1 && (
               <Pagination
                 page={page || 1}
                 urlParams="page"
-                totalPages={order.totalPages}
+                totalPages={order?.totalPages}
               />
             )}
           </div>

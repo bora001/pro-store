@@ -1,14 +1,4 @@
-import {
-  Body,
-  Column,
-  Container,
-  Head,
-  Html,
-  Preview,
-  Row,
-  Tailwind,
-  Text,
-} from "@react-email/components";
+import { Body, Column, Container, Head, Html, Preview, Row, Tailwind, Text } from "@react-email/components";
 import LogoTemplate from "./logo-template";
 
 const EmailVerificationTemplate = ({ token }: { token: string }) => {
@@ -39,8 +29,5 @@ const EmailVerificationTemplate = ({ token }: { token: string }) => {
     </Html>
   );
 };
-EmailVerificationTemplate.PreviewProps = {
-  token: "A12BDZ",
-};
-
+EmailVerificationTemplate.PreviewProps = { token: "A12BDZ" };
 export default EmailVerificationTemplate;

@@ -1,5 +1,11 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.8.0](https://github.com/bora001/pro-store/compare/v1.7.0...v1.8.0) (2025-05-19)
+This release includes several enhancements, such as new features.
+
+### 🚀 New Features
+* (container): refactor Container into a compound component ([c89c573](https://github.com/bora001/pro-store/commit/c89c573530379b939a94e09240256df60e347a98))
+
 ## Release Overview [1.7.0](https://github.com/bora001/pro-store/compare/v1.6.0...v1.7.0) (2025-05-19)
 This release includes several enhancements, such as new features, code refactoring.
 

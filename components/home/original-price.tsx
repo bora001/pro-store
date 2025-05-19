@@ -1,5 +1,5 @@
-import Text from "../custom/text";
 import { cn } from "@/lib/utils";
+import Text from "../custom/text";
 
 const OriginalPrice = ({ price, isEnd }: { isEnd: boolean; price: string }) => {
   return (

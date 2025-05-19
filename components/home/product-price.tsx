@@ -1,9 +1,9 @@
 "use client";
 import { cn, divideByDecimal } from "@/lib/utils";
-import Text from "../custom/text";
 import OriginalPrice from "./original-price";
 import { discountPrice } from "@/utils/price/discountPrice";
 import useGetCountdown from "@/hooks/use-get-countdown";
+import Text from "../custom/text";
 
 type ProductPricePropsType = {
   unit?: string;

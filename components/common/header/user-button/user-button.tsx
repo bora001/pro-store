@@ -22,9 +22,7 @@ const UserButton = async ({ noPopup }: { noPopup?: boolean }) => {
         <User size={16} />
         {name}
       </div>
-      <p className="text-sm text-muted-foreground leading-none font-normal">
-        {email}
-      </p>
+      <p className="text-sm text-muted-foreground leading-none font-normal">{email}</p>
     </div>
   );
 

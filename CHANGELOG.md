@@ -1,5 +1,45 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.6.0](https://github.com/bora001/pro-store/compare/v1.5.0...v1.6.0) (2025-05-19)
+This release includes several enhancements, such as new features, bug fixes, code refactoring.
+
+### 🚀 New Features
+* (order-detail): add responsive layout ([a2b5868](https://github.com/bora001/pro-store/commit/a2b5868c9ff906b839ed79f436d1d42abfe5c2d8))
+
+* (prisma): refactor Cart model to use relation with CartItem ([e5cac73](https://github.com/bora001/pro-store/commit/e5cac736a82977c7ac7e35469cffd0d7d373d3c0))
+
+* apply handleAsync to server actions ([0958b13](https://github.com/bora001/pro-store/commit/0958b132a6e61fd1b30a36af843af55b0b2ab73d))
+
+* apply validProduct filter to product related query ([edfdf15](https://github.com/bora001/pro-store/commit/edfdf157c9dee697075cb02bc70fc412906b8e18))
+
+### 🐛 Bug Fixes
+* (cart): update item quantity logic in handleModifyItemQtyToCart ([ab33a6c](https://github.com/bora001/pro-store/commit/ab33a6c26c862501d7181a9c6b4f20514f32168d))
+
+* (search): relocate validProduct to appropriate position ([9ca0a63](https://github.com/bora001/pro-store/commit/9ca0a63933624d1e3e9f428d0babadf5b77eb12f))
+
+### 🔧 Code Refactoring
+* (cart) : cart.actions, userId ([a69992a](https://github.com/bora001/pro-store/commit/a69992ad8263745d41862000f2222b496244fac9))
+
+* (lib) : enhance code readability ([6ce8081](https://github.com/bora001/pro-store/commit/6ce80817963d0bcff2c558188836df12fb76c8e8))
+
+* apply naming convention to types ([17d591f](https://github.com/bora001/pro-store/commit/17d591f98ec32b11d5379cffee2c66f7e67101ba))
+
+* clean up duplicate type declarations ([58fb258](https://github.com/bora001/pro-store/commit/58fb2583c69e533b7a1d7ed5576ba8b40cb39bf2))
+
+* PAYMENT_METHODS into a typed constant ([ed9b13d](https://github.com/bora001/pro-store/commit/ed9b13d61445029acc3727d81fc0e67acc39d3e2))
+
+* rename fetch functions to handle in admin.deal ([664ac2b](https://github.com/bora001/pro-store/commit/664ac2b239a1a6de17836fee9606b029c360aadb))
+
+* rename fetch functions to handle in admin.order ([354cb96](https://github.com/bora001/pro-store/commit/354cb96a042e6eb3a198124d7a177003c075cf92))
+
+* restructure components/customs and apply file naming convention ([5e41bc2](https://github.com/bora001/pro-store/commit/5e41bc2c6ffa4b8c5e56e7dc2ae62a66611c9cac))
+
+* revise add-to-cart logic and improve structure ([3d29358](https://github.com/bora001/pro-store/commit/3d29358f0c7e5a55b87e15284e90ed1747844d50))
+
+* separate admin actions ([521dd19](https://github.com/bora001/pro-store/commit/521dd19f33bcb6bb7ff12a8e236b940d214a1ff2))
+
+* separate admin controls and refactor order-detail component ([3e00d17](https://github.com/bora001/pro-store/commit/3e00d17be42f26d227e0faeef8bcb5846245bb19))
+
 ## Release Overview [1.5.0](https://github.com/bora001/pro-store/compare/v1.4.2...v1.5.0) (2025-05-05)
 This release includes several enhancements, such as new features, code refactoring.
 

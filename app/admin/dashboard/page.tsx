@@ -3,31 +3,15 @@ import Container from "@/components/common/container";
 import ListContainer from "@/components/common/list-container";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getOrderSummary } from "@/lib/actions/handler/admin/admin.order.actions";
 import { PATH } from "@/lib/constants";
 import { dateTimeConverter } from "@/lib/utils";
-import {
-  BadgeDollarSign,
-  Barcode,
-  ChevronRight,
-  CreditCard,
-  User,
-} from "lucide-react";
+import { BadgeDollarSign, Barcode, ChevronRight, CreditCard, User } from "lucide-react";
 import Link from "next/link";
-export const metadata = {
-  title: "Dashboard",
-};
-const RECENT_SALES = {
-  HEADER: ["BUYER", "DATE", "TOTAL", "DETAIL"],
-};
+
+export const metadata = { title: "Dashboard" };
+const RECENT_SALES = { HEADER: ["BUYER", "DATE", "TOTAL", "DETAIL"] };
 const DashboardPage = async () => {
   const { data: summary } = await getOrderSummary();
   const summaryList = [
@@ -57,8 +41,11 @@ const DashboardPage = async () => {
     },
   ];
   return (
-    <Container title="Dashboard">
-      <div className="space-y-4">
+    <Container>
+      <Container.Header>
+        <Container.Title title="Dashboard" />
+      </Container.Header>
+      <Container.Body className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {summaryList.map(({ text, title, icon, link }) => (
             <Card key={title}>
@@ -82,10 +69,7 @@ const DashboardPage = async () => {
               <CardTitle>Overview</CardTitle>
             </CardHeader>
             <CardContent>
-              <ListContainer
-                listLength={summary?.salesData.length || 0}
-                title="No Sales Data"
-              >
+              <ListContainer listLength={summary?.salesData.length || 0} title="No Sales Data">
                 <OverviewChart data={summary?.salesData || []} />
               </ListContainer>
             </CardContent>
@@ -95,20 +79,13 @@ const DashboardPage = async () => {
             <CardHeader>
               <CardTitle className="flex justify-between">
                 <p>Recent Sales</p>
-                <Link
-                  href={PATH.ORDERS}
-                  className="text-sm text-gray-500"
-                  aria-label="more sales"
-                >
+                <Link href={PATH.ORDERS} className="text-sm text-gray-500" aria-label="more sales">
                   <ChevronRight />
                 </Link>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ListContainer
-                listLength={summary?.latestSales.length || 0}
-                title="No Sales Data"
-              >
+              <ListContainer listLength={summary?.latestSales.length || 0} title="No Sales Data">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -121,9 +98,7 @@ const DashboardPage = async () => {
                     {summary?.latestSales.map((order) => (
                       <TableRow key={order.id}>
                         <TableCell>{order.user.name}</TableCell>
-                        <TableCell>
-                          {dateTimeConverter(order.createdAt)}
-                        </TableCell>
+                        <TableCell>{dateTimeConverter(order.createdAt)}</TableCell>
                         <TableCell>{order.totalPrice}</TableCell>
                         <TableCell>
                           <Link href={`${PATH.ORDER}/${order.id}`}>
@@ -138,7 +113,7 @@ const DashboardPage = async () => {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </Container.Body>
     </Container>
   );
 };

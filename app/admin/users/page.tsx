@@ -1,36 +1,24 @@
-import SearchContainer from "@/components/admin/search-container";
+import SearchContainer from "@/components/admin/common/search-container";
 import DeleteButton from "@/components/common/delete-button";
 import Pagination from "@/components/common/pagination";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getAllUsers } from "@/lib/actions/handler/admin/admin.user.actions";
 import { deleteUser } from "@/lib/actions/handler/user.action";
 import { CONSTANTS, PATH } from "@/lib/constants";
 import { idSlicer } from "@/lib/utils";
 import Link from "next/link";
-export const metadata = {
-  title: "Users",
-};
-const ADMIN_USER = {
-  HEADER: ["ID", "NAME", "EMAIL", "ROLE", "DETAIL"],
-};
-const AdminUserPage = async (props: {
-  searchParams: Promise<{ page: string; query: string }>;
-}) => {
+
+export const metadata = { title: "Users" };
+const ADMIN_USER = { HEADER: ["ID", "NAME", "EMAIL", "ROLE", "DETAIL"] };
+const AdminUserPage = async (props: { searchParams: Promise<{ page: string; query: string }> }) => {
   const { page, query } = await props.searchParams;
   const { data } = await getAllUsers({ page: +page || 1, query });
 
   return (
     <SearchContainer
       title="Users"
-      hasList={data?.user.length === 0}
+      noList={data?.user.length === 0}
       resetPath={PATH.USERS}
       query={query}
       emptyText="No users available"
@@ -50,11 +38,7 @@ const AdminUserPage = async (props: {
               <TableCell>{name}</TableCell>
               <TableCell>{email}</TableCell>
               <TableCell>
-                <Badge
-                  variant={role === CONSTANTS.ADMIN ? "default" : "secondary"}
-                >
-                  {role}
-                </Badge>
+                <Badge variant={role === CONSTANTS.ADMIN ? "default" : "secondary"}>{role}</Badge>
               </TableCell>
               <TableCell className="space-x-1">
                 <Link href={`${PATH.USERS}/${id}`}>
@@ -75,13 +59,7 @@ const AdminUserPage = async (props: {
         </TableBody>
       </Table>
       <div className="flex justify-center">
-        {data && data.totalPages > 1 && (
-          <Pagination
-            page={page || 1}
-            urlParams="page"
-            totalPages={data.totalPages}
-          />
-        )}
+        {data && data.totalPages > 1 && <Pagination page={page || 1} urlParams="page" totalPages={data.totalPages} />}
       </div>
     </SearchContainer>
   );

@@ -3,35 +3,32 @@ import TextAreaBox from "@/components/admin/setting/textarea-box";
 import Container from "@/components/common/container";
 import { getSetting } from "@/lib/actions/handler/admin/admin.setting.actions";
 
-export const metadata = {
-  title: "Setting",
-};
-
+export const metadata = { title: "Setting" };
 const AdminUserPage = async () => {
   const { data } = await getSetting();
   return (
-    <Container title="Setting" className="space-y-5">
-      <div className="flex gap-4">
+    <Container>
+      <Container.Header>
+        <Container.Title title="Setting" />
+      </Container.Header>
+      <Container.Body className="space-y-5">
+        <div className="flex gap-4">
+          <TextAreaBox type="prompt" data={data?.prompt || ""} title="System Prompt" placeholder="Enter your prompt" />
+          <TextAreaBox
+            data={data?.manual || ""}
+            title="Manual Answer"
+            placeholder="Enter your manual inputs"
+            type="manual"
+          />
+        </div>
         <TextAreaBox
-          type="prompt"
-          data={data?.prompt || ""}
-          title="System Prompt"
-          placeholder="Enter your prompt"
+          data={data?.recommendation || ""}
+          title="Recommendation Prompt"
+          placeholder="Enter your recommendation prompt"
+          type="recommendation"
         />
-        <TextAreaBox
-          data={data?.manual || ""}
-          title="Manual Answer"
-          placeholder="Enter your manual inputs"
-          type="manual"
-        />
-      </div>
-      <TextAreaBox
-        data={data?.recommendation || ""}
-        title="Recommendation Prompt"
-        placeholder="Enter your recommendation prompt"
-        type="recommendation"
-      />
-      <TagBox data={data?.tags || []} />
+        <TagBox data={data?.tags || []} />
+      </Container.Body>
     </Container>
   );
 };

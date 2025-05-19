@@ -1,36 +1,23 @@
-import SearchContainer from "@/components/admin/search-container";
+import SearchContainer from "@/components/admin/common/search-container";
 import DeleteButton from "@/components/common/delete-button";
 import Pagination from "@/components/common/pagination";
 import { Badge } from "@/components/ui/badge";
-import {
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-  Table,
-} from "@/components/ui/table";
+import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import { getAllOrders } from "@/lib/actions/handler/admin/admin.order.actions";
 import { deleteOrder } from "@/lib/actions/handler/admin/admin.order.actions";
 import { PATH } from "@/lib/constants";
 import { dateTimeConverter, idSlicer } from "@/lib/utils";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Orders",
-};
-const ADMIN_ORDERS = {
-  HEADER: ["ID", "USER", "DATE", "TOTAL", "DELIVERED", "DETAIL"],
-};
-const AdminOrdersPage = async (props: {
-  searchParams: Promise<{ page: string; query: string }>;
-}) => {
+export const metadata = { title: "Orders" };
+const ADMIN_ORDERS = { HEADER: ["ID", "USER", "DATE", "TOTAL", "DELIVERED", "DETAIL"] };
+const AdminOrdersPage = async (props: { searchParams: Promise<{ page: string; query: string }> }) => {
   const { page, query } = await props.searchParams;
   const { data } = await getAllOrders({ page: +page || 1, query });
   return (
     <SearchContainer
       title="Orders"
-      hasList={data?.order.length === 0}
+      noList={data?.order.length === 0}
       resetPath={PATH.ORDERS}
       query={query}
       emptyText="No orders have been placed yet"
@@ -59,26 +46,14 @@ const AdminOrdersPage = async (props: {
                 <Link href={`${PATH.ORDER}/${order.id}`}>
                   <Badge variant="outline">Details</Badge>
                 </Link>
-                <DeleteButton
-                  id={order.id}
-                  action={deleteOrder}
-                  type="badge"
-                  buttonLabel="delete-order-button"
-                />
+                <DeleteButton id={order.id} action={deleteOrder} type="badge" buttonLabel="delete-order-button" />
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-
       <div className="flex justify-center">
-        {data && data.totalPages > 1 && (
-          <Pagination
-            page={page || 1}
-            urlParams="page"
-            totalPages={data.totalPages}
-          />
-        )}
+        {data && data.totalPages > 1 && <Pagination page={page || 1} urlParams="page" totalPages={data.totalPages} />}
       </div>
     </SearchContainer>
   );

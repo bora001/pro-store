@@ -62,9 +62,12 @@ const updateExistCart = async ({ cartId, productId, qty }: { cartId: string; pro
 export const handleAddItemToCart = async ({ data, qty, sessionCartId, userId }: HandleCartQueries & CartInfoType) => {
   const { productId, name, slug } = data;
   const newPath = `${PATH.PRODUCT}/${slug}`;
-  const hasExistingCart = await prisma.cart.findFirst({ where: { sessionCartId } });
-  if (!hasExistingCart) return createNewCart({ productId, qty, newPath, name, userId, sessionCartId });
-  await updateExistCart({ cartId: hasExistingCart.id, productId, qty });
+
+  const params = userId ? { userId } : { sessionCartId };
+  const existingCart = await prisma.cart.findFirst({ where: params });
+  if (!existingCart) return createNewCart({ productId, qty, newPath, name, userId, sessionCartId });
+  await updateExistCart({ cartId: existingCart.id, productId, qty });
+
   revalidatePath(newPath);
   return { message: `${name} updated to cart` };
 };

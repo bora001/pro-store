@@ -1,5 +1,11 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.8.1](https://github.com/bora001/pro-store/compare/v1.8.0...v1.8.1) (2025-05-30)
+This release includes several enhancements, such as bug fixes.
+
+### 🐛 Bug Fixes
+* (cart): handle cart creation or update based on userId or sessionCartId ([fc84a65](https://github.com/bora001/pro-store/commit/fc84a65b0e7d863b614a51f5e8f1ea12f8e7942e))
+
 ## Release Overview [1.8.0](https://github.com/bora001/pro-store/compare/v1.7.0...v1.8.0) (2025-05-19)
 This release includes several enhancements, such as new features.
 

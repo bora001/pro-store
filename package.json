@@ -1,7 +1,9 @@
 {
-  "name": "prostore",
+  "name": "pro-store",
   "version": "1.8.1",
   "private": true,
+  "author": "Bora Lee (https://github.com/bora001)",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

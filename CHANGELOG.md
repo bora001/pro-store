@@ -1,5 +1,11 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.8.2](https://github.com/bora001/pro-store/compare/v1.8.1...v1.8.2) (2025-06-01)
+This release includes several enhancements, such as documentation updates.
+
+### 📚 Documentation Updates
+* add README, LICENSE ([ebf886a](https://github.com/bora001/pro-store/commit/ebf886a4e87988a9457cc686164660c993888e98))
+
 ## Release Overview [1.8.1](https://github.com/bora001/pro-store/compare/v1.8.0...v1.8.1) (2025-05-30)
 This release includes several enhancements, such as bug fixes.
 

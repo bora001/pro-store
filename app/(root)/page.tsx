@@ -21,11 +21,7 @@ const HomePage = async () => {
       <FeatureBannerSlide data={bannerData || []} />
       <ShoppingBenefits />
       <DealCountDown deal={deal} />
-      <ProductList
-        data={latestProduct || []}
-        title="Newest Arrivals"
-        className={!latestProduct?.length && "hidden"}
-      />
+      <ProductList data={latestProduct || []} title="Newest Arrivals" className={!latestProduct?.length && "hidden"} />
       <div className="flex items-center justify-center mb-6">
         <Link href={PATH.SEARCH}>
           <Button>View All Products</Button>

@@ -18,7 +18,8 @@
     "show": "email dev",
     "prepare": "husky install",
     "type-check": "tsc --noEmit",
-    "release": "semantic-release --debug"
+    "release": "semantic-release --debug",
+    "start:ws": "ts-node ./websocket/server.ts"
   },
   "dependencies": {
     "@auth/core": "^0.39.0",

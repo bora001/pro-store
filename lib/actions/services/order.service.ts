@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { CONSTANTS, PATH, TYPESENSE_KEY } from "@/lib/constants";
+import { CONSTANTS, PATH, REDIS_KEY, TYPESENSE_KEY } from "@/lib/constants";
 import { redirect } from "next/navigation";
 import { getMyCart } from "../handler/cart.actions";
 import { getUserById } from "../handler/user.action";
@@ -17,6 +17,9 @@ import { updateOrderToPaid } from "../handler/order.actions";
 import { revalidatePath } from "next/cache";
 import { sendPurchaseReceipt } from "@/lib/email/mail-handler";
 import { getUserInfo } from "../utils/session.utils";
+import { sendMessageToSocket } from "../publish/actions";
+import { PUBLISH_KEYS } from "@/websocket/constants";
+import { deleteAllRedisKey } from "@/lib/redis/redis-handler";
 
 export async function handleCreateOrder(payment: PaymentFormType["type"]) {
   if (!payment) redirect(PATH.PAYMENT);
@@ -68,6 +71,7 @@ export async function handleCreateOrder(payment: PaymentFormType["type"]) {
     const newOrder = await tx.order.create({ data: order });
     const { productId } = activeDeal.data || {};
 
+    // const data =
     await tx.orderItem.createMany({
       data: cart.data.items.map(({ ...item }) => {
         const hasDeal = productId === item.productId;
@@ -76,10 +80,27 @@ export async function handleCreateOrder(payment: PaymentFormType["type"]) {
     });
 
     await tx.cartItem.deleteMany({ where: { cartId: cart.data.id } });
+
     return newOrder.id;
   });
 
   if (!newOrderId) throw new Error("Order is not created");
+  if (activeDeal.data) {
+    const data = await prisma.product.findFirst({
+      where: { id: activeDeal.data.productId },
+      select: {
+        stock: true,
+      },
+    });
+    if (data && data?.stock < 5) {
+      await sendMessageToSocket({
+        channel: PUBLISH_KEYS.INVENTORY_UPDATE,
+        message: JSON.stringify({ productId: activeDeal.data.productId, qty: data.stock, soldOut: data.stock === 0 }),
+      });
+    }
+    await deleteAllRedisKey(REDIS_KEY.ACTIVE_DEAL);
+  }
+  await deleteAllRedisKey(REDIS_KEY.ADMIN_PRODUCT_LIST);
   return redirect(`${PATH.ORDER}/${newOrderId}`);
 }
 

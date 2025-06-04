@@ -58,11 +58,11 @@ export const CHAT_ROLE = {
 } as const;
 
 export const REDIS_KEY = {
-  BANNER: "banner-cache",
-  ACTIVE_DEAL: "active-deal-cache",
-  ADMIN_PRODUCT_LIST: "admin-product-list-cache",
-  ADMIN_DEAL_LIST: "admin-deal-list-cache",
-  SETTING: "setting-cache",
+  BANNER: "cache:banner",
+  ACTIVE_DEAL: "cache:deal:active",
+  ADMIN_PRODUCT_LIST: "cache:admin:product:list",
+  ADMIN_DEAL_LIST: "cache:admin:deal:list",
+  SETTING: "cache:setting",
 };
 
 export const TYPESENSE_KEY = {

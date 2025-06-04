@@ -26,6 +26,6 @@ export const getCachedData = async <T>(key: string): Promise<T | null> => {
 };
 
 export const deleteAllRedisKey = async (key: string) => {
-  const keys = await redis.keys(`${key}_*`);
+  const keys = await redis.keys(`${key}*`);
   if (keys.length > 0) await redis.del(...keys);
 };

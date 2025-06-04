@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardHeader } from "../ui/card";
 import Link from "next/link";
 import ProductPrice from "./product-price";
@@ -7,6 +9,7 @@ import RatingStar from "../common/rating-star";
 import { Badge } from "../ui/badge";
 import S3Image from "../common/S3Image";
 import ProductDiscountBadge from "../product/product-discount-badge";
+import ProductBadge from "../common/product-badge";
 
 const PRODUCT_CARD_IMAGE_SIZE = 306;
 
@@ -16,30 +19,47 @@ const ProductCard = ({
   product: ProductItemType;
 }) => {
   const endTime = String(Deal?.[0]?.endTime || "");
+  const currentQty = stock || 0;
+  const soldOut = stock === 0;
+
   return (
-    <Card className="w-full md:max-w-sm ">
+    <Card className={`w-full md:max-w-sm ${soldOut ? "filter grayscale" : ""}`}>
+      {/* overlay */}
+      {soldOut && <div className="absolute inset-0 bg-gray-300 bg-opacity-40 rounded-2xl pointer-events-none z-10" />}
+
       {/* header */}
       <div className="relative">
-        <ProductDiscountBadge endTime={endTime} discount={Deal[0]?.discount} />
-      </div>
-      <CardHeader className="items-center p-0 ">
-        <Link href={`${PATH.PRODUCT}/${slug}`}>
-          <S3Image
-            className="rounded-2xl"
-            folder="product"
-            fileName={String(images[0])}
-            alt={name}
-            size={PRODUCT_CARD_IMAGE_SIZE}
-            priority
+        {soldOut || currentQty < 5 ? (
+          <ProductBadge
+            text={soldOut ? "Sold Out" : `${currentQty} Left`}
+            className="py-1 text-xs z-30"
+            variant={soldOut ? undefined : "orange"}
+            position="top-left"
           />
-        </Link>
-      </CardHeader>
+        ) : null}
+        {!soldOut && <ProductDiscountBadge endTime={endTime} discount={Deal[0]?.discount} />}
+
+        <CardHeader className="items-center p-0">
+          <Link href={`${PATH.PRODUCT}/${slug}`} className={soldOut ? STYLE.LINK_DISABLED : ""}>
+            <S3Image
+              className="rounded-2xl"
+              folder="product"
+              fileName={String(images[0])}
+              alt={name}
+              size={PRODUCT_CARD_IMAGE_SIZE}
+              priority
+            />
+          </Link>
+        </CardHeader>
+      </div>
+
       {/* content */}
       <CardContent className="p-4 grid gap-4">
         <p className="text-xs">{brand}</p>
-        <Link href={`${PATH.PRODUCT}/${slug}`}>
+        <Link href={`${PATH.PRODUCT}/${slug}`} className={soldOut ? STYLE.LINK_DISABLED : ""}>
           <h2 className="text-sm font-medium line-clamp-2 h-[38px]">{name}</h2>
         </Link>
+
         <div className="flex-between gap-4">
           <RatingStar rating={rating} />
           {stock > 0 ? (
@@ -54,3 +74,7 @@ const ProductCard = ({
 };
 
 export default ProductCard;
+
+const STYLE = {
+  LINK_DISABLED: "pointer-events-none cursor-not-allowed",
+};

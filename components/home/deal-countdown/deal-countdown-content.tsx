@@ -30,7 +30,7 @@ const DealCountdownContent = ({ deal, soldOut: dealSoldOut }: { deal: GetDealTyp
     (e: MessageEvent) => {
       try {
         const message = JSON.parse(e.data);
-        if (message.type === "inventory-update" && message.data?.productId === deal.productId) {
+        if (message.type === PUBLISH_KEYS.INVENTORY_UPDATE && message.data?.productId === deal.productId) {
           setCurrentQty(message.data.qty);
           setSoldOut(message.data.soldOut);
         }

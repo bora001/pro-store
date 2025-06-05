@@ -10,17 +10,47 @@ import { Badge } from "../ui/badge";
 import S3Image from "../common/S3Image";
 import ProductDiscountBadge from "../product/product-discount-badge";
 import ProductBadge from "../common/product-badge";
+import { useCallback, useEffect, useState } from "react";
+import { useWebsocketConnector } from "@/hooks/use-websocket-connector";
+import { PUBLISH_KEYS } from "@/websocket/constants";
 
 const PRODUCT_CARD_IMAGE_SIZE = 306;
 
 const ProductCard = ({
-  product: { slug, images, name, brand, rating, stock, price, Deal },
+  product: { slug, images, name, brand, rating, stock, price, Deal, id },
 }: {
   product: ProductItemType;
 }) => {
   const endTime = String(Deal?.[0]?.endTime || "");
-  const currentQty = stock || 0;
-  const soldOut = stock === 0;
+  const [currentQty, setCurrentQty] = useState<number>(stock || 0);
+  const [soldOut, setSoldOut] = useState(stock === 0);
+
+  useEffect(() => {
+    setSoldOut(stock === 0);
+    setCurrentQty(stock || 0);
+  }, [stock]);
+
+  const onMessage = useCallback(
+    (e: MessageEvent) => {
+      try {
+        const message = JSON.parse(e.data);
+        if (message.type === PUBLISH_KEYS.INVENTORY_UPDATE && message.data?.productId === id) {
+          setCurrentQty(message.data.qty);
+          setSoldOut(message.data.soldOut);
+        }
+      } catch (error) {
+        console.error("Failed to parse WebSocket message:", error);
+      }
+    },
+    [id]
+  );
+
+  useWebsocketConnector({
+    id,
+    channels: [PUBLISH_KEYS.INVENTORY_UPDATE],
+    onMessage,
+    enabled: Boolean(Deal && Deal.length > 0),
+  });
 
   return (
     <Card className={`w-full md:max-w-sm ${soldOut ? "filter grayscale" : ""}`}>

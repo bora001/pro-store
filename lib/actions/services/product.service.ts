@@ -21,10 +21,8 @@ export const handleLatestProducts = async () => {
 // single products by slug
 export const handleProductBySlug = async (slug: string) => {
   const data = await prisma.product.findUnique({
-    where: { ...validProduct, slug },
-    include: {
-      Deal: { where: { product: { slug }, isActive: true, endTime: { gte: new Date() } } },
-    },
+    where: { slug, price: { gte: 1 } },
+    include: { Deal: { where: { product: { slug }, isActive: true, endTime: { gte: new Date() } } } },
   });
   if (!data) throw new Error("Product not found");
   return { data: prismaToJs(data) };

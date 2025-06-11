@@ -17,6 +17,8 @@ import { Prisma } from "@prisma/client";
 import { deleteOneItemIndex } from "@/lib/typesense/delete-one-item-index";
 import { revalidatePath } from "next/cache";
 import { deleteImage } from "../../utils/images.utils";
+import { sendMessageToSocket } from "../../publish/actions";
+import { PUBLISH_KEYS } from "@/websocket/constants";
 
 // get-product
 export type HandleGetProductType = { id: string; props?: Prisma.ProductFindFirstArgs };
@@ -32,7 +34,7 @@ export const handleGetAllAdminProduct = async ({
   page = 1,
   limit = CONSTANTS.PAGE_LIMIT,
 }: HandleGetAllAdminProductType): Promise<{ data: AdminProductResult }> => {
-  const cacheKey = `${REDIS_KEY.ADMIN_PRODUCT_LIST}_${page}`;
+  const cacheKey = `${REDIS_KEY.ADMIN_PRODUCT_LIST}:${page}`;
   const cachedList = await getCachedData<AdminProductResult>(cacheKey);
   if (cachedList) return { data: { ...cachedList } };
 
@@ -74,11 +76,23 @@ export const handleCreateProduct = async (data: InsertProductSchemaType) => {
 
 // update-product
 export const handleUpdateProduct = async (data: UpdateProductSchemaType) => {
-  const originalProductData = await prisma.product.findFirst({ where: { id: data.id } });
+  const originalProductData = await prisma.product.findFirst({
+    where: { id: data.id },
+    include: { Deal: { select: { isActive: true } } },
+  });
   if (!originalProductData) throw new Error("Product not found");
   if ((originalProductData.isFeatured && !data.isFeatured) || (!originalProductData.isFeatured && data.isFeatured)) {
     await redis.del(REDIS_KEY.BANNER);
   }
+  const hasActiveDeal = originalProductData.Deal.some((deal) => deal.isActive);
+  if (hasActiveDeal) {
+    await redis.del(REDIS_KEY.ACTIVE_DEAL);
+    await sendMessageToSocket({
+      channel: PUBLISH_KEYS.INVENTORY_UPDATE,
+      message: JSON.stringify({ productId: data.id, qty: data.stock, soldOut: data.stock === 0 }),
+    });
+  }
+
   const product = updateProductSchema.parse(data);
   await prisma.product.update({
     where: { id: data.id },

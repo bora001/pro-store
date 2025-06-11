@@ -8,14 +8,45 @@ import { cn } from "@/lib/utils";
 import AddToCart from "../../product/add-to-cart";
 import DealCountdownTimer from "./deal-countdown-timer";
 import { GetDealType } from "@/types";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "../../ui/button";
 import Link from "next/link";
 import DiscountBadge from "../../product/discount-badge";
 import { discountPrice } from "@/utils/price/discountPrice";
+import ProductBadge from "@/components/common/product-badge";
+import { useWebsocketConnector } from "@/hooks/use-websocket-connector";
+import { PUBLISH_KEYS } from "@/websocket/constants";
 
-const DealCountdownContent = ({ deal, soldOut }: { deal: GetDealType; soldOut: boolean }) => {
+const DealCountdownContent = ({ deal, soldOut: dealSoldOut }: { deal: GetDealType; soldOut: boolean }) => {
   const [isActiveDeal, setIsActiveDeal] = useState(true);
+  const [currentQty, setCurrentQty] = useState<number>(deal.product?.stock || 0);
+  const [soldOut, setSoldOut] = useState(dealSoldOut);
+  useEffect(() => {
+    setSoldOut(dealSoldOut);
+    setCurrentQty(deal.product?.stock || 0);
+  }, [deal.product?.stock, dealSoldOut]);
+
+  const onMessage = useCallback(
+    (e: MessageEvent) => {
+      try {
+        const message = JSON.parse(e.data);
+        if (message.type === PUBLISH_KEYS.INVENTORY_UPDATE && message.data?.productId === deal.productId) {
+          setCurrentQty(message.data.qty);
+          setSoldOut(message.data.soldOut);
+        }
+      } catch (error) {
+        console.error("Failed to parse WebSocket message:", error);
+      }
+    },
+    [deal.productId]
+  );
+
+  useWebsocketConnector({
+    id: deal.productId,
+    channels: [PUBLISH_KEYS.INVENTORY_UPDATE],
+    onMessage,
+  });
+
   return (
     <>
       {soldOut || !isActiveDeal ? (
@@ -28,6 +59,7 @@ const DealCountdownContent = ({ deal, soldOut }: { deal: GetDealType; soldOut: b
           >
             {!isActiveDeal ? "FINISH" : "SOLD OUT"} 🎉
           </div>
+
           <Image
             className="brightness-50"
             src={`https://${CONFIG.IMAGE_URL}/product/${deal.product?.images[0]}`}
@@ -43,15 +75,26 @@ const DealCountdownContent = ({ deal, soldOut }: { deal: GetDealType; soldOut: b
       ) : (
         <CardContent className={cn("flex justify-center")}>
           <div className="flex gap-8 flex-col lg:flex-row items-center">
-            <div className={cn("rounded-lg overflow-hidden shadow-lg aspect-square relative size-56 lg:size-72")}>
-              <Image
-                src={`https://${CONFIG.IMAGE_URL}/product/${deal.product?.images[0]}`}
-                alt="Promo"
-                sizes="100%"
-                fill
-                priority
-              />
+            <div className="relative">
+              {soldOut || currentQty < 5 ? (
+                <ProductBadge
+                  text={soldOut ? "Sold Out" : `${currentQty} Left`}
+                  className="py-1 text-xs z-30"
+                  variant={soldOut ? undefined : "orange"}
+                  position="top-left"
+                />
+              ) : null}
+              <div className={cn("rounded-lg overflow-hidden shadow-lg aspect-square relative size-56 lg:size-72")}>
+                <Image
+                  src={`https://${CONFIG.IMAGE_URL}/product/${deal.product?.images[0]}`}
+                  alt="Promo"
+                  sizes="100%"
+                  fill
+                  priority
+                />
+              </div>
             </div>
+
             <div className="flex flex-col items-center justify-center gap-4 px-4">
               <p className="text-lg text-center text-primary dark:text-black">{deal.description}</p>
               <DealCountdownTimer

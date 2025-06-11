@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "outDir": "dist",
+    "paths": {
+      "@pro-store-monorepo/common": ["packages/common/src"]
+    }
+  }
+}

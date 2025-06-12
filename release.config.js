@@ -83,6 +83,17 @@ module.exports = {
       },
     ],
     [
+      "@semantic-release/monorepo",
+      {
+        packages: [
+          "apps/*",
+          "packages/*"
+        ],
+        message: "chore(release): publish",
+        monorepoPrefix: true
+      }
+    ],
+    [
       "@semantic-release/npm",
       {
         npmPublish: false,

@@ -1,1 +1,1 @@
-pnpm -F @pro-store-monorepo/web pnpm build
+pnpm -F @pro-store-monorepo/web build

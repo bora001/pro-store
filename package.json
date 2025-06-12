@@ -38,7 +38,7 @@
     "overrides": {
       "next": "15.2.4",
       "prismjs": "^1.30.0",
-      "brace-expansion": "^1.1.11"
+      "brace-expansion": ">=1.1.12"
     }
   }
 }

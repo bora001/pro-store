@@ -1,0 +1,50 @@
+{
+  "ui": "tui",
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "build": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "public/dist/**"],
+      "dependsOn": ["^build"],
+      "env": [ "DATABASE_URL",
+      "AUTH_SECRET",
+      "NEXTAUTH_URL",
+      "NEXTAUTH_URL_INTERNAL",
+      "PAYPAL_API_URL",
+      "PAYPAL_CLIENT_ID",
+      "PAYPAL_APP_SECRET",
+      "STRIPE_SECRET_KEY",
+      "STRIPE_WEBHOOK_SECRET",
+      "AWS_ACCESS_KEY_ID",
+      "AWS_SECRET_ACCESS_KEY",
+      "AWS_S3_BUCKET_NAME",
+      "AWS_S3_REGION",
+      "REDIS_URL",
+      "TYPESENSE_API_KEY",
+      "TYPESENSE_PORT",
+      "TYPESENSE_HOST",
+      "EMAIL_SERVER",
+      "EMAIL_SERVER_PORT",
+      "EMAIL_FROM",
+      "EMAIL_PWD",
+      "OPEN_AI_MODEL",
+      "OPENAI_API_KEY",
+      "GITHUB_TOKEN"]
+    },
+    "test": {
+      "outputs": ["coverage/**"],
+      "dependsOn": []
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    }
+  },
+  "globalEnv": [".env"]
+}

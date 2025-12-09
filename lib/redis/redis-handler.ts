@@ -8,21 +8,22 @@ import { redis } from ".";
  * @param ttl - TTL in seconds (default 3600, 0 for infinite cache).
  */
 
-export const cacheData = async <T>(
-  key: string,
-  data: T,
-  ttl: number = 3600 // default - 1 hour, 0 - infinity cache
-): Promise<void> => {
+export const cacheData = async <T>(key: string, data: T, ttl: number = 3600) => {
+  const existing = await getCachedData<T>(key);
+  if (existing) return;
   console.log("📝", ttl, "SET REDIS", key);
-  // If TTL is 0, cache indefinitely; otherwise, set with TTL.
   if (ttl === 0) await redis.set(key, JSON.stringify(data));
   else await redis.setex(key, ttl, JSON.stringify(data));
 };
-
 export const getCachedData = async <T>(key: string): Promise<T | null> => {
-  const cachedData = await redis.get(key);
-  if (cachedData) return JSON.parse(cachedData) as T;
-  return null;
+  const cached = await redis.get(key);
+  if (typeof cached !== "string") return null;
+  try {
+    return JSON.parse(cached) as T;
+  } catch (e) {
+    console.error(`Failed to parse cache for key=${key}`, e);
+    return null;
+  }
 };
 
 export const deleteAllRedisKey = async (key: string) => {

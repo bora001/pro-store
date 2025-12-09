@@ -38,5 +38,6 @@ jobs:
           EMAIL_FROM: ${{ secrets.EMAIL_FROM}}
           EMAIL_PWD: ${{ secrets.EMAIL_PWD}}
           REDIS_URL: ${{ secrets.REDIS_URL }}
+          REDIS_TOKEN: ${{ secrets.REDIS_TOKEN }}
 
         run: pnpm run release

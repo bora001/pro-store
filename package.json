@@ -43,6 +43,7 @@
     "@react-email/components": "^0.0.34",
     "@stripe/react-stripe-js": "^3.5.1",
     "@stripe/stripe-js": "^6.1.0",
+    "@upstash/redis": "^1.35.7",
     "autoprefixer": "^10.4.21",
     "bcrypt-ts-edge": "^3.0.1",
     "class-variance-authority": "^0.7.1",
@@ -53,10 +54,9 @@
     "embla-carousel-react": "^8.5.2",
     "immer": "^10.1.1",
     "init": "^0.1.2",
-    "ioredis": "^5.6.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.482.0",
-    "next": "15.2.4",
+    "next": "15.2.6",
     "next-auth": "5.0.0-beta.25",
     "next-themes": "^0.4.6",
     "nodemailer": "^6.10.1",
@@ -112,8 +112,9 @@
   },
   "pnpm": {
     "overrides": {
-      "next": "15.2.4",
+      "next": "15.2.6",
       "prismjs": "^1.30.0"
     }
-  }
+  },
+  "packageManager": "pnpm@9.12.1+sha512.e5a7e52a4183a02d5931057f7a0dbff9d5e9ce3161e33fa68ae392125b79282a8a8a470a51dfc8a0ed86221442eb2fb57019b0990ed24fab519bf0e1bc5ccfc4"
 }

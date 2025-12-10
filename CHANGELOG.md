@@ -1,5 +1,16 @@
 # 🚀 RELEASE NOTES
 
+## Release Overview [1.9.0](https://github.com/bora001/pro-store/compare/v1.8.2...v1.9.0) (2025-12-10)
+This release includes several enhancements, such as new features, bug fixes.
+
+### 🚀 New Features
+* add errorPage ([2779e86](https://github.com/bora001/pro-store/commit/2779e86054316d2e3c1f725d6bca8b700696ade1))
+
+* configure robots.txt rules to manage bot traffic ([84cbe9c](https://github.com/bora001/pro-store/commit/84cbe9c22b3bdc2c7678879d44751b6f84d47c0b))
+
+### 🐛 Bug Fixes
+* React Flight/Next.js RCE vulnerability & change redis-connector ([a4c72f1](https://github.com/bora001/pro-store/commit/a4c72f11871d45693c231f33ba7bdb25ef15d12b))
+
 ## Release Overview [1.8.2](https://github.com/bora001/pro-store/compare/v1.8.1...v1.8.2) (2025-06-01)
 This release includes several enhancements, such as documentation updates.
 
